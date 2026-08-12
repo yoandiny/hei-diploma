@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Affectations cours — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <aside th:replace="~{fragments/sidebar :: sidebar('cours', 'ADMIN')}"></aside>
+  <div class="main-wrap">
+    <header th:replace="~{fragments/topbar :: topbar('Affectations cours / enseignants / groupes', 'ADMIN')}"></header>
+    <main class="content">
+      <div class="alert alert-info">
+        Un cours est donné par un ou plusieurs enseignants à plusieurs groupes, mais pas toujours à tous.
+        Chaque ligne lie un enseignant à un sous-ensemble de groupes.
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">PROG4 — Programmation avancée</h2>
+
+        <form th:action="@{/admin/cours/PROG4/affectations}" method="post">
+          <div class="mapping-matrix" id="mapping-rows">
+            <div class="mapping-row">
+              <div class="form-field">
+                <label>Enseignant</label>
+                <select name="teacher">
+                  <option selected>Rakoto Jean</option>
+                  <option>Ravelo Marie</option>
+                  <option>Andrianina Paul</option>
+                  <option>Rasoa Lala</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Groupes</label>
+                <select name="group" multiple>
+                  <option selected>K1</option>
+                  <option selected>K2</option>
+                  <option>K3</option>
+                  <option>G1</option>
+                  <option>G2</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Commentaire</label>
+                <input type="text" name="comment" placeholder="Ex. CM + TD K1/K2"/>
+              </div>
+              <button type="button" class="btn btn-sm btn-outline" onclick="this.closest('.mapping-row').remove()">
+                Retirer
+              </button>
+            </div>
+
+            <div class="mapping-row">
+              <div class="form-field">
+                <label>Enseignant</label>
+                <select name="teacher">
+                  <option>Rakoto Jean</option>
+                  <option selected>Ravelo Marie</option>
+                  <option>Andrianina Paul</option>
+                  <option>Rasoa Lala</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Groupes</label>
+                <select name="group" multiple>
+                  <option>K1</option>
+                  <option selected>K2</option>
+                  <option>K3</option>
+                  <option>G1</option>
+                  <option>G2</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Commentaire</label>
+                <input type="text" name="comment" value="TD groupe K2 uniquement"/>
+              </div>
+              <button type="button" class="btn btn-sm btn-outline" onclick="this.closest('.mapping-row').remove()">
+                Retirer
+              </button>
+            </div>
+          </div>
+
+          <div class="btn-group" style="margin-top:1rem;">
+            <button type="button" class="btn btn-outline" id="add-mapping-row">
+              <i class="fa-solid fa-plus"></i> Ajouter une affectation
+            </button>
+            <button type="submit" class="btn btn-primary">Enregistrer les affectations</button>
+            <a class="btn btn-outline" th:href="@{/admin/courses/list.html}">Retour</a>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+</div>
+<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+</body>
+</html>
