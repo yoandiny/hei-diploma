@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Historique de note — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <aside th:replace="~{fragments/sidebar :: sidebar('notes', 'TEACHER')}"></aside>
+  <div class="main-wrap">
+    <header th:replace="~{fragments/topbar :: topbar('Historique de note', 'TEACHER')}"></header>
+    <main class="content">
+      <div class="btn-group" style="margin-bottom:1rem;">
+        <a class="btn btn-outline" th:href="@{/teacher/grades-edit.html}">
+          <i class="fa-solid fa-arrow-left"></i> Retour à la saisie
+        </a>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Historique — PROG4 / Fondàna Yoan DINY</h2>
+        <ul class="timeline">
+          <li>
+            <div class="when">12 juin 2026 — 14:22 · par Rakoto Jean</div>
+            <div class="what">15.0 → 16.5</div>
+            <div class="why">Motif : Erreur de saisie sur la copie n°12</div>
+          </li>
+          <li>
+            <div class="when">01 juin 2026 — 16:45 · par Rakoto Jean</div>
+            <div class="what">— → 15.0</div>
+            <div class="why">Motif : Première saisie</div>
+          </li>
+        </ul>
+      </div>
+    </main>
+  </div>
+</div>
+<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+</body>
+</html>
