@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Saisie des notes — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <aside th:replace="~{fragments/sidebar :: sidebar('notes', 'TEACHER')}"></aside>
+  <div class="main-wrap">
+    <header th:replace="~{fragments/topbar :: topbar('Saisie des notes — PROG4', 'TEACHER')}"></header>
+    <main class="content">
+      <div class="alert alert-warning">
+        Toute modification de note exige un <strong>motif obligatoire</strong> et alimente l'historique.
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
+          <h2 class="section-title" style="margin:0;">PROG4 — Examen final (groupe K2)</h2>
+          <a class="btn btn-outline btn-sm" th:href="@{/teacher/grade-history.html}">
+            <i class="fa-solid fa-clock-rotate-left"></i> Voir l'historique
+          </a>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+            <tr>
+              <th>Réf.</th>
+              <th>Étudiant</th>
+              <th>Groupe</th>
+              <th>Note actuelle</th>
+              <th>Nouvelle note</th>
+              <th>Motif de modification</th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>STD24001</td>
+              <td>Andria Miora</td>
+              <td>K2</td>
+              <td>12.0</td>
+              <td colspan="3">
+                <form class="btn-group" style="align-items:flex-start;" th:action="@{/teacher/notes/PROG4}" method="post">
+                  <input type="hidden" name="studentId" value="STD24001"/>
+                  <input type="number" name="newValue" step="0.5" min="0" max="20" value="12.0" style="width:5.5rem;"/>
+                  <input type="text" name="reason" class="required-field" placeholder="Motif obligatoire…" required style="min-width:14rem;flex:1;"/>
+                  <button type="submit" class="btn btn-sm btn-primary">Enregistrer</button>
+                  <a class="btn btn-sm btn-outline" th:href="@{/teacher/grade-history.html}">Histo</a>
+                </form>
+              </td>
+            </tr>
+            <tr>
+              <td>STD24005</td>
+              <td>Fondàna Yoan DINY</td>
+              <td>K2</td>
+              <td>16.5</td>
+              <td colspan="3">
+                <form class="btn-group" style="align-items:flex-start;" th:action="@{/teacher/notes/PROG4}" method="post">
+                  <input type="hidden" name="studentId" value="STD24005"/>
+                  <input type="number" name="newValue" step="0.5" min="0" max="20" value="16.5" style="width:5.5rem;"/>
+                  <input type="text" name="reason" placeholder="Motif obligatoire…" required style="min-width:14rem;flex:1;"/>
+                  <button type="submit" class="btn btn-sm btn-primary">Enregistrer</button>
+                  <a class="btn btn-sm btn-outline" th:href="@{/teacher/grade-history.html}">Histo</a>
+                </form>
+              </td>
+            </tr>
+            <tr>
+              <td>STD24012</td>
+              <td>Rasoanaivo Hery</td>
+              <td>K2</td>
+              <td>09.5</td>
+              <td colspan="3">
+                <form class="btn-group" style="align-items:flex-start;" th:action="@{/teacher/notes/PROG4}" method="post">
+                  <input type="hidden" name="studentId" value="STD24012"/>
+                  <input type="number" name="newValue" step="0.5" min="0" max="20" value="9.5" style="width:5.5rem;"/>
+                  <input type="text" name="reason" placeholder="Motif obligatoire…" required style="min-width:14rem;flex:1;"/>
+                  <button type="submit" class="btn btn-sm btn-primary">Enregistrer</button>
+                  <a class="btn btn-sm btn-outline" th:href="@{/teacher/grade-history.html}">Histo</a>
+                </form>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+</body>
+</html>

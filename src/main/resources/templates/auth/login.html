@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Connexion — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+</head>
+<body>
+<div class="login-page">
+  <div class="login-card">
+    <div class="brand">
+      <div class="brand-mark">HEI</div>
+      <h1>HEI Diploma</h1>
+    </div>
+
+    <form th:action="@{/login}" method="post">
+      <p class="hint" style="margin:0 0 0.75rem;color:var(--hei-muted);font-size:0.88rem;">
+        Choisissez un rôle pour prévisualiser les interfaces.
+      </p>
+      <div class="role-switch">
+        <label>
+          <input type="radio" name="role" value="STUDENT" checked/>
+          <span>Étudiant</span>
+        </label>
+        <label>
+          <input type="radio" name="role" value="TEACHER"/>
+          <span>Enseignant</span>
+        </label>
+        <label>
+          <input type="radio" name="role" value="ADMIN"/>
+          <span>Admin</span>
+        </label>
+      </div>
+
+      <div class="form-field" style="margin-bottom:0.85rem;">
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" placeholder="prenom@mail.hei.school" value="yoan@mail.hei.school"/>
+      </div>
+      <div class="form-field">
+        <label for="password">Mot de passe</label>
+        <input id="password" type="password" name="password" placeholder="••••••••" value="demo"/>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Se connecter</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

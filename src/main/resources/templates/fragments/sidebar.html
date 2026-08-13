@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<aside class="sidebar" th:fragment="sidebar(activeNav, role)">
+  <a class="sidebar-brand" href="#">
+    <span class="brand-mark">HEI</span>
+    <span class="brand-text">HEI Diploma</span>
+  </a>
+
+  <!-- Navigation étudiant -->
+  <ul class="sidebar-nav" th:if="${role == 'STUDENT'}">
+    <li>
+      <a th:href="@{/student/dashboard.html}" th:classappend="${activeNav == 'dashboard'} ? ' active'">
+        <i class="fa-solid fa-gauge-high"></i> Dashboard
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/student/profile.html}" th:classappend="${activeNav == 'profil'} ? ' active'">
+        <i class="fa-regular fa-user"></i> Profil
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/student/grades.html}" th:classappend="${activeNav == 'notes'} ? ' active'">
+        <i class="fa-solid fa-graduation-cap"></i> Mes notes
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/student/transcripts.html}" th:classappend="${activeNav == 'releves'} ? ' active'">
+        <i class="fa-regular fa-file-lines"></i> Mes relevés
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/auth/login.html}">
+        <i class="fa-solid fa-right-from-bracket"></i> Se déconnecter
+      </a>
+    </li>
+  </ul>
+
+  <!-- Navigation enseignant -->
+  <ul class="sidebar-nav" th:if="${role == 'TEACHER'}">
+    <li>
+      <a th:href="@{/teacher/dashboard.html}" th:classappend="${activeNav == 'dashboard'} ? ' active'">
+        <i class="fa-solid fa-gauge-high"></i> Dashboard
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/teacher/courses.html}" th:classappend="${activeNav == 'cours'} ? ' active'">
+        <i class="fa-solid fa-book"></i> Mes cours
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/teacher/grades-home.html}" th:classappend="${activeNav == 'notes'} ? ' active'">
+        <i class="fa-solid fa-pen-to-square"></i> Notes
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/auth/login.html}">
+        <i class="fa-solid fa-right-from-bracket"></i> Se déconnecter
+      </a>
+    </li>
+  </ul>
+
+  <!-- Navigation admin -->
+  <ul class="sidebar-nav" th:if="${role == 'ADMIN'}">
+    <li>
+      <a th:href="@{/admin/dashboard.html}" th:classappend="${activeNav == 'dashboard'} ? ' active'">
+        <i class="fa-solid fa-gauge-high"></i> Dashboard
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/admin/courses/list.html}" th:classappend="${activeNav == 'cours'} ? ' active'">
+        <i class="fa-solid fa-book"></i> Cours
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/admin/students/list.html}" th:classappend="${activeNav == 'etudiants'} ? ' active'">
+        <i class="fa-solid fa-users"></i> Étudiants
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/admin/grades/history.html}" th:classappend="${activeNav == 'historique'} ? ' active'">
+        <i class="fa-solid fa-clock-rotate-left"></i> Historique notes
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/admin/promotion/results.html}" th:classappend="${activeNav == 'promotion'} ? ' active'">
+        <i class="fa-solid fa-chart-column"></i> Promo (3 ans)
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/auth/login.html}">
+        <i class="fa-solid fa-right-from-bracket"></i> Se déconnecter
+      </a>
+    </li>
+  </ul>
+
+  <div class="sidebar-footer">
+    <button type="button" class="sidebar-hours">
+      <i class="fa-regular fa-clock"></i> Horaires d'ouverture
+    </button>
+    <div class="sidebar-contact"><i class="fa-solid fa-phone"></i> 034 94 041 16</div>
+    <div class="sidebar-contact"><i class="fa-regular fa-envelope"></i> contact@mail.hei.school</div>
+  </div>
+</aside>
+</body>
+</html>

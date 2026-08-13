@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Résultats promotion — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <aside th:replace="~{fragments/sidebar :: sidebar('promotion', 'ADMIN')}"></aside>
+  <div class="main-wrap">
+    <header th:replace="~{fragments/topbar :: topbar('Résultats de promotion (3 ans)', 'ADMIN')}"></header>
+    <main class="content">
+      <div class="card" style="margin-bottom:1rem;">
+        <form class="btn-group" method="get" th:action="@{/admin/promotion/results.html}">
+          <div class="form-field" style="min-width:200px;">
+            <label for="promo">Promotion</label>
+            <select id="promo" name="promo">
+              <option>2022</option>
+              <option selected>2023</option>
+              <option>2024</option>
+              <option>2025</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" style="align-self:flex-end;">Afficher</button>
+        </form>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card"><div class="label">Année 1 — moyenne</div><div class="value">13.4</div></div>
+        <div class="stat-card"><div class="label">Année 2 — moyenne</div><div class="value">14.1</div></div>
+        <div class="stat-card"><div class="label">Année 3 — moyenne</div><div class="value">14.8</div></div>
+        <div class="stat-card"><div class="label">Taux réussite Y3</div><div class="value">85%</div></div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Promotion 2023 — vue sur 3 ans</h2>
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+            <tr>
+              <th>Année du parcours</th>
+              <th>Effectif</th>
+              <th>Moyenne générale</th>
+              <th>Taux de réussite</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>Année 1</td>
+              <td>120</td>
+              <td>13.4</td>
+              <td><span class="badge badge-ok">82%</span></td>
+            </tr>
+            <tr>
+              <td>Année 2</td>
+              <td>108</td>
+              <td>14.1</td>
+              <td><span class="badge badge-warn">78%</span></td>
+            </tr>
+            <tr>
+              <td>Année 3</td>
+              <td>95</td>
+              <td>14.8</td>
+              <td><span class="badge badge-ok">85%</span></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+</body>
+</html>

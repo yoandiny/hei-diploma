@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Mon profil — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <aside th:replace="~{fragments/sidebar :: sidebar('profil', 'STUDENT')}"></aside>
+  <div class="main-wrap">
+    <header th:replace="~{fragments/topbar :: topbar('Mon profil', 'STUDENT')}"></header>
+    <main class="content">
+      <section class="profile-hero">
+        <div class="profile-banner"></div>
+        <div class="profile-head">
+          <img class="profile-avatar" th:src="@{/img/avatar-default.svg}" src="/img/avatar-default.svg" alt="Photo de profil"/>
+          <div class="profile-identity">
+            <h1>Fondàna Yoan DINY</h1>
+            <div class="meta">STD24005 · K2</div>
+          </div>
+          <div class="profile-actions">
+            <a class="btn btn-outline" href="#"><i class="fa-solid fa-download"></i> Certificat</a>
+          </div>
+        </div>
+        <nav class="profile-tabs">
+          <a class="active" href="#">Détails du Profil</a>
+          <a href="#">Commentaires</a>
+          <a href="#">Boîte aux lettres</a>
+          <a href="#">Participation</a>
+        </nav>
+      </section>
+
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <h2 class="section-title">Coordonnées</h2>
+            <div class="grid-fields">
+              <div class="info-item">
+                <span class="info-icon"><i class="fa-regular fa-envelope"></i></span>
+                <div>
+                  <span class="label">Email</span>
+                  <span class="value">yoan@mail.hei.school</span>
+                </div>
+              </div>
+              <div class="info-item">
+                <span class="info-icon"><i class="fa-solid fa-phone"></i></span>
+                <div>
+                  <span class="label">Téléphone</span>
+                  <span class="value">034 44 769 69</span>
+                </div>
+              </div>
+              <div class="info-item">
+                <span class="info-icon"><i class="fa-solid fa-location-dot"></i></span>
+                <div>
+                  <span class="label">Adresse</span>
+                  <span class="value">III H 14 BIS RA Ouest Ambohijanahary</span>
+                </div>
+              </div>
+              <div class="info-item">
+                <span class="info-icon"><i class="fa-solid fa-map"></i></span>
+                <div>
+                  <span class="label">Géolocalisation</span>
+                  <a class="value" href="#">47.5222692, -18.9236586</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2 class="section-title">Détails personnels</h2>
+            <div class="grid-fields">
+              <div class="info-item">
+                <span class="info-icon"><i class="fa-solid fa-venus-mars"></i></span>
+                <div>
+                  <span class="label">Sexe</span>
+                  <span class="value">Homme</span>
+                </div>
+              </div>
+              <div class="info-item">
+                <span class="info-icon"><i class="fa-regular fa-id-card"></i></span>
+                <div>
+                  <span class="label">Numéro CIN</span>
+                  <span class="value">101241232449</span>
+                </div>
+              </div>
+              <div class="info-item">
+                <span class="info-icon"><i class="fa-solid fa-cake-candles"></i></span>
+                <div>
+                  <span class="label">Date et lieu de naissance</span>
+                  <span class="value">12 mars 2004 — Antananarivo</span>
+                </div>
+              </div>
+              <div class="info-item">
+                <span class="info-icon"><i class="fa-solid fa-circle-check"></i></span>
+                <div>
+                  <span class="label">Statut</span>
+                  <span class="value">Actif</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="section-title">Informations personnelles</h2>
+          <div class="info-stack">
+            <div class="info-item">
+              <span class="info-icon"><i class="fa-regular fa-calendar"></i></span>
+              <div>
+                <span class="label">Date d'entrée chez HEI</span>
+                <span class="value">18 octobre 2024</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-icon"><i class="fa-solid fa-rotate"></i></span>
+              <div>
+                <span class="label">Redoublant</span>
+                <span class="value">Non</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-icon"><i class="fa-solid fa-road"></i></span>
+              <div>
+                <span class="label">Parcours de Spécialisation</span>
+                <span class="value">Tronc commun</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-icon"><i class="fa-solid fa-briefcase"></i></span>
+              <div>
+                <span class="label">Statut professionnel</span>
+                <span class="value">N'a pas d'expérience professionnelle</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-icon"><i class="fa-solid fa-list"></i></span>
+              <div>
+                <span class="label">Type d'expérience professionnelle</span>
+                <span class="value">Pas d'expérience professionnelle</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+</body>
+</html>

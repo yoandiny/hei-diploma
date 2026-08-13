@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Étudiants — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <aside th:replace="~{fragments/sidebar :: sidebar('etudiants', 'ADMIN')}"></aside>
+  <div class="main-wrap">
+    <header th:replace="~{fragments/topbar :: topbar('Étudiants', 'ADMIN')}"></header>
+    <main class="content">
+      <div class="alert alert-info">
+        Un étudiant peut changer de groupe à tout moment durant son parcours.
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Liste des étudiants</h2>
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+            <tr>
+              <th>Référence</th>
+              <th>Nom</th>
+              <th>Groupe actuel</th>
+              <th>Année</th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>STD24001</td>
+              <td>Andria Miora</td>
+              <td><span class="badge badge-info">K1</span></td>
+              <td>L2</td>
+              <td><a class="btn btn-sm btn-primary" th:href="@{/admin/students/edit-group.html}">Changer de groupe</a></td>
+            </tr>
+            <tr>
+              <td>STD24005</td>
+              <td>Fondàna Yoan DINY</td>
+              <td><span class="badge badge-info">K2</span></td>
+              <td>L2</td>
+              <td><a class="btn btn-sm btn-primary" th:href="@{/admin/students/edit-group.html}">Changer de groupe</a></td>
+            </tr>
+            <tr>
+              <td>STD24012</td>
+              <td>Rasoanaivo Hery</td>
+              <td><span class="badge badge-info">K2</span></td>
+              <td>L2</td>
+              <td><a class="btn btn-sm btn-primary" th:href="@{/admin/students/edit-group.html}">Changer de groupe</a></td>
+            </tr>
+            <tr>
+              <td>STD23008</td>
+              <td>Rakotomalala Soa</td>
+              <td><span class="badge badge-info">G1</span></td>
+              <td>L3</td>
+              <td><a class="btn btn-sm btn-primary" th:href="@{/admin/students/edit-group.html}">Changer de groupe</a></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+</body>
+</html>
