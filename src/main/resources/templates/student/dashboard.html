@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Dashboard — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <aside th:replace="~{fragments/sidebar :: sidebar('dashboard', 'STUDENT')}"></aside>
+  <div class="main-wrap">
+    <header th:replace="~{fragments/topbar :: topbar('Dashboard', 'STUDENT')}"></header>
+    <main class="content">
+      <div class="stats">
+        <div class="stat-card">
+          <div class="label">Moyenne générale</div>
+          <div class="value">15.2</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Notes visibles</div>
+          <div class="value">3</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Groupe</div>
+          <div class="value">K2</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Relevés</div>
+          <div class="value">3</div>
+        </div>
+      </div>
+
+      <div class="alert alert-info">
+        En tant qu'étudiant, vous ne voyez que <strong>vos</strong> notes et <strong>vos</strong> relevés.
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Dernières notes</h2>
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+            <tr>
+              <th>Cours</th>
+              <th>Épreuve</th>
+              <th>Note</th>
+              <th>Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>PROG4 — Programmation avancée</td>
+              <td>Examen final</td>
+              <td><strong>16.5</strong></td>
+              <td>10 juin 2026</td>
+            </tr>
+            <tr>
+              <td>WEB4 — Développement web</td>
+              <td>Contrôle continu</td>
+              <td><strong>14.0</strong></td>
+              <td>02 juin 2026</td>
+            </tr>
+            <tr>
+              <td>SYS2 — Systèmes d'exploitation</td>
+              <td>TP noté</td>
+              <td><strong>15.0</strong></td>
+              <td>20 mai 2026</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+</body>
+</html>

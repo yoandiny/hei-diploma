@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Dashboard admin — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <aside th:replace="~{fragments/sidebar :: sidebar('dashboard', 'ADMIN')}"></aside>
+  <div class="main-wrap">
+    <header th:replace="~{fragments/topbar :: topbar('Dashboard admin', 'ADMIN')}"></header>
+    <main class="content">
+      <div class="stats">
+        <div class="stat-card"><div class="label">Cours</div><div class="value">3</div></div>
+        <div class="stat-card"><div class="label">Étudiants</div><div class="value">4</div></div>
+        <div class="stat-card"><div class="label">Enseignants</div><div class="value">4</div></div>
+        <div class="stat-card"><div class="label">Modifs notes</div><div class="value">3</div></div>
+      </div>
+
+      <div class="alert alert-info">
+        L'admin peut tout faire, y compris consulter les résultats de promotion sur 3 ans.
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h2 class="section-title">Accès rapides</h2>
+          <div class="btn-group">
+            <a class="btn btn-primary" th:href="@{/admin/courses/form.html}">Nouveau cours</a>
+            <a class="btn btn-outline" th:href="@{/admin/students/list.html}">Changer un groupe</a>
+            <a class="btn btn-outline" th:href="@{/admin/promotion/results.html}">Résultats promo</a>
+            <a class="btn btn-outline" th:href="@{/admin/grades/history.html}">Historique notes</a>
+          </div>
+        </div>
+        <div class="card">
+          <h2 class="section-title">Promo 2023 — aperçu 3 ans</h2>
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+              <tr><th>Année</th><th>Moyenne</th><th>Réussite</th></tr>
+              </thead>
+              <tbody>
+              <tr><td>Année 1</td><td>13.4</td><td>82%</td></tr>
+              <tr><td>Année 2</td><td>14.1</td><td>78%</td></tr>
+              <tr><td>Année 3</td><td>14.8</td><td>85%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+</body>
+</html>

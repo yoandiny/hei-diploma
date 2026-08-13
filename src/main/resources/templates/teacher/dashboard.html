@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Dashboard enseignant — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <aside th:replace="~{fragments/sidebar :: sidebar('dashboard', 'TEACHER')}"></aside>
+  <div class="main-wrap">
+    <header th:replace="~{fragments/topbar :: topbar('Dashboard enseignant', 'TEACHER')}"></header>
+    <main class="content">
+      <div class="stats">
+        <div class="stat-card"><div class="label">Cours assignés</div><div class="value">2</div></div>
+        <div class="stat-card"><div class="label">Groupes</div><div class="value">3</div></div>
+        <div class="stat-card"><div class="label">Étudiants</div><div class="value">80</div></div>
+        <div class="stat-card"><div class="label">Notes à saisir</div><div class="value">12</div></div>
+      </div>
+
+      <div class="alert alert-info">
+        Un enseignant peut voir et modifier toutes les notes de <strong>ses</strong> cours uniquement.
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Mes cours</h2>
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+            <tr>
+              <th>Code</th>
+              <th>Intitulé</th>
+              <th>Groupes</th>
+              <th>Étudiants</th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>PROG4</td>
+              <td>Programmation avancée</td>
+              <td>
+                <span class="chip">K1</span>
+                <span class="chip">K2</span>
+              </td>
+              <td>42</td>
+              <td><a class="btn btn-sm btn-primary" th:href="@{/teacher/grades-edit.html}">Saisir notes</a></td>
+            </tr>
+            <tr>
+              <td>WEB4</td>
+              <td>Développement web</td>
+              <td>
+                <span class="chip">K2</span>
+                <span class="chip">K3</span>
+              </td>
+              <td>38</td>
+              <td><a class="btn btn-sm btn-primary" th:href="@{/teacher/grades-edit.html}">Saisir notes</a></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+</body>
+</html>
