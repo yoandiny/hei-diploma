@@ -14,7 +14,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"exam_id", "student_id"}))
+@Table(
+    name = "grade",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"exam_id", "student_id"}))
 @Getter
 @Setter
 public class JGrade {
