@@ -13,8 +13,7 @@ import lombok.Setter;
 @Entity
 @Table(
     name = "course_assignment",
-    uniqueConstraints =
-        @UniqueConstraint(columnNames = {"course_id", "group_id", "teacher_id"}))
+    uniqueConstraints = @UniqueConstraint(columnNames = {"course_id", "group_id", "teacher_id"}))
 @Getter
 @Setter
 public class JCourseAssignment {
