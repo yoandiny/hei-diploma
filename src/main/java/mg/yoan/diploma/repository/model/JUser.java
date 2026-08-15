@@ -5,12 +5,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.Instant;
 import lombok.Getter;
 import lombok.Setter;
 import mg.yoan.diploma.domain.Role;
 
 @Entity
+@Table(name = "user")
 @Getter
 @Setter
 public class JUser {
