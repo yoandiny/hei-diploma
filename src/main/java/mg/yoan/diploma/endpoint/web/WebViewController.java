@@ -86,12 +86,6 @@ public class WebViewController {
     return page(model, "admin/courses/assign-groups", "Affectations", "cours");
   }
 
-  @GetMapping("/admin/students/list.html")
-  @PreAuthorize("hasRole('ADMIN')")
-  public String adminStudents(Model model) {
-    return page(model, "admin/students/list", "Étudiants", "etudiants");
-  }
-
   @GetMapping("/admin/students/edit-group.html")
   @PreAuthorize("hasRole('ADMIN')")
   public String adminEditGroup(Model model) {
