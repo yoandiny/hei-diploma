@@ -1,5 +1,6 @@
 package mg.yoan.diploma.repository.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,7 +20,7 @@ public class JTeacher {
 
   @Id private String id;
 
-  @OneToOne(optional = false, fetch = FetchType.LAZY)
+  @OneToOne(optional = false, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
   @MapsId
   @JoinColumn(name = "id")
   private JUser user;

@@ -73,6 +73,16 @@
       </a>
     </li>
     <li>
+      <a th:href="@{/admin/teachers/list.html}" th:classappend="${activeNav == 'enseignants'} ? ' active'">
+        <i class="fa-solid fa-chalkboard-user"></i> Enseignants
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/admin/groups/list.html}" th:classappend="${activeNav == 'groupes'} ? ' active'">
+        <i class="fa-solid fa-layer-group"></i> Groupes
+      </a>
+    </li>
+    <li>
       <a th:href="@{/admin/students/list.html}" th:classappend="${activeNav == 'etudiants'} ? ' active'">
         <i class="fa-solid fa-users"></i> Étudiants
       </a>
