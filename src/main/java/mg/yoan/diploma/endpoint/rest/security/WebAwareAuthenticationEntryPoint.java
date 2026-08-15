@@ -17,7 +17,7 @@ public class WebAwareAuthenticationEntryPoint implements AuthenticationEntryPoin
       AuthenticationException authException)
       throws IOException {
     if (ApiRequest.isApi(request)) {
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+      HttpErrorResponse.send(response, HttpServletResponse.SC_UNAUTHORIZED);
       return;
     }
     response.sendRedirect(request.getContextPath() + "/login");

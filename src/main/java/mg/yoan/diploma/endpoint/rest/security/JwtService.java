@@ -18,6 +18,8 @@ public class JwtService {
 
   private static final String CLAIM_EMAIL = "email";
   private static final String CLAIM_ROLE = "role";
+  private static final String CLAIM_FIRST_NAME = "firstName";
+  private static final String CLAIM_LAST_NAME = "lastName";
 
   private final SecretKey signingKey;
   private final long expirationSeconds;
@@ -30,15 +32,27 @@ public class JwtService {
   }
 
   public String generateToken(String userId, String email, Role role) {
+    return generateToken(userId, email, role, null, null);
+  }
+
+  public String generateToken(
+      String userId, String email, Role role, String firstName, String lastName) {
     Instant now = Instant.now();
-    return Jwts.builder()
-        .subject(userId)
-        .claim(CLAIM_EMAIL, email)
-        .claim(CLAIM_ROLE, role.name())
-        .issuedAt(Date.from(now))
-        .expiration(Date.from(now.plusSeconds(expirationSeconds)))
-        .signWith(signingKey)
-        .compact();
+    var builder =
+        Jwts.builder()
+            .subject(userId)
+            .claim(CLAIM_EMAIL, email)
+            .claim(CLAIM_ROLE, role.name())
+            .issuedAt(Date.from(now))
+            .expiration(Date.from(now.plusSeconds(expirationSeconds)))
+            .signWith(signingKey);
+    if (firstName != null) {
+      builder.claim(CLAIM_FIRST_NAME, firstName);
+    }
+    if (lastName != null) {
+      builder.claim(CLAIM_LAST_NAME, lastName);
+    }
+    return builder.compact();
   }
 
   public long getExpirationSeconds() {
@@ -65,5 +79,13 @@ public class JwtService {
 
   public Role extractRole(Claims claims) {
     return Role.valueOf(claims.get(CLAIM_ROLE, String.class));
+  }
+
+  public String extractFirstName(Claims claims) {
+    return claims.get(CLAIM_FIRST_NAME, String.class);
+  }
+
+  public String extractLastName(Claims claims) {
+    return claims.get(CLAIM_LAST_NAME, String.class);
   }
 }
