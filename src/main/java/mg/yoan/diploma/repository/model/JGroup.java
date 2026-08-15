@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "group")
+@Table(name = "`group`")
 @Getter
 @Setter
 public class JGroup {
