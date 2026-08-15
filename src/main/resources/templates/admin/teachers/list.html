@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Gestion des cours — HEI Diploma</title>
+  <title>Enseignants — HEI Diploma</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
@@ -12,48 +12,52 @@
 </head>
 <body>
 <div class="app-shell">
-  <aside th:replace="~{fragments/sidebar :: sidebar('cours', 'ADMIN')}"></aside>
+  <aside th:replace="~{fragments/sidebar :: sidebar('enseignants', 'ADMIN')}"></aside>
   <div class="main-wrap">
-    <header th:replace="~{fragments/topbar :: topbar('Gestion des cours', 'ADMIN')}"></header>
+    <header th:replace="~{fragments/topbar :: topbar('Enseignants', 'ADMIN')}"></header>
     <main class="content">
       <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}">Enregistré.</div>
       <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur.</div>
 
       <div class="btn-group" style="margin-bottom:1rem;">
-        <a class="btn btn-primary" th:href="@{/admin/courses/form.html}">
-          <i class="fa-solid fa-plus"></i> Nouveau cours
+        <a class="btn btn-primary" th:href="@{/admin/teachers/form.html}">
+          <i class="fa-solid fa-plus"></i> Nouvel enseignant
         </a>
       </div>
 
       <div class="card">
         <h2 class="section-title">
-          Cours
-          <span th:text="|(${#lists.size(courses)})|">(0)</span>
+          Enseignants
+          <span th:text="|(${#lists.size(teachers)})|">(0)</span>
         </h2>
         <p style="color:var(--hei-muted);margin-top:0;font-size:0.9rem;">
-          Un cours peut ensuite être enseigné par plusieurs enseignants, et n'est pas forcément donné à tous les groupes.
+          Créez les comptes enseignants avant d'affecter des cours.
         </p>
-        <div class="empty" th:if="${courses.empty}">Aucun cours pour le moment.</div>
-        <div class="table-wrap" th:unless="${courses.empty}">
+        <div class="empty" th:if="${teachers.empty}">Aucun enseignant pour le moment.</div>
+        <div class="table-wrap" th:unless="${teachers.empty}">
           <table class="data">
             <thead>
             <tr>
-              <th>Code</th>
-              <th>Intitulé</th>
-              <th>Crédits</th>
+              <th>Matricule</th>
+              <th>Nom</th>
+              <th>Email</th>
+              <th>Statut</th>
               <th></th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="course : ${courses}">
-              <td th:text="${course.ref}">PROG4</td>
-              <td th:text="${course.title}">Programmation avancée</td>
-              <td th:text="${course.credits}">6</td>
+            <tr th:each="teacher : ${teachers}">
+              <td th:text="${teacher.employeeNumber}">TCH001</td>
+              <td th:text="${teacher.user != null ? teacher.user.fullName : '—'}">Nom</td>
+              <td th:text="${teacher.user != null ? teacher.user.email : '—'}">mail@hei.school</td>
+              <td>
+                <span class="badge badge-info" th:if="${teacher.user != null && teacher.user.enabled}">Actif</span>
+                <span th:if="${teacher.user == null || !teacher.user.enabled}">Désactivé</span>
+              </td>
               <td class="btn-group">
-                <a class="btn btn-sm btn-outline" th:href="@{/admin/courses/form.html(id=${course.id})}">Éditer</a>
-                <a class="btn btn-sm btn-primary" th:href="@{/admin/courses/assign-groups.html(courseId=${course.id})}">Affectations</a>
-                <form th:action="@{/admin/courses/{id}/delete(id=${course.id})}" method="post" style="display:inline;"
-                      onsubmit="return confirm('Supprimer ce cours ?');">
+                <a class="btn btn-sm btn-outline" th:href="@{/admin/teachers/form.html(id=${teacher.id})}">Éditer</a>
+                <form th:action="@{/admin/teachers/{id}/delete(id=${teacher.id})}" method="post" style="display:inline;"
+                      onsubmit="return confirm('Supprimer cet enseignant ?');">
                   <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
                 </form>
               </td>

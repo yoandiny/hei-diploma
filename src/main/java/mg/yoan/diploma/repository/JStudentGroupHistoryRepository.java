@@ -13,4 +13,6 @@ public interface JStudentGroupHistoryRepository
   List<JStudentGroupHistory> findByStudentIdOrderByStartDateDesc(String studentId);
 
   Optional<JStudentGroupHistory> findByStudentIdAndEndDateIsNull(String studentId);
+
+  boolean existsByGroupId(String groupId);
 }

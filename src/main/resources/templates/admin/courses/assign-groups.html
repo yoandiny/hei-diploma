@@ -16,83 +16,71 @@
   <div class="main-wrap">
     <header th:replace="~{fragments/topbar :: topbar('Affectations cours / enseignants / groupes', 'ADMIN')}"></header>
     <main class="content">
+      <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}">OK</div>
+      <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur</div>
       <div class="alert alert-info">
-        Un cours est donné par un ou plusieurs enseignants à plusieurs groupes, mais pas toujours à tous.
-        Chaque ligne lie un enseignant à un sous-ensemble de groupes.
+        Une affectation relie un enseignant, un cours et un groupe. Un cours peut avoir plusieurs enseignants,
+        et n'est pas forcément donné à tous les groupes.
       </div>
 
       <div class="card">
-        <h2 class="section-title">PROG4 — Programmation avancée</h2>
+        <h2 class="section-title" th:text="|${course.ref} — ${course.title}|">PROG4 — Programmation avancée</h2>
 
-        <form th:action="@{/admin/cours/PROG4/affectations}" method="post">
-          <div class="mapping-matrix" id="mapping-rows">
-            <div class="mapping-row">
-              <div class="form-field">
-                <label>Enseignant</label>
-                <select name="teacher">
-                  <option selected>Rakoto Jean</option>
-                  <option>Ravelo Marie</option>
-                  <option>Andrianina Paul</option>
-                  <option>Rasoa Lala</option>
-                </select>
-              </div>
-              <div class="form-field">
-                <label>Groupes</label>
-                <select name="group" multiple>
-                  <option selected>K1</option>
-                  <option selected>K2</option>
-                  <option>K3</option>
-                  <option>G1</option>
-                  <option>G2</option>
-                </select>
-              </div>
-              <div class="form-field">
-                <label>Commentaire</label>
-                <input type="text" name="comment" placeholder="Ex. CM + TD K1/K2"/>
-              </div>
-              <button type="button" class="btn btn-sm btn-outline" onclick="this.closest('.mapping-row').remove()">
-                Retirer
-              </button>
-            </div>
-
-            <div class="mapping-row">
-              <div class="form-field">
-                <label>Enseignant</label>
-                <select name="teacher">
-                  <option>Rakoto Jean</option>
-                  <option selected>Ravelo Marie</option>
-                  <option>Andrianina Paul</option>
-                  <option>Rasoa Lala</option>
-                </select>
-              </div>
-              <div class="form-field">
-                <label>Groupes</label>
-                <select name="group" multiple>
-                  <option>K1</option>
-                  <option selected>K2</option>
-                  <option>K3</option>
-                  <option>G1</option>
-                  <option>G2</option>
-                </select>
-              </div>
-              <div class="form-field">
-                <label>Commentaire</label>
-                <input type="text" name="comment" value="TD groupe K2 uniquement"/>
-              </div>
-              <button type="button" class="btn btn-sm btn-outline" onclick="this.closest('.mapping-row').remove()">
-                Retirer
-              </button>
-            </div>
+        <form th:action="@{/admin/courses/{id}/assignments(id=${course.id})}" method="post" class="form-grid" style="margin-bottom:1.5rem;">
+          <div class="form-field">
+            <label class="required" for="teacherId">Enseignant</label>
+            <select id="teacherId" name="teacherId" required>
+              <option value="">Choisir…</option>
+              <option th:each="teacher : ${teachers}" th:value="${teacher.id}"
+                      th:text="${teacher.user.fullName + ' (' + teacher.employeeNumber + ')'}">
+                Nom
+              </option>
+            </select>
           </div>
-
-          <div class="btn-group" style="margin-top:1rem;">
-            <button type="button" class="btn btn-outline" id="add-mapping-row">
-              <i class="fa-solid fa-plus"></i> Ajouter une affectation
-            </button>
-            <button type="submit" class="btn btn-primary">Enregistrer les affectations</button>
-            <a class="btn btn-outline" th:href="@{/admin/courses/list.html}">Retour</a>
+          <div class="form-field full">
+            <label class="required" for="groupIds">Groupes</label>
+            <select id="groupIds" name="groupIds" multiple required size="6">
+              <option th:each="group : ${groups}" th:value="${group.id}"
+                      th:text="${group.ref + (group.promotion != null ? ' — ' + group.promotion.label : '')}">
+                K1
+              </option>
+            </select>
+            <span class="hint">Ctrl/Cmd pour plusieurs groupes. Une ligne d'affectation est créée par groupe.</span>
+          </div>
+          <div class="full btn-group">
+            <button type="submit" class="btn btn-primary">Ajouter l'affectation</button>
+            <a class="btn btn-outline" th:href="@{/admin/courses/list.html}">Retour aux cours</a>
           </div>
         </form>
+
+        <h2 class="section-title">Affectations actuelles</h2>
+        <div class="empty" th:if="${assignments.empty}">Aucune affectation pour ce cours.</div>
+        <div class="table-wrap" th:unless="${assignments.empty}">
+          <table class="data">
+            <thead>
+            <tr>
+              <th>Enseignant</th>
+              <th>Groupe</th>
+              <th>Promotion</th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="assignment : ${assignments}">
+              <td th:text="${assignment.teacher.user.fullName}">Enseignant</td>
+              <td><span class="badge badge-info" th:text="${assignment.group.ref}">K1</span></td>
+              <td th:text="${assignment.group.promotion != null ? assignment.group.promotion.label : '—'}">Promo</td>
+              <td>
+                <form th:action="@{/admin/courses/assignments/{id}/delete(id=${assignment.id})}" method="post"
+                      style="display:inline;" onsubmit="return confirm('Retirer cette affectation ?');">
+                  <input type="hidden" name="courseId" th:value="${course.id}"/>
+                  <button type="submit" class="btn btn-sm btn-danger">Retirer</button>
+                </form>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </main>
   </div>

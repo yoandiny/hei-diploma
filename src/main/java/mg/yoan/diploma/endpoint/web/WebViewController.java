@@ -68,24 +68,6 @@ public class WebViewController {
     return page(model, "admin/dashboard", "Dashboard admin", "dashboard");
   }
 
-  @GetMapping("/admin/courses/list.html")
-  @PreAuthorize("hasRole('ADMIN')")
-  public String adminCourses(Model model) {
-    return page(model, "admin/courses/list", "Gestion des cours", "cours");
-  }
-
-  @GetMapping("/admin/courses/form.html")
-  @PreAuthorize("hasRole('ADMIN')")
-  public String adminCourseForm(Model model) {
-    return page(model, "admin/courses/form", "Nouveau / éditer un cours", "cours");
-  }
-
-  @GetMapping("/admin/courses/assign-groups.html")
-  @PreAuthorize("hasRole('ADMIN')")
-  public String adminAssignGroups(Model model) {
-    return page(model, "admin/courses/assign-groups", "Affectations", "cours");
-  }
-
   @GetMapping("/admin/students/edit-group.html")
   @PreAuthorize("hasRole('ADMIN')")
   public String adminEditGroup(Model model) {
