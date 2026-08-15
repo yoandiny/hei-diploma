@@ -12,7 +12,7 @@ import lombok.Setter;
 import mg.yoan.diploma.domain.Role;
 
 @Entity
-@Table(name = "user")
+@Table(name = "`user`")
 @Getter
 @Setter
 public class JUser {
