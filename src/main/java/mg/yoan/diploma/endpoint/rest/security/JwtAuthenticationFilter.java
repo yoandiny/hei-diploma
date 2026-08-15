@@ -23,6 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private static final String BEARER_PREFIX = "Bearer ";
 
   private final JwtService jwtService;
+  private final JwtCookie jwtCookie;
 
   @Override
   protected void doFilterInternal(
@@ -31,20 +32,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       @NonNull FilterChain filterChain)
       throws ServletException, IOException {
 
-    String authHeader = request.getHeader("Authorization");
-    if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
+    String token = bearerToken(request).or(() -> jwtCookie.read(request)).orElse(null);
+    if (token == null) {
       filterChain.doFilter(request, response);
       return;
     }
 
-    String token = authHeader.substring(BEARER_PREFIX.length());
     Optional<Claims> claims = jwtService.parseClaims(token);
-
     if (claims.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null) {
       Claims c = claims.get();
       AuthenticatedUser principal =
           new AuthenticatedUser(
-              jwtService.extractUserId(c), jwtService.extractEmail(c), jwtService.extractRole(c));
+              jwtService.extractUserId(c),
+              jwtService.extractEmail(c),
+              jwtService.extractRole(c),
+              jwtService.extractFirstName(c),
+              jwtService.extractLastName(c));
 
       var authority = new SimpleGrantedAuthority("ROLE_" + principal.getRole().name());
       var authentication =
@@ -54,5 +57,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     filterChain.doFilter(request, response);
+  }
+
+  private Optional<String> bearerToken(HttpServletRequest request) {
+    String authHeader = request.getHeader("Authorization");
+    if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
+      return Optional.empty();
+    }
+    return Optional.of(authHeader.substring(BEARER_PREFIX.length()));
   }
 }

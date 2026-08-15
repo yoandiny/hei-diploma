@@ -17,7 +17,7 @@ public class WebAwareAccessDeniedHandler implements AccessDeniedHandler {
       AccessDeniedException accessDeniedException)
       throws IOException {
     if (ApiRequest.isApi(request)) {
-      response.sendError(HttpServletResponse.SC_FORBIDDEN);
+      HttpErrorResponse.send(response, HttpServletResponse.SC_FORBIDDEN);
       return;
     }
     response.sendRedirect(request.getContextPath() + "/forbidden");

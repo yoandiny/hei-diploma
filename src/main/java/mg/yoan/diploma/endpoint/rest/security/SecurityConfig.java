@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.NullSecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -26,6 +27,7 @@ public class SecurityConfig {
   private final LoginFailureHandler loginFailureHandler;
   private final WebAwareAuthenticationEntryPoint authenticationEntryPoint;
   private final WebAwareAccessDeniedHandler accessDeniedHandler;
+  private final JwtCookie jwtCookie;
 
   @Bean
   public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilterRegistration() {
@@ -42,6 +44,8 @@ public class SecurityConfig {
         .csrf(csrf -> csrf.disable())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .securityContext(
+            context -> context.securityContextRepository(new NullSecurityContextRepository()))
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers(HttpMethod.POST, "/auth/login")
@@ -68,14 +72,17 @@ public class SecurityConfig {
   @Order(2)
   public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf.disable())
+        .requestCache(cache -> cache.disable())
         .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .securityContext(
+            context -> context.securityContextRepository(new NullSecurityContextRepository()))
         .authenticationProvider(databaseAuthenticationProvider)
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers("/css/**", "/js/**", "/img/**", "/favicon.ico")
                     .permitAll()
-                    .requestMatchers("/login", "/logout", "/forbidden")
+                    .requestMatchers("/", "/error", "/login", "/logout", "/forbidden")
                     .permitAll()
                     .requestMatchers("/student/**")
                     .hasRole("STUDENT")
@@ -98,15 +105,16 @@ public class SecurityConfig {
             logout ->
                 logout
                     .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                    .addLogoutHandler(
+                        (request, response, authentication) -> jwtCookie.clear(request, response))
                     .logoutSuccessUrl("/login?logout")
-                    .invalidateHttpSession(true)
-                    .clearAuthentication(true)
                     .permitAll())
         .exceptionHandling(
             exceptions ->
                 exceptions
                     .authenticationEntryPoint(authenticationEntryPoint)
-                    .accessDeniedHandler(accessDeniedHandler));
+                    .accessDeniedHandler(accessDeniedHandler))
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }

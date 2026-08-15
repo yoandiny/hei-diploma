@@ -15,4 +15,10 @@ public class User {
   private final Role role;
   private final boolean enabled;
   private final Instant createdAt;
+
+  public String getFullName() {
+    String first = firstName == null ? "" : firstName;
+    String last = lastName == null ? "" : lastName;
+    return (first + " " + last).trim();
+  }
 }

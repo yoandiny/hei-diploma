@@ -8,22 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class LoginController {
 
-  @GetMapping("/login")
+  @GetMapping({"/", "/login"})
   public String login(@AuthenticationPrincipal AuthenticatedUser user) {
-    if (user != null) {
-      return switch (user.getRole()) {
-        case STUDENT -> "redirect:/student/dashboard.html";
-        case TEACHER -> "redirect:/teacher/dashboard.html";
-        case ADMIN -> "redirect:/admin/dashboard.html";
-      };
-    }
-    return "auth/login";
-  }
-
-  @GetMapping("/")
-  public String root(@AuthenticationPrincipal AuthenticatedUser user) {
     if (user == null) {
-      return "redirect:/login";
+      return "auth/login";
     }
     return switch (user.getRole()) {
       case STUDENT -> "redirect:/student/dashboard.html";
