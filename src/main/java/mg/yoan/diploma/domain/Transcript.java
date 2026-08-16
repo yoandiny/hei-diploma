@@ -22,10 +22,6 @@ public class Transcript {
     return weightedAverageOf(grades);
   }
 
-  /**
-   * A student is graduated when every required course (L1 through L3) averages at least 10, and the
-   * overall weighted average is at least 10.
-   */
   public boolean isGraduated(Collection<UUID> requiredCourseIds) {
     if (requiredCourseIds == null || requiredCourseIds.isEmpty()) {
       return false;
