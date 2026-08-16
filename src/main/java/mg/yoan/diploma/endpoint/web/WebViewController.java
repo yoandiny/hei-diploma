@@ -80,12 +80,6 @@ public class WebViewController {
     return page(model, "admin/grades/history", "Historique des notes", "historique");
   }
 
-  @GetMapping("/admin/promotion/results.html")
-  @PreAuthorize("hasRole('ADMIN')")
-  public String adminPromotion(Model model) {
-    return page(model, "admin/promotion/results", "Résultats de promotion (3 ans)", "promotion");
-  }
-
   private String page(Model model, String view, String heading, String nav) {
     model.addAttribute("pageHeading", heading);
     model.addAttribute("activeNav", nav);
