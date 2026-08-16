@@ -50,4 +50,14 @@ public interface JGradeRepository extends JpaRepository<JGrade, String> {
       where g.id = :id
       """)
   Optional<JGrade> findDetailedById(@Param("id") String id);
+
+  @Query(
+      """
+      select g from JGrade g
+      join fetch g.exam e
+      join fetch e.course
+      join fetch g.student
+      where g.student.id in :studentIds
+      """)
+  List<JGrade> findDetailedByStudentIdIn(@Param("studentIds") Collection<String> studentIds);
 }

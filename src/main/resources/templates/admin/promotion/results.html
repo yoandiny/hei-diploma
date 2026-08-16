@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Résultats promotion — HEI Diploma</title>
+  <title>Diplômés — HEI Diploma</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
@@ -14,60 +14,63 @@
 <div class="app-shell">
   <aside th:replace="~{fragments/sidebar :: sidebar('promotion', 'ADMIN')}"></aside>
   <div class="main-wrap">
-    <header th:replace="~{fragments/topbar :: topbar('Résultats de promotion (3 ans)', 'ADMIN')}"></header>
+    <header th:replace="~{fragments/topbar :: topbar('Diplômés', 'ADMIN')}"></header>
     <main class="content">
+      <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur.</div>
+      <div class="alert alert-info">
+        Un étudiant est diplômé s'il a au moins 10 dans chaque cours (L1 à L3) et une moyenne générale d'au moins 10.
+      </div>
+
       <div class="card" style="margin-bottom:1rem;">
         <form class="btn-group" method="get" th:action="@{/admin/promotion/results.html}">
-          <div class="form-field" style="min-width:200px;">
-            <label for="promo">Promotion</label>
-            <select id="promo" name="promo">
-              <option>2022</option>
-              <option selected>2023</option>
-              <option>2024</option>
-              <option>2025</option>
+          <div class="form-field" style="min-width:240px;">
+            <label for="promotionId">Promotion</label>
+            <select id="promotionId" name="promotionId">
+              <option value="">Choisir une promotion</option>
+              <option th:each="promotion : ${promotions}"
+                      th:value="${promotion.id}"
+                      th:selected="${selectedPromotionId != null and #strings.equals(selectedPromotionId, promotion.id.toString())}"
+                      th:text="|${promotion.label} (${promotion.startYear}–${promotion.endYear})|">
+                Promo
+              </option>
             </select>
           </div>
           <button type="submit" class="btn btn-primary" style="align-self:flex-end;">Afficher</button>
+          <a class="btn btn-outline" style="align-self:flex-end;"
+             th:if="${promotion != null}"
+             th:href="@{/admin/promotion/graduates.xlsx(promotionId=${selectedPromotionId})}">
+            <i class="fa-solid fa-file-excel"></i> Exporter Excel
+          </a>
         </form>
       </div>
 
-      <div class="stats">
-        <div class="stat-card"><div class="label">Année 1 — moyenne</div><div class="value">13.4</div></div>
-        <div class="stat-card"><div class="label">Année 2 — moyenne</div><div class="value">14.1</div></div>
-        <div class="stat-card"><div class="label">Année 3 — moyenne</div><div class="value">14.8</div></div>
-        <div class="stat-card"><div class="label">Taux réussite Y3</div><div class="value">85%</div></div>
-      </div>
-
-      <div class="card">
-        <h2 class="section-title">Promotion 2023 — vue sur 3 ans</h2>
-        <div class="table-wrap">
+      <div class="card" th:if="${promotion != null}">
+        <h2 class="section-title">
+          Diplômés
+          <span th:text="|(${#lists.size(graduates)})|">(0)</span>
+          — <span th:text="${promotion.label}">Promo</span>
+        </h2>
+        <div class="empty" th:if="${graduates.empty}">Aucun diplômé pour cette promotion.</div>
+        <div class="table-wrap" th:unless="${graduates.empty}">
           <table class="data">
             <thead>
             <tr>
-              <th>Année du parcours</th>
-              <th>Effectif</th>
+              <th>Référence</th>
+              <th>Nom</th>
+              <th>Groupe</th>
               <th>Moyenne générale</th>
-              <th>Taux de réussite</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td>Année 1</td>
-              <td>120</td>
-              <td>13.4</td>
-              <td><span class="badge badge-ok">82%</span></td>
-            </tr>
-            <tr>
-              <td>Année 2</td>
-              <td>108</td>
-              <td>14.1</td>
-              <td><span class="badge badge-warn">78%</span></td>
-            </tr>
-            <tr>
-              <td>Année 3</td>
-              <td>95</td>
-              <td>14.8</td>
-              <td><span class="badge badge-ok">85%</span></td>
+            <tr th:each="graduate : ${graduates}">
+              <td th:text="${graduate.student.studentNumber}">STD24001</td>
+              <td th:text="${graduate.student.user != null ? graduate.student.user.fullName : '—'}">Nom</td>
+              <td>
+                <span class="badge badge-info" th:if="${graduate.student.currentGroup != null}"
+                      th:text="${graduate.student.currentGroup.ref}">K1</span>
+                <span th:if="${graduate.student.currentGroup == null}">—</span>
+              </td>
+              <td th:text="${graduate.weightedAverage}">14.20</td>
             </tr>
             </tbody>
           </table>

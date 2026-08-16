@@ -50,4 +50,13 @@ public interface JCourseAssignmentRepository extends JpaRepository<JCourseAssign
       order by a.course.ref, g.ref
       """)
   List<JCourseAssignment> findDetailedByTeacherId(@Param("teacherId") String teacherId);
+
+  @Query(
+      """
+      select distinct a from JCourseAssignment a
+      join fetch a.course
+      join fetch a.group g
+      where g.promotion.id = :promotionId
+      """)
+  List<JCourseAssignment> findByPromotionId(@Param("promotionId") String promotionId);
 }
