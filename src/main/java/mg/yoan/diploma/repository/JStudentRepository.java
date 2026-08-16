@@ -14,6 +14,8 @@ public interface JStudentRepository extends JpaRepository<JStudent, String> {
 
   Optional<JStudent> findByStudentNumber(String studentNumber);
 
+  boolean existsByStudentNumber(String studentNumber);
+
   List<JStudent> findByPromotionId(String promotionId);
 
   @Query(
@@ -24,15 +26,16 @@ public interface JStudentRepository extends JpaRepository<JStudent, String> {
       left join fetch s.currentGroup g
       left join fetch g.promotion
       where s.promotion.id = :promotionId
+        and s.deletedAt is null
       order by s.studentNumber
       """)
   List<JStudent> findDetailedByPromotionId(@Param("promotionId") String promotionId);
 
-  List<JStudent> findByCurrentGroupId(String groupId);
+  List<JStudent> findByCurrentGroupIdAndDeletedAtIsNull(String groupId);
 
-  long countByCurrentGroupId(String groupId);
+  long countByCurrentGroupIdAndDeletedAtIsNull(String groupId);
 
-  long countByCurrentGroupIdIn(Collection<String> groupIds);
+  long countByCurrentGroupIdInAndDeletedAtIsNull(Collection<String> groupIds);
 
   @Query(
       """
@@ -42,6 +45,7 @@ public interface JStudentRepository extends JpaRepository<JStudent, String> {
       left join fetch s.currentGroup g
       left join fetch g.promotion
       where s.currentGroup.id = :groupId
+        and s.deletedAt is null
       order by s.studentNumber
       """)
   List<JStudent> findDetailedByCurrentGroupId(@Param("groupId") String groupId);
@@ -54,6 +58,7 @@ public interface JStudentRepository extends JpaRepository<JStudent, String> {
       join fetch s.currentGroup g
       left join fetch g.promotion
       where s.currentGroup.id in :groupIds
+        and s.deletedAt is null
       order by g.ref, s.studentNumber
       """)
   List<JStudent> findDetailedByCurrentGroupIdIn(@Param("groupIds") Collection<String> groupIds);
@@ -66,6 +71,7 @@ public interface JStudentRepository extends JpaRepository<JStudent, String> {
       left join fetch s.currentGroup g
       left join fetch g.promotion
       where s.id = :id
+        and s.deletedAt is null
       """)
   Optional<JStudent> findDetailedById(@Param("id") String id);
 
@@ -76,6 +82,7 @@ public interface JStudentRepository extends JpaRepository<JStudent, String> {
       join fetch s.promotion
       left join fetch s.currentGroup g
       left join fetch g.promotion
+      where s.deletedAt is null
       order by s.studentNumber
       """)
   List<JStudent> findAllDetailed();

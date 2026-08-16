@@ -70,7 +70,8 @@ public class TeacherGradeService {
                       course.getTitle(),
                       new ArrayList<>(),
                       0));
-      int students = (int) studentRepository.countByCurrentGroupId(group.getId().toString());
+      int students =
+          (int) studentRepository.countByCurrentGroupIdAndDeletedAtIsNull(group.getId().toString());
       existing.groups().add(new AssignedGroup(group.getId().toString(), group.getRef(), students));
     }
     return byCourse.values().stream()
@@ -375,7 +376,8 @@ public class TeacherGradeService {
         continue;
       }
       var group = assignment.getGroup();
-      int students = (int) studentRepository.countByCurrentGroupId(group.getId().toString());
+      int students =
+          (int) studentRepository.countByCurrentGroupIdAndDeletedAtIsNull(group.getId().toString());
       groups.add(new AssignedGroup(group.getId().toString(), group.getRef(), students));
     }
     return groups;
@@ -412,7 +414,9 @@ public class TeacherGradeService {
             .toList();
     List<String> groupIds = groups.stream().map(AssignedGroup::groupId).toList();
     int studentCount =
-        groupIds.isEmpty() ? 0 : (int) studentRepository.countByCurrentGroupIdIn(groupIds);
+        groupIds.isEmpty()
+            ? 0
+            : (int) studentRepository.countByCurrentGroupIdInAndDeletedAtIsNull(groupIds);
     int gradedCount = (int) gradeRepository.countByExamId(exam.getId());
     var course = exam.getCourse();
     return new ExamOption(
