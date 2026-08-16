@@ -16,8 +16,13 @@
   <div class="main-wrap">
     <header th:replace="~{fragments/topbar :: topbar('Étudiants', 'ADMIN')}"></header>
     <main class="content">
-      <div class="alert alert-info">
-        Un étudiant peut changer de groupe à tout moment durant son parcours.
+      <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}">Enregistré.</div>
+      <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur.</div>
+
+      <div class="btn-group" style="margin-bottom:1rem;">
+        <a class="btn btn-primary" th:href="@{/admin/students/form.html}">
+          <i class="fa-solid fa-plus"></i> Nouvel étudiant
+        </a>
       </div>
 
       <div class="card">
@@ -36,6 +41,7 @@
               <th>Nom</th>
               <th>Groupe actuel</th>
               <th>Promotion</th>
+              <th>Statut</th>
               <th></th>
             </tr>
             </thead>
@@ -50,10 +56,31 @@
               </td>
               <td th:text="${student.promotion != null ? student.promotion.label : '—'}">Promo</td>
               <td>
-                <a class="btn btn-sm btn-primary"
-                   th:href="@{/admin/students/edit-group.html(id=${student.id})}">
-                  Changer de groupe
-                </a>
+                <span class="badge badge-ok"
+                      th:if="${student.user != null && student.user.enabled}">Actif</span>
+                <span class="badge badge-warn"
+                      th:if="${student.user == null || !student.user.enabled}">Suspendu</span>
+              </td>
+              <td class="btn-group">
+                <a class="btn btn-sm btn-outline"
+                   th:href="@{/admin/students/profile.html(id=${student.id})}">Profil</a>
+                <a class="btn btn-sm btn-outline"
+                   th:href="@{/admin/students/edit-group.html(id=${student.id})}">Groupe</a>
+                <form th:if="${student.user != null && student.user.enabled}"
+                      th:action="@{/admin/students/{id}/suspend(id=${student.id})}"
+                      method="post" style="display:inline;">
+                  <button type="submit" class="btn btn-sm btn-outline">Suspendre</button>
+                </form>
+                <form th:if="${student.user == null || !student.user.enabled}"
+                      th:action="@{/admin/students/{id}/unsuspend(id=${student.id})}"
+                      method="post" style="display:inline;">
+                  <button type="submit" class="btn btn-sm btn-outline">Réactiver</button>
+                </form>
+                <form th:action="@{/admin/students/{id}/delete(id=${student.id})}" method="post"
+                      style="display:inline;"
+                      onsubmit="return confirm('Supprimer cet étudiant ?');">
+                  <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                </form>
               </td>
             </tr>
             </tbody>

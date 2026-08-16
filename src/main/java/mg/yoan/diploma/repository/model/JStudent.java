@@ -1,5 +1,6 @@
 package mg.yoan.diploma.repository.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.Instant;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,7 +22,7 @@ public class JStudent {
 
   @Id private String id;
 
-  @OneToOne(optional = false, fetch = FetchType.LAZY)
+  @OneToOne(optional = false, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
   @MapsId
   @JoinColumn(name = "id")
   private JUser user;
@@ -35,4 +37,6 @@ public class JStudent {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "current_group_id")
   private JGroup currentGroup;
+
+  private Instant deletedAt;
 }

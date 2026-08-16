@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import mg.yoan.diploma.endpoint.rest.security.AuthenticatedUser;
 import mg.yoan.diploma.service.DomainException;
 import mg.yoan.diploma.service.TeacherGradeService;
-import mg.yoan.diploma.service.TeacherGradeService.AssignedCourse;
 import mg.yoan.diploma.service.TeacherGradeService.ExamOption;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,16 +25,16 @@ public class TeacherGradeViewController {
 
   @GetMapping("/teacher/dashboard.html")
   public String dashboard(@AuthenticationPrincipal AuthenticatedUser user, Model model) {
-    List<AssignedCourse> courses = teacherGradeService.listAssignedCourses(user.getUserId());
-    List<ExamOption> exams = teacherGradeService.listTeacherExams(user.getUserId());
+    var home = teacherGradeService.loadHome(user.getUserId());
     model.addAttribute("pageHeading", "Dashboard enseignant");
     model.addAttribute("activeNav", "dashboard");
-    model.addAttribute("courses", courses);
-    model.addAttribute("courseCount", courses.size());
-    model.addAttribute(
-        "groupCount", courses.stream().mapToInt(course -> course.groups().size()).sum());
-    model.addAttribute("examCount", exams.size());
-    model.addAttribute("openExamCount", exams.stream().filter(exam -> !exam.isSubmitted()).count());
+    model.addAttribute("courses", home.courses());
+    model.addAttribute("draftExams", home.draftExams());
+    model.addAttribute("courseCount", home.courses().size());
+    model.addAttribute("groupCount", home.groupCount());
+    model.addAttribute("studentCount", home.studentCount());
+    model.addAttribute("examCount", home.exams().size());
+    model.addAttribute("openExamCount", home.draftExams().size());
     return "teacher/dashboard";
   }
 

@@ -45,7 +45,8 @@ public interface JCourseAssignmentRepository extends JpaRepository<JCourseAssign
       join fetch a.course
       join fetch a.group g
       left join fetch g.promotion
-      join fetch a.teacher
+      join fetch a.teacher t
+      join fetch t.user
       where a.teacher.id = :teacherId
       order by a.course.ref, g.ref
       """)

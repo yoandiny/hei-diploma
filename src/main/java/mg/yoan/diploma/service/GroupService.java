@@ -75,7 +75,7 @@ public class GroupService {
     if (!groupRepository.existsById(id)) {
       throw new DomainException("Groupe introuvable.");
     }
-    if (!studentRepository.findByCurrentGroupId(id).isEmpty()) {
+    if (!studentRepository.findByCurrentGroupIdAndDeletedAtIsNull(id).isEmpty()) {
       throw new DomainException("Impossible de supprimer un groupe qui a encore des étudiants.");
     }
     if (assignmentRepository.existsByGroupId(id)) {

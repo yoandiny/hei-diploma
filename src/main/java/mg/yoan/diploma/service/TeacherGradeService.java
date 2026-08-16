@@ -70,7 +70,8 @@ public class TeacherGradeService {
                       course.getTitle(),
                       new ArrayList<>(),
                       0));
-      int students = (int) studentRepository.countByCurrentGroupId(group.getId().toString());
+      int students =
+          (int) studentRepository.countByCurrentGroupIdAndDeletedAtIsNull(group.getId().toString());
       existing.groups().add(new AssignedGroup(group.getId().toString(), group.getRef(), students));
     }
     return byCourse.values().stream()
@@ -94,8 +95,11 @@ public class TeacherGradeService {
             .collect(Collectors.toCollection(HashSet::new));
     return examRepository.findDetailedByCourseId(courseId).stream()
         .filter(
-            exam ->
-                exam.getGroups().stream().anyMatch(group -> assignedIds.contains(group.getId())))
+            exam -> {
+              var groups = exam.getGroups();
+              return groups != null
+                  && groups.stream().anyMatch(group -> assignedIds.contains(group.getId()));
+            })
         .sorted(Comparator.comparing(JExam::getDateExam).reversed())
         .map(this::toExamOption)
         .toList();
@@ -107,6 +111,35 @@ public class TeacherGradeService {
         .flatMap(course -> listExams(teacherId, course.courseId()).stream())
         .sorted(Comparator.comparing(ExamOption::dateExam).reversed())
         .toList();
+  }
+
+  @Transactional(readOnly = true)
+  public TeacherHome loadHome(String teacherId) {
+    List<AssignedCourse> courses = listAssignedCourses(teacherId);
+    List<ExamOption> exams =
+        courses.stream()
+            .flatMap(course -> listExams(teacherId, course.courseId()).stream())
+            .sorted(Comparator.comparing(ExamOption::dateExam).reversed())
+            .toList();
+    List<ExamOption> drafts = exams.stream().filter(exam -> !exam.isSubmitted()).toList();
+    int groupCount =
+        (int)
+            courses.stream()
+                .flatMap(course -> course.groups().stream())
+                .map(AssignedGroup::groupId)
+                .distinct()
+                .count();
+    int studentCount =
+        courses.stream()
+            .flatMap(course -> course.groups().stream())
+            .collect(
+                Collectors.toMap(
+                    AssignedGroup::groupId, AssignedGroup::studentCount, (left, right) -> left))
+            .values()
+            .stream()
+            .mapToInt(Integer::intValue)
+            .sum();
+    return new TeacherHome(courses, exams, drafts, groupCount, studentCount);
   }
 
   @Transactional(readOnly = true)
@@ -343,7 +376,8 @@ public class TeacherGradeService {
         continue;
       }
       var group = assignment.getGroup();
-      int students = (int) studentRepository.countByCurrentGroupId(group.getId().toString());
+      int students =
+          (int) studentRepository.countByCurrentGroupIdAndDeletedAtIsNull(group.getId().toString());
       groups.add(new AssignedGroup(group.getId().toString(), group.getRef(), students));
     }
     return groups;
@@ -380,7 +414,9 @@ public class TeacherGradeService {
             .toList();
     List<String> groupIds = groups.stream().map(AssignedGroup::groupId).toList();
     int studentCount =
-        groupIds.isEmpty() ? 0 : (int) studentRepository.countByCurrentGroupIdIn(groupIds);
+        groupIds.isEmpty()
+            ? 0
+            : (int) studentRepository.countByCurrentGroupIdInAndDeletedAtIsNull(groupIds);
     int gradedCount = (int) gradeRepository.countByExamId(exam.getId());
     var course = exam.getCourse();
     return new ExamOption(
@@ -426,6 +462,13 @@ public class TeacherGradeService {
 
   public record AssignedCourse(
       String courseId, String ref, String title, List<AssignedGroup> groups, int studentCount) {}
+
+  public record TeacherHome(
+      List<AssignedCourse> courses,
+      List<ExamOption> exams,
+      List<ExamOption> draftExams,
+      int groupCount,
+      int studentCount) {}
 
   public record ExamOption(
       String examId,
