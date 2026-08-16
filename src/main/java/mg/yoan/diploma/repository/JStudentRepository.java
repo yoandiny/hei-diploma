@@ -15,6 +15,18 @@ public interface JStudentRepository extends JpaRepository<JStudent, String> {
 
   List<JStudent> findByPromotionId(String promotionId);
 
+  @Query(
+      """
+      select distinct s from JStudent s
+      join fetch s.user
+      join fetch s.promotion
+      left join fetch s.currentGroup g
+      left join fetch g.promotion
+      where s.promotion.id = :promotionId
+      order by s.studentNumber
+      """)
+  List<JStudent> findDetailedByPromotionId(@Param("promotionId") String promotionId);
+
   List<JStudent> findByCurrentGroupId(String groupId);
 
   @Query(

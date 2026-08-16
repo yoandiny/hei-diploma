@@ -40,7 +40,13 @@ public class SecurityConfig {
   @Bean
   @Order(1)
   public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
-    http.securityMatcher("/auth/**", "/students/**", "/ping", "/health/**", "/admin/students")
+    http.securityMatcher(
+            "/auth/**",
+            "/students/**",
+            "/ping",
+            "/health/**",
+            "/admin/students",
+            "/admin/promotions/*/graduates")
         .csrf(csrf -> csrf.disable())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -52,7 +58,7 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers("/ping", "/health/**")
                     .permitAll()
-                    .requestMatchers("/admin/students")
+                    .requestMatchers("/admin/students", "/admin/promotions/*/graduates")
                     .hasRole("ADMIN")
                     .requestMatchers("/students/**")
                     .hasRole("STUDENT")
