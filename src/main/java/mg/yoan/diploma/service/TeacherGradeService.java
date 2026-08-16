@@ -94,8 +94,11 @@ public class TeacherGradeService {
             .collect(Collectors.toCollection(HashSet::new));
     return examRepository.findDetailedByCourseId(courseId).stream()
         .filter(
-            exam ->
-                exam.getGroups().stream().anyMatch(group -> assignedIds.contains(group.getId())))
+            exam -> {
+              var groups = exam.getGroups();
+              return groups != null
+                  && groups.stream().anyMatch(group -> assignedIds.contains(group.getId()));
+            })
         .sorted(Comparator.comparing(JExam::getDateExam).reversed())
         .map(this::toExamOption)
         .toList();
@@ -107,6 +110,35 @@ public class TeacherGradeService {
         .flatMap(course -> listExams(teacherId, course.courseId()).stream())
         .sorted(Comparator.comparing(ExamOption::dateExam).reversed())
         .toList();
+  }
+
+  @Transactional(readOnly = true)
+  public TeacherHome loadHome(String teacherId) {
+    List<AssignedCourse> courses = listAssignedCourses(teacherId);
+    List<ExamOption> exams =
+        courses.stream()
+            .flatMap(course -> listExams(teacherId, course.courseId()).stream())
+            .sorted(Comparator.comparing(ExamOption::dateExam).reversed())
+            .toList();
+    List<ExamOption> drafts = exams.stream().filter(exam -> !exam.isSubmitted()).toList();
+    int groupCount =
+        (int)
+            courses.stream()
+                .flatMap(course -> course.groups().stream())
+                .map(AssignedGroup::groupId)
+                .distinct()
+                .count();
+    int studentCount =
+        courses.stream()
+            .flatMap(course -> course.groups().stream())
+            .collect(
+                Collectors.toMap(
+                    AssignedGroup::groupId, AssignedGroup::studentCount, (left, right) -> left))
+            .values()
+            .stream()
+            .mapToInt(Integer::intValue)
+            .sum();
+    return new TeacherHome(courses, exams, drafts, groupCount, studentCount);
   }
 
   @Transactional(readOnly = true)
@@ -426,6 +458,13 @@ public class TeacherGradeService {
 
   public record AssignedCourse(
       String courseId, String ref, String title, List<AssignedGroup> groups, int studentCount) {}
+
+  public record TeacherHome(
+      List<AssignedCourse> courses,
+      List<ExamOption> exams,
+      List<ExamOption> draftExams,
+      int groupCount,
+      int studentCount) {}
 
   public record ExamOption(
       String examId,

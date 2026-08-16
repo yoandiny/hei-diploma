@@ -19,7 +19,7 @@
       <div class="stats">
         <div class="stat-card"><div class="label">Cours</div><div class="value" th:text="${courseCount}">0</div></div>
         <div class="stat-card"><div class="label">Groupes</div><div class="value" th:text="${groupCount}">0</div></div>
-        <div class="stat-card"><div class="label">Examens</div><div class="value" th:text="${examCount}">0</div></div>
+        <div class="stat-card"><div class="label">Étudiants</div><div class="value" th:text="${studentCount}">0</div></div>
         <div class="stat-card"><div class="label">À saisir</div><div class="value" th:text="${openExamCount}">0</div></div>
       </div>
 
@@ -32,9 +32,38 @@
       </div>
 
       <div class="card">
+        <h2 class="section-title">Examens à saisir</h2>
+        <div class="empty" th:if="${#lists.isEmpty(draftExams)}">Aucun examen en attente de saisie.</div>
+        <div class="table-wrap" th:unless="${#lists.isEmpty(draftExams)}">
+          <table class="data">
+            <thead>
+            <tr>
+              <th>Cours</th>
+              <th>Classes</th>
+              <th>Notes</th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="exam : ${draftExams}">
+              <td th:text="${exam.courseRef + ' — ' + exam.courseTitle}">PROG4</td>
+              <td th:text="${exam.groupRefs}">K1</td>
+              <td th:text="${exam.gradedCount + ' / ' + exam.studentCount}">0 / 0</td>
+              <td>
+                <a class="btn btn-sm btn-primary" th:href="@{/teacher/grades-edit.html(examId=${exam.examId})}">
+                  Saisir
+                </a>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
         <h2 class="section-title">Mes cours</h2>
-        <div class="empty" th:if="${courses.empty}">Aucun cours ne vous est affecté.</div>
-        <div class="table-wrap" th:unless="${courses.empty}">
+        <div class="empty" th:if="${#lists.isEmpty(courses)}">Aucun cours ne vous est affecté.</div>
+        <div class="table-wrap" th:unless="${#lists.isEmpty(courses)}">
           <table class="data">
             <thead>
             <tr>
