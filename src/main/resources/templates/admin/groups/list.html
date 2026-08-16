@@ -18,6 +18,10 @@
     <main class="content">
       <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}">OK</div>
       <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur</div>
+      <div class="alert alert-info">
+        Un groupe appartient à une promotion. Créez d'abord la promotion, puis les groupes (K1, K2…).
+      </div>
+
       <div class="card" style="margin-bottom:1.25rem;">
         <div class="btn-group" style="margin-bottom:1rem;">
           <a class="btn btn-primary" th:href="@{/admin/promotions/form.html}">

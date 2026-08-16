@@ -30,6 +30,9 @@
           Cours
           <span th:text="|(${#lists.size(courses)})|">(0)</span>
         </h2>
+        <p style="color:var(--hei-muted);margin-top:0;font-size:0.9rem;">
+          Un cours peut ensuite être enseigné par plusieurs enseignants, et n'est pas forcément donné à tous les groupes.
+        </p>
         <div class="empty" th:if="${courses.empty}">Aucun cours pour le moment.</div>
         <div class="table-wrap" th:unless="${courses.empty}">
           <table class="data">
