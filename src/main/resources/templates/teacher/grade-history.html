@@ -18,14 +18,14 @@
     <main class="content">
       <div class="btn-group" style="margin-bottom:1rem;">
         <a class="btn btn-outline"
-           th:href="@{/teacher/grades-edit.html(courseId=${courseId}, groupId=${groupId}, examId=${examId})}">
+           th:href="@{/teacher/grades-edit.html(examId=${examId}, groupId=${groupId})}">
           <i class="fa-solid fa-arrow-left"></i> Retour à la saisie
         </a>
       </div>
 
       <div class="card">
         <h2 class="section-title"
-            th:text="${history.grade.exam.course.ref + ' / ' + history.grade.student.studentNumber + ' — ' + (history.grade.student.user != null ? history.grade.student.user.fullName : '')}">
+            th:text="${history.grade.exam.course.ref + ' / ' + history.grade.student.studentNumber + ' — ' + (history.grade.student.user != null ? history.grade.student.user.firstName + ' ' + history.grade.student.user.lastName : '')}">
           Historique
         </h2>
         <div class="empty" th:if="${history.entries.empty}">Aucun historique pour cette note.</div>

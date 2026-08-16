@@ -17,6 +17,7 @@ public class ExamMapper {
         .course(CourseMapper.toDomain(entity.getCourse()))
         .dateExam(entity.getDateExam())
         .coefficient(entity.getCoefficient())
+        .submittedAt(entity.getSubmittedAt())
         .build();
   }
 
@@ -29,6 +30,7 @@ public class ExamMapper {
     entity.setCourse(CourseMapper.toEntity(domain.getCourse()));
     entity.setDateExam(domain.getDateExam());
     entity.setCoefficient(domain.getCoefficient());
+    entity.setSubmittedAt(domain.getSubmittedAt());
     return entity;
   }
 }

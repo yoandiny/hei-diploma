@@ -18,9 +18,6 @@
     <main class="content">
       <div class="card">
         <h2 class="section-title">Cours enseignés</h2>
-        <p style="color:var(--hei-muted);margin-top:0;font-size:0.9rem;">
-          Seuls les cours et groupes qui vous sont affectés apparaissent ici.
-        </p>
         <div class="empty" th:if="${courses.empty}">Aucun cours ne vous est affecté.</div>
         <div class="table-wrap" th:unless="${courses.empty}">
           <table class="data">
@@ -28,7 +25,7 @@
             <tr>
               <th>Code</th>
               <th>Intitulé</th>
-              <th>Groupes concernés</th>
+              <th>Groupes</th>
               <th>Effectif</th>
               <th></th>
             </tr>
@@ -38,17 +35,14 @@
               <td th:text="${course.ref}">PROG4</td>
               <td th:text="${course.title}">Programmation avancée</td>
               <td>
-                <a class="chip" th:each="group : ${course.groups}"
-                   th:href="@{/teacher/grades-edit.html(courseId=${course.courseId}, groupId=${group.groupId})}"
-                   th:text="${group.ref}">K1</a>
+                <span class="chip" th:each="group : ${course.groups}" th:text="${group.ref}">K1</span>
               </td>
               <td th:text="${course.studentCount}">0</td>
-              <td>
+              <td class="btn-group">
                 <a class="btn btn-sm btn-outline"
-                   th:if="${!course.groups.empty}"
-                   th:href="@{/teacher/grades-edit.html(courseId=${course.courseId}, groupId=${course.groups[0].groupId})}">
-                  Notes
-                </a>
+                   th:href="@{/teacher/exams.html(courseId=${course.courseId})}">Examens</a>
+                <a class="btn btn-sm btn-primary"
+                   th:href="@{/teacher/grades-home.html(courseId=${course.courseId})}">Notes</a>
               </td>
             </tr>
             </tbody>

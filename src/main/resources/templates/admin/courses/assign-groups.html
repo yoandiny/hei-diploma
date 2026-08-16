@@ -18,11 +18,6 @@
     <main class="content">
       <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}">OK</div>
       <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur</div>
-      <div class="alert alert-info">
-        Une affectation relie un enseignant, un cours et un groupe. Un cours peut avoir plusieurs enseignants,
-        et n'est pas forcément donné à tous les groupes.
-      </div>
-
       <div class="card">
         <h2 class="section-title" th:text="|${course.ref} — ${course.title}|">PROG4 — Programmation avancée</h2>
 
@@ -45,7 +40,6 @@
                 K1
               </option>
             </select>
-            <span class="hint">Ctrl/Cmd pour plusieurs groupes. Une ligne d'affectation est créée par groupe.</span>
           </div>
           <div class="full btn-group">
             <button type="submit" class="btn btn-primary">Ajouter l'affectation</button>

@@ -39,9 +39,6 @@
             <input id="credits" name="credits" type="number" min="0" step="1" value="6" required
                    th:value="${course != null ? course.credits : 6}"/>
           </div>
-          <p class="full hint" style="color:var(--hei-muted);margin:0;">
-            Les enseignants et groupes se définissent ensuite dans les affectations.
-          </p>
           <div class="full btn-group">
             <button type="submit" class="btn btn-primary">Enregistrer</button>
             <a class="btn btn-outline" th:href="@{/admin/courses/list.html}">Annuler</a>

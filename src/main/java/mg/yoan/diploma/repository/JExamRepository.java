@@ -13,12 +13,20 @@ public interface JExamRepository extends JpaRepository<JExam, String> {
 
   List<JExam> findByCourseId(String courseId);
 
-  List<JExam> findByCourseIdOrderByDateExamDesc(String courseId);
+  @Query(
+      """
+      select distinct e from JExam e
+      join fetch e.course
+      left join fetch e.groups
+      where e.course.id = :courseId
+      """)
+  List<JExam> findDetailedByCourseId(@Param("courseId") String courseId);
 
   @Query(
       """
       select e from JExam e
       join fetch e.course
+      left join fetch e.groups
       where e.id = :id
       """)
   Optional<JExam> findDetailedById(@Param("id") String id);

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface JGradeRepository extends JpaRepository<JGrade, String> {
 
+  long countByExamId(String examId);
+
   List<JGrade> findByStudentId(String studentId);
 
   List<JGrade> findByExamId(String examId);

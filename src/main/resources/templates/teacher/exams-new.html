@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Nouvel examen — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <aside th:replace="~{fragments/sidebar :: sidebar('examens', 'TEACHER')}"></aside>
+  <div class="main-wrap">
+    <header th:replace="~{fragments/topbar :: topbar('Nouvel examen', 'TEACHER')}"></header>
+    <main class="content">
+      <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur.</div>
+
+      <div class="btn-group" style="margin-bottom:1rem;">
+        <a class="btn btn-outline" th:href="@{/teacher/exams.html}">
+          <i class="fa-solid fa-arrow-left"></i> Retour
+        </a>
+      </div>
+
+      <div class="card" style="max-width:720px;">
+        <h2 class="section-title">Créer un examen</h2>
+        <form class="form-grid" method="get" th:action="@{/teacher/exams-new.html}" th:if="${course == null}">
+          <div class="form-field full">
+            <label class="required" for="courseId">Cours</label>
+            <select id="courseId" name="courseId" required>
+              <option value="">Choisir…</option>
+              <option th:each="item : ${courses}" th:value="${item.courseId}"
+                      th:text="${item.ref + ' — ' + item.title}">PROG4</option>
+            </select>
+          </div>
+          <div class="full btn-group">
+            <button type="submit" class="btn btn-primary">Continuer</button>
+          </div>
+        </form>
+
+        <form th:action="@{/teacher/exams}" method="post" class="form-grid" th:if="${course != null}">
+          <input type="hidden" name="courseId" th:value="${course.courseId}"/>
+          <div class="form-field full">
+            <label>Cours</label>
+            <strong th:text="${course.ref + ' — ' + course.title}">PROG4</strong>
+          </div>
+          <div class="form-field">
+            <label class="required" for="dateExam">Date</label>
+            <input id="dateExam" name="dateExam" type="datetime-local" required/>
+          </div>
+          <div class="form-field">
+            <label class="required" for="coefficient">Coefficient</label>
+            <input id="coefficient" name="coefficient" type="number" min="0.01" step="0.01" value="1" required/>
+          </div>
+          <div class="form-field full">
+            <label class="required">Classes</label>
+            <div class="btn-group">
+              <label th:each="group : ${assignedGroups}" class="chip" style="cursor:pointer;display:inline-flex;align-items:center;gap:0.4rem;">
+                <input type="checkbox" name="groupIds" th:value="${group.groupId}"
+                       th:checked="${assignedGroups.size() == 1}"/>
+                <span th:text="${group.ref}">K1</span>
+              </label>
+            </div>
+          </div>
+          <div class="full btn-group">
+            <button type="submit" class="btn btn-primary">Créer l'examen</button>
+            <a class="btn btn-outline" th:href="@{/teacher/exams.html}">Annuler</a>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+</div>
+<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+</body>
+</html>

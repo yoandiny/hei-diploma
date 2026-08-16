@@ -13,4 +13,5 @@ public class Exam {
   private final Course course;
   private final Instant dateExam;
   private final BigDecimal coefficient;
+  private final Instant submittedAt;
 }

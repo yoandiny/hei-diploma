@@ -17,13 +17,18 @@
     <header th:replace="~{fragments/topbar :: topbar('Dashboard enseignant', 'TEACHER')}"></header>
     <main class="content">
       <div class="stats">
-        <div class="stat-card"><div class="label">Cours assignés</div><div class="value" th:text="${courseCount}">0</div></div>
+        <div class="stat-card"><div class="label">Cours</div><div class="value" th:text="${courseCount}">0</div></div>
         <div class="stat-card"><div class="label">Groupes</div><div class="value" th:text="${groupCount}">0</div></div>
-        <div class="stat-card"><div class="label">Étudiants</div><div class="value" th:text="${studentCount}">0</div></div>
+        <div class="stat-card"><div class="label">Examens</div><div class="value" th:text="${examCount}">0</div></div>
+        <div class="stat-card"><div class="label">À saisir</div><div class="value" th:text="${openExamCount}">0</div></div>
       </div>
 
-      <div class="alert alert-info">
-        Vous ne pouvez visualiser et modifier que les notes des cours et groupes qui vous sont affectés.
+      <div class="toolbar">
+        <div class="btn-group">
+          <a class="btn btn-primary" th:href="@{/teacher/exams-new.html}">Nouvel examen</a>
+          <a class="btn btn-outline" th:href="@{/teacher/exams.html}">Mes examens</a>
+          <a class="btn btn-outline" th:href="@{/teacher/grades-home.html}">Saisie des notes</a>
+        </div>
       </div>
 
       <div class="card">
@@ -48,12 +53,11 @@
                 <span class="chip" th:each="group : ${course.groups}" th:text="${group.ref}">K1</span>
               </td>
               <td th:text="${course.studentCount}">0</td>
-              <td>
+              <td class="btn-group">
+                <a class="btn btn-sm btn-outline"
+                   th:href="@{/teacher/exams.html(courseId=${course.courseId})}">Examens</a>
                 <a class="btn btn-sm btn-primary"
-                   th:if="${!course.groups.empty}"
-                   th:href="@{/teacher/grades-edit.html(courseId=${course.courseId}, groupId=${course.groups[0].groupId})}">
-                  Saisir notes
-                </a>
+                   th:href="@{/teacher/grades-home.html(courseId=${course.courseId})}">Notes</a>
               </td>
             </tr>
             </tbody>

@@ -30,9 +30,6 @@
           Enseignants
           <span th:text="|(${#lists.size(teachers)})|">(0)</span>
         </h2>
-        <p style="color:var(--hei-muted);margin-top:0;font-size:0.9rem;">
-          Créez les comptes enseignants avant d'affecter des cours.
-        </p>
         <div class="empty" th:if="${teachers.empty}">Aucun enseignant pour le moment.</div>
         <div class="table-wrap" th:unless="${teachers.empty}">
           <table class="data">
