@@ -53,7 +53,6 @@
             <input id="password" name="password" type="password" autocomplete="new-password"
                    th:required="${teacher == null}"
                    th:placeholder="${teacher == null} ? '••••••••' : 'Laisser vide pour ne pas changer'"/>
-            <span class="hint" th:if="${teacher != null}">Laissez vide pour conserver le mot de passe actuel.</span>
           </div>
           <div class="form-field">
             <label for="enabled">Compte actif</label>
