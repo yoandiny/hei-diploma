@@ -17,6 +17,20 @@ public interface JStudentRepository extends JpaRepository<JStudent, String> {
 
   List<JStudent> findByCurrentGroupId(String groupId);
 
+  long countByCurrentGroupId(String groupId);
+
+  @Query(
+      """
+      select distinct s from JStudent s
+      join fetch s.user
+      join fetch s.promotion
+      left join fetch s.currentGroup g
+      left join fetch g.promotion
+      where s.currentGroup.id = :groupId
+      order by s.studentNumber
+      """)
+  List<JStudent> findDetailedByCurrentGroupId(@Param("groupId") String groupId);
+
   @Query(
       """
       select s from JStudent s

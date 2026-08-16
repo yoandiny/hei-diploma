@@ -16,27 +16,27 @@
   <div class="main-wrap">
     <header th:replace="~{fragments/topbar :: topbar('Notes de mes cours', 'TEACHER')}"></header>
     <main class="content">
+      <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}">OK</div>
+      <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur.</div>
       <div class="card">
-        <h2 class="section-title">Choisir un cours</h2>
-        <div class="table-wrap">
+        <h2 class="section-title">Choisir un cours et un groupe</h2>
+        <div class="empty" th:if="${courses.empty}">Aucun cours ne vous est affecté.</div>
+        <div class="table-wrap" th:unless="${courses.empty}">
           <table class="data">
             <thead>
             <tr>
               <th>Cours</th>
               <th>Groupes</th>
-              <th></th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td>PROG4 — Programmation avancée</td>
-              <td><span class="chip">K1</span> <span class="chip">K2</span></td>
-              <td><a class="btn btn-sm btn-primary" th:href="@{/teacher/grades-edit.html}">Ouvrir</a></td>
-            </tr>
-            <tr>
-              <td>WEB4 — Développement web</td>
-              <td><span class="chip">K2</span> <span class="chip">K3</span></td>
-              <td><a class="btn btn-sm btn-primary" th:href="@{/teacher/grades-edit.html}">Ouvrir</a></td>
+            <tr th:each="course : ${courses}">
+              <td th:text="${course.ref + ' — ' + course.title}">PROG4</td>
+              <td>
+                <a class="btn btn-sm btn-primary" th:each="group : ${course.groups}"
+                   th:href="@{/teacher/grades-edit.html(courseId=${course.courseId}, groupId=${group.groupId})}"
+                   th:text="${group.ref}">K1</a>
+              </td>
             </tr>
             </tbody>
           </table>

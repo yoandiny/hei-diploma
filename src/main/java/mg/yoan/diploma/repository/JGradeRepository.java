@@ -1,5 +1,6 @@
 package mg.yoan.diploma.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import mg.yoan.diploma.repository.model.JGrade;
@@ -26,4 +27,25 @@ public interface JGradeRepository extends JpaRepository<JGrade, String> {
       order by e.dateExam asc
       """)
   List<JGrade> findDetailedByStudentId(@Param("studentId") String studentId);
+
+  @Query(
+      """
+      select g from JGrade g
+      join fetch g.student
+      where g.exam.id = :examId and g.student.id in :studentIds
+      """)
+  List<JGrade> findByExamIdAndStudentIdIn(
+      @Param("examId") String examId, @Param("studentIds") Collection<String> studentIds);
+
+  @Query(
+      """
+      select g from JGrade g
+      join fetch g.exam e
+      join fetch e.course
+      join fetch g.student s
+      left join fetch s.currentGroup
+      join fetch s.user
+      where g.id = :id
+      """)
+  Optional<JGrade> findDetailedById(@Param("id") String id);
 }

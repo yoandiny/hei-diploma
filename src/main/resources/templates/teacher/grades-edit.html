@@ -14,21 +14,58 @@
 <div class="app-shell">
   <aside th:replace="~{fragments/sidebar :: sidebar('notes', 'TEACHER')}"></aside>
   <div class="main-wrap">
-    <header th:replace="~{fragments/topbar :: topbar('Saisie des notes — PROG4', 'TEACHER')}"></header>
+    <header th:replace="~{fragments/topbar :: topbar(${pageHeading}, 'TEACHER')}"></header>
     <main class="content">
+      <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}">OK</div>
+      <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur.</div>
       <div class="alert alert-warning">
-        Toute modification de note exige un <strong>motif obligatoire</strong> et alimente l'historique.
+        Toute saisie ou modification de note exige un <strong>motif obligatoire</strong> et alimente l'historique.
       </div>
 
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
-          <h2 class="section-title" style="margin:0;">PROG4 — Examen final (groupe K2)</h2>
-          <a class="btn btn-outline btn-sm" th:href="@{/teacher/grade-history.html}">
-            <i class="fa-solid fa-clock-rotate-left"></i> Voir l'historique
-          </a>
-        </div>
+      <div class="btn-group" style="margin-bottom:1rem;">
+        <a class="btn btn-outline" th:href="@{/teacher/grades-home.html}">
+          <i class="fa-solid fa-arrow-left"></i> Retour aux cours
+        </a>
+      </div>
 
-        <div class="table-wrap">
+      <div class="card" style="margin-bottom:1rem;">
+        <h2 class="section-title">Examen</h2>
+        <form class="btn-group" method="get" th:action="@{/teacher/grades-edit.html}" th:if="${!exams.empty}">
+          <input type="hidden" name="courseId" th:value="${courseId}"/>
+          <input type="hidden" name="groupId" th:value="${groupId}"/>
+          <div class="form-field" style="min-width:280px;">
+            <label for="examId">Examen</label>
+            <select id="examId" name="examId">
+              <option th:each="exam : ${exams}" th:value="${exam.id}"
+                      th:selected="${selectedExamId != null and #strings.equals(selectedExamId, exam.id.toString())}"
+                      th:text="|Coeff ${exam.coefficient} — ${exam.dateExam}|">
+                Examen
+              </option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" style="align-self:flex-end;">Afficher</button>
+        </form>
+        <form th:action="@{/teacher/exams}" method="post" class="form-grid" style="margin-top:1rem;">
+          <input type="hidden" name="courseId" th:value="${courseId}"/>
+          <input type="hidden" name="groupId" th:value="${groupId}"/>
+          <div class="form-field">
+            <label class="required" for="dateExam">Date de l'examen</label>
+            <input id="dateExam" name="dateExam" type="datetime-local" required/>
+          </div>
+          <div class="form-field">
+            <label class="required" for="coefficient">Coefficient</label>
+            <input id="coefficient" name="coefficient" type="number" min="0.01" step="0.01" value="1" required/>
+          </div>
+          <div class="full btn-group">
+            <button type="submit" class="btn btn-outline">Créer un examen</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card" th:if="${sheet != null}">
+        <h2 class="section-title" th:text="${sheet.exam.course.ref + ' — groupe ' + sheet.groupRef}">PROG4</h2>
+        <div class="empty" th:if="${sheet.rows.empty}">Aucun étudiant dans ce groupe.</div>
+        <div class="table-wrap" th:unless="${sheet.rows.empty}">
           <table class="data">
             <thead>
             <tr>
@@ -37,53 +74,30 @@
               <th>Groupe</th>
               <th>Note actuelle</th>
               <th>Nouvelle note</th>
-              <th>Motif de modification</th>
+              <th>Motif</th>
               <th></th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td>STD24001</td>
-              <td>Andria Miora</td>
-              <td>K2</td>
-              <td>12.0</td>
+            <tr th:each="row : ${sheet.rows}">
+              <td th:text="${row.studentNumber}">STD24001</td>
+              <td th:text="${row.fullName}">Nom</td>
+              <td th:text="${row.groupRef}">K1</td>
+              <td th:text="${row.currentValue != null ? row.currentValue : '—'}">—</td>
               <td colspan="3">
-                <form class="btn-group" style="align-items:flex-start;" th:action="@{/teacher/notes/PROG4}" method="post">
-                  <input type="hidden" name="studentId" value="STD24001"/>
-                  <input type="number" name="newValue" step="0.5" min="0" max="20" value="12.0" style="width:5.5rem;"/>
-                  <input type="text" name="reason" class="required-field" placeholder="Motif obligatoire…" required style="min-width:14rem;flex:1;"/>
-                  <button type="submit" class="btn btn-sm btn-primary">Enregistrer</button>
-                  <a class="btn btn-sm btn-outline" th:href="@{/teacher/grade-history.html}">Histo</a>
-                </form>
-              </td>
-            </tr>
-            <tr>
-              <td>STD24005</td>
-              <td>Fondàna Yoan DINY</td>
-              <td>K2</td>
-              <td>16.5</td>
-              <td colspan="3">
-                <form class="btn-group" style="align-items:flex-start;" th:action="@{/teacher/notes/PROG4}" method="post">
-                  <input type="hidden" name="studentId" value="STD24005"/>
-                  <input type="number" name="newValue" step="0.5" min="0" max="20" value="16.5" style="width:5.5rem;"/>
+                <form class="btn-group" style="align-items:flex-start;" th:action="@{/teacher/grades}" method="post">
+                  <input type="hidden" name="courseId" th:value="${courseId}"/>
+                  <input type="hidden" name="groupId" th:value="${groupId}"/>
+                  <input type="hidden" name="examId" th:value="${selectedExamId}"/>
+                  <input type="hidden" name="studentId" th:value="${row.studentId}"/>
+                  <input type="number" name="value" step="0.01" min="0" max="20" required style="width:5.5rem;"
+                         th:value="${row.currentValue}"/>
                   <input type="text" name="reason" placeholder="Motif obligatoire…" required style="min-width:14rem;flex:1;"/>
                   <button type="submit" class="btn btn-sm btn-primary">Enregistrer</button>
-                  <a class="btn btn-sm btn-outline" th:href="@{/teacher/grade-history.html}">Histo</a>
-                </form>
-              </td>
-            </tr>
-            <tr>
-              <td>STD24012</td>
-              <td>Rasoanaivo Hery</td>
-              <td>K2</td>
-              <td>09.5</td>
-              <td colspan="3">
-                <form class="btn-group" style="align-items:flex-start;" th:action="@{/teacher/notes/PROG4}" method="post">
-                  <input type="hidden" name="studentId" value="STD24012"/>
-                  <input type="number" name="newValue" step="0.5" min="0" max="20" value="9.5" style="width:5.5rem;"/>
-                  <input type="text" name="reason" placeholder="Motif obligatoire…" required style="min-width:14rem;flex:1;"/>
-                  <button type="submit" class="btn btn-sm btn-primary">Enregistrer</button>
-                  <a class="btn btn-sm btn-outline" th:href="@{/teacher/grade-history.html}">Histo</a>
+                  <a class="btn btn-sm btn-outline" th:if="${row.gradeId != null}"
+                     th:href="@{/teacher/grade-history.html(gradeId=${row.gradeId}, courseId=${courseId}, groupId=${groupId}, examId=${selectedExamId})}">
+                    Histo
+                  </a>
                 </form>
               </td>
             </tr>

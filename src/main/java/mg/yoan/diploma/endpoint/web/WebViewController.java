@@ -32,36 +32,6 @@ public class WebViewController {
     return page(model, "student/transcripts", "Mes relevés", "releves");
   }
 
-  @GetMapping("/teacher/dashboard.html")
-  @PreAuthorize("hasRole('TEACHER')")
-  public String teacherDashboard(Model model) {
-    return page(model, "teacher/dashboard", "Dashboard enseignant", "dashboard");
-  }
-
-  @GetMapping("/teacher/courses.html")
-  @PreAuthorize("hasRole('TEACHER')")
-  public String teacherCourses(Model model) {
-    return page(model, "teacher/courses", "Mes cours", "cours");
-  }
-
-  @GetMapping("/teacher/grades-home.html")
-  @PreAuthorize("hasRole('TEACHER')")
-  public String teacherGradesHome(Model model) {
-    return page(model, "teacher/grades-home", "Notes de mes cours", "notes");
-  }
-
-  @GetMapping("/teacher/grades-edit.html")
-  @PreAuthorize("hasRole('TEACHER')")
-  public String teacherGradesEdit(Model model) {
-    return page(model, "teacher/grades-edit", "Saisie des notes", "notes");
-  }
-
-  @GetMapping("/teacher/grade-history.html")
-  @PreAuthorize("hasRole('TEACHER')")
-  public String teacherGradeHistory(Model model) {
-    return page(model, "teacher/grade-history", "Historique de note", "notes");
-  }
-
   @GetMapping("/admin/dashboard.html")
   @PreAuthorize("hasRole('ADMIN')")
   public String adminDashboard(Model model) {

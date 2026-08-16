@@ -17,19 +17,19 @@
     <header th:replace="~{fragments/topbar :: topbar('Dashboard enseignant', 'TEACHER')}"></header>
     <main class="content">
       <div class="stats">
-        <div class="stat-card"><div class="label">Cours assignés</div><div class="value">2</div></div>
-        <div class="stat-card"><div class="label">Groupes</div><div class="value">3</div></div>
-        <div class="stat-card"><div class="label">Étudiants</div><div class="value">80</div></div>
-        <div class="stat-card"><div class="label">Notes à saisir</div><div class="value">12</div></div>
+        <div class="stat-card"><div class="label">Cours assignés</div><div class="value" th:text="${courseCount}">0</div></div>
+        <div class="stat-card"><div class="label">Groupes</div><div class="value" th:text="${groupCount}">0</div></div>
+        <div class="stat-card"><div class="label">Étudiants</div><div class="value" th:text="${studentCount}">0</div></div>
       </div>
 
       <div class="alert alert-info">
-        Un enseignant peut voir et modifier toutes les notes de <strong>ses</strong> cours uniquement.
+        Vous ne pouvez visualiser et modifier que les notes des cours et groupes qui vous sont affectés.
       </div>
 
       <div class="card">
         <h2 class="section-title">Mes cours</h2>
-        <div class="table-wrap">
+        <div class="empty" th:if="${courses.empty}">Aucun cours ne vous est affecté.</div>
+        <div class="table-wrap" th:unless="${courses.empty}">
           <table class="data">
             <thead>
             <tr>
@@ -41,25 +41,20 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td>PROG4</td>
-              <td>Programmation avancée</td>
+            <tr th:each="course : ${courses}">
+              <td th:text="${course.ref}">PROG4</td>
+              <td th:text="${course.title}">Programmation avancée</td>
               <td>
-                <span class="chip">K1</span>
-                <span class="chip">K2</span>
+                <span class="chip" th:each="group : ${course.groups}" th:text="${group.ref}">K1</span>
               </td>
-              <td>42</td>
-              <td><a class="btn btn-sm btn-primary" th:href="@{/teacher/grades-edit.html}">Saisir notes</a></td>
-            </tr>
-            <tr>
-              <td>WEB4</td>
-              <td>Développement web</td>
+              <td th:text="${course.studentCount}">0</td>
               <td>
-                <span class="chip">K2</span>
-                <span class="chip">K3</span>
+                <a class="btn btn-sm btn-primary"
+                   th:if="${!course.groups.empty}"
+                   th:href="@{/teacher/grades-edit.html(courseId=${course.courseId}, groupId=${course.groups[0].groupId})}">
+                  Saisir notes
+                </a>
               </td>
-              <td>38</td>
-              <td><a class="btn btn-sm btn-primary" th:href="@{/teacher/grades-edit.html}">Saisir notes</a></td>
             </tr>
             </tbody>
           </table>

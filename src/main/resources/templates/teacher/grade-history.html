@@ -17,23 +17,26 @@
     <header th:replace="~{fragments/topbar :: topbar('Historique de note', 'TEACHER')}"></header>
     <main class="content">
       <div class="btn-group" style="margin-bottom:1rem;">
-        <a class="btn btn-outline" th:href="@{/teacher/grades-edit.html}">
+        <a class="btn btn-outline"
+           th:href="@{/teacher/grades-edit.html(courseId=${courseId}, groupId=${groupId}, examId=${examId})}">
           <i class="fa-solid fa-arrow-left"></i> Retour à la saisie
         </a>
       </div>
 
       <div class="card">
-        <h2 class="section-title">Historique — PROG4 / Fondàna Yoan DINY</h2>
-        <ul class="timeline">
-          <li>
-            <div class="when">12 juin 2026 — 14:22 · par Rakoto Jean</div>
-            <div class="what">15.0 → 16.5</div>
-            <div class="why">Motif : Erreur de saisie sur la copie n°12</div>
-          </li>
-          <li>
-            <div class="when">01 juin 2026 — 16:45 · par Rakoto Jean</div>
-            <div class="what">— → 15.0</div>
-            <div class="why">Motif : Première saisie</div>
+        <h2 class="section-title"
+            th:text="${history.grade.exam.course.ref + ' / ' + history.grade.student.studentNumber + ' — ' + (history.grade.student.user != null ? history.grade.student.user.fullName : '')}">
+          Historique
+        </h2>
+        <div class="empty" th:if="${history.entries.empty}">Aucun historique pour cette note.</div>
+        <ul class="timeline" th:unless="${history.entries.empty}">
+          <li th:each="entry : ${history.entries}">
+            <div class="when" th:text="${entry.changedAt} + ' · par ' + ${entry.changedByName}">date</div>
+            <div class="what"
+                 th:text="${(entry.previousValue != null ? entry.previousValue : '—') + ' → ' + entry.newValue}">
+              15.0 → 16.5
+            </div>
+            <div class="why" th:text="${'Motif : ' + entry.reason}">Motif</div>
           </li>
         </ul>
       </div>
