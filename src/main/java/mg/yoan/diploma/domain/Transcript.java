@@ -50,9 +50,8 @@ public class Transcript {
     BigDecimal coefficientSum = BigDecimal.ZERO;
 
     for (Grade grade : values) {
-      BigDecimal coefficient = grade.getExam().getCoefficient();
-      weightedSum = weightedSum.add(grade.getValue().multiply(coefficient));
-      coefficientSum = coefficientSum.add(coefficient);
+      weightedSum = weightedSum.add(grade.getValue());
+      coefficientSum = coefficientSum.add(grade.getExam().getCoefficient());
     }
 
     if (coefficientSum.compareTo(BigDecimal.ZERO) == 0) {

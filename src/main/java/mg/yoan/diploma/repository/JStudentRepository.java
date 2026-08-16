@@ -1,5 +1,6 @@
 package mg.yoan.diploma.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import mg.yoan.diploma.repository.model.JStudent;
@@ -28,6 +29,34 @@ public interface JStudentRepository extends JpaRepository<JStudent, String> {
   List<JStudent> findDetailedByPromotionId(@Param("promotionId") String promotionId);
 
   List<JStudent> findByCurrentGroupId(String groupId);
+
+  long countByCurrentGroupId(String groupId);
+
+  long countByCurrentGroupIdIn(Collection<String> groupIds);
+
+  @Query(
+      """
+      select distinct s from JStudent s
+      join fetch s.user
+      join fetch s.promotion
+      left join fetch s.currentGroup g
+      left join fetch g.promotion
+      where s.currentGroup.id = :groupId
+      order by s.studentNumber
+      """)
+  List<JStudent> findDetailedByCurrentGroupId(@Param("groupId") String groupId);
+
+  @Query(
+      """
+      select distinct s from JStudent s
+      join fetch s.user
+      join fetch s.promotion
+      join fetch s.currentGroup g
+      left join fetch g.promotion
+      where s.currentGroup.id in :groupIds
+      order by g.ref, s.studentNumber
+      """)
+  List<JStudent> findDetailedByCurrentGroupIdIn(@Param("groupIds") Collection<String> groupIds);
 
   @Query(
       """

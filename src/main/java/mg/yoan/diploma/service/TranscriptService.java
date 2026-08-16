@@ -29,6 +29,7 @@ public class TranscriptService {
               Student student = StudentMapper.toDomain(entity);
               var grades =
                   gradeRepository.findDetailedByStudentId(studentId).stream()
+                      .filter(grade -> grade.getExam().getSubmittedAt() != null)
                       .map(
                           grade ->
                               Grade.builder()

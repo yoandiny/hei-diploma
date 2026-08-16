@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Détail examen — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <aside th:replace="~{fragments/sidebar :: sidebar('examens', 'TEACHER')}"></aside>
+  <div class="main-wrap">
+    <header th:replace="~{fragments/topbar :: topbar(${pageHeading}, 'TEACHER')}"></header>
+    <main class="content">
+      <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}">OK</div>
+      <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur.</div>
+
+      <div class="btn-group" style="margin-bottom:1rem;">
+        <a class="btn btn-outline" th:href="@{/teacher/exams.html}">
+          <i class="fa-solid fa-arrow-left"></i> Mes examens
+        </a>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">
+          <span th:text="${exam.courseRef + ' — ' + exam.courseTitle}">PROG4</span>
+          <span class="badge badge-ok" th:if="${exam.submitted}" style="margin-left:0.5rem;">Soumis</span>
+          <span class="badge badge-muted" th:unless="${exam.submitted}" style="margin-left:0.5rem;">Brouillon</span>
+        </h2>
+        <div class="exam-meta">
+          <span>Date : <strong th:text="${exam.dateExam}">—</strong></span>
+          <span>Coefficient : <strong th:text="${exam.coefficient}">1</strong></span>
+          <span>Note sur : <strong th:text="${exam.maxGrade}">20</strong></span>
+          <span>Classes : <strong th:text="${exam.groupRefs}">K1</strong></span>
+          <span>Notes : <strong th:text="${exam.gradedCount + ' / ' + exam.studentCount}">0 / 0</strong></span>
+        </div>
+        <div class="btn-group">
+          <a class="btn btn-primary" th:if="${!exam.submitted}"
+             th:href="@{/teacher/grades-edit.html(examId=${exam.examId})}">
+            Saisir les notes
+          </a>
+          <a class="btn btn-outline" th:if="${exam.submitted}"
+             th:href="@{/teacher/grades-edit.html(examId=${exam.examId})}">
+            Consulter les notes
+          </a>
+          <form th:if="${!exam.submitted}" th:action="@{/teacher/exams/submit}" method="post"
+                onsubmit="return confirm('Soumettre cet examen ? Les notes ne pourront plus être modifiées.');">
+            <input type="hidden" name="examId" th:value="${exam.examId}"/>
+            <button type="submit" class="btn btn-gold">Soumettre l'examen</button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+</body>
+</html>
