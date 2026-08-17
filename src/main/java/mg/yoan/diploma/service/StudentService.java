@@ -110,6 +110,36 @@ public class StudentService {
   }
 
   @Transactional
+  public Student changeGroup(String id, String groupId) {
+    JStudent student = requireActive(id);
+    JGroup group =
+        resolveGroup(required(groupId, "Le groupe est obligatoire."), student.getPromotion());
+    String currentGroupId =
+        student.getCurrentGroup() == null ? null : student.getCurrentGroup().getId();
+    if (group.getId().equals(currentGroupId)) {
+      throw new DomainException("L'étudiant est déjà dans ce groupe.");
+    }
+    Instant now = Instant.now();
+    groupHistoryRepository
+        .findByStudentIdAndEndDateIsNull(student.getId())
+        .ifPresent(
+            history -> {
+              history.setEndDate(now);
+              groupHistoryRepository.save(history);
+            });
+    student.setCurrentGroup(group);
+    studentRepository.save(student);
+    JStudentGroupHistory history = new JStudentGroupHistory();
+    history.setId(UUID.randomUUID().toString());
+    history.setStudent(student);
+    history.setGroup(group);
+    history.setStartDate(now);
+    groupHistoryRepository.save(history);
+    return StudentMapper.toDomain(
+        studentRepository.findDetailedById(student.getId()).orElse(student));
+  }
+
+  @Transactional
   public void suspend(String id) {
     JStudent student = requireActive(id);
     student.getUser().setEnabled(false);

@@ -32,24 +32,6 @@ public class WebViewController {
     return page(model, "student/transcripts", "Mes relevés", "releves");
   }
 
-  @GetMapping("/admin/dashboard.html")
-  @PreAuthorize("hasRole('ADMIN')")
-  public String adminDashboard(Model model) {
-    return page(model, "admin/dashboard", "Dashboard admin", "dashboard");
-  }
-
-  @GetMapping("/admin/students/edit-group.html")
-  @PreAuthorize("hasRole('ADMIN')")
-  public String adminEditGroup(Model model) {
-    return page(model, "admin/students/edit-group", "Changer de groupe", "etudiants");
-  }
-
-  @GetMapping("/admin/grades/history.html")
-  @PreAuthorize("hasRole('ADMIN')")
-  public String adminGradeHistory(Model model) {
-    return page(model, "admin/grades/history", "Historique des notes", "historique");
-  }
-
   private String page(Model model, String view, String heading, String nav) {
     model.addAttribute("pageHeading", heading);
     model.addAttribute("activeNav", nav);
