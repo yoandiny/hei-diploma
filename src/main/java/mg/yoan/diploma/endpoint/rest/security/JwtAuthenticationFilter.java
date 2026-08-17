@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import mg.yoan.diploma.repository.JUserRepository;
+import mg.yoan.diploma.repository.model.JUser;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,6 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtService jwtService;
   private final JwtCookie jwtCookie;
+  private final JUserRepository userRepository;
 
   @Override
   protected void doFilterInternal(
@@ -41,13 +44,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     Optional<Claims> claims = jwtService.parseClaims(token);
     if (claims.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null) {
       Claims c = claims.get();
+      Optional<JUser> stored =
+          userRepository.findById(jwtService.extractUserId(c)).filter(JUser::isEnabled);
+      if (stored.isEmpty()) {
+        jwtCookie.clear(request, response);
+        filterChain.doFilter(request, response);
+        return;
+      }
+      JUser user = stored.get();
       AuthenticatedUser principal =
           new AuthenticatedUser(
-              jwtService.extractUserId(c),
-              jwtService.extractEmail(c),
-              jwtService.extractRole(c),
-              jwtService.extractFirstName(c),
-              jwtService.extractLastName(c));
+              user.getId(),
+              user.getEmail(),
+              user.getRole(),
+              user.getFirstName(),
+              user.getLastName());
 
       var authority = new SimpleGrantedAuthority("ROLE_" + principal.getRole().name());
       var authentication =

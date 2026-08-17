@@ -105,6 +105,38 @@ public class AdminStudentViewController {
     return studentRedirect(id, redirect);
   }
 
+  @GetMapping("/admin/students/edit-group.html")
+  public String editGroup(
+      @RequestParam("id") String id, Model model, RedirectAttributes redirectAttributes) {
+    model.addAttribute("activeNav", "etudiants");
+    try {
+      var student = studentService.getById(id);
+      model.addAttribute("pageHeading", "Changer de groupe");
+      model.addAttribute("student", student);
+      model.addAttribute(
+          "groups", groupService.listByPromotion(student.getPromotion().getId().toString()));
+      return "admin/students/edit-group";
+    } catch (DomainException exception) {
+      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      return "redirect:/admin/students/list.html";
+    }
+  }
+
+  @PostMapping("/admin/students/{id}/group")
+  public String changeGroup(
+      @PathVariable String id,
+      @RequestParam("groupId") String groupId,
+      RedirectAttributes redirectAttributes) {
+    try {
+      studentService.changeGroup(id, groupId);
+      redirectAttributes.addFlashAttribute("success", "Groupe mis à jour.");
+    } catch (DomainException exception) {
+      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      return "redirect:/admin/students/edit-group.html?id=" + id;
+    }
+    return "redirect:/admin/students/list.html";
+  }
+
   @PostMapping("/admin/students/{id}/delete")
   public String delete(@PathVariable String id, RedirectAttributes redirectAttributes) {
     try {
