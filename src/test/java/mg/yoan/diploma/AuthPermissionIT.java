@@ -1,72 +1,72 @@
 package mg.yoan.diploma;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.http.HttpMethod.GET;
 
-import jakarta.servlet.http.Cookie;
+import java.util.List;
 import mg.yoan.diploma.domain.Role;
 import mg.yoan.diploma.domain.Teacher;
 import mg.yoan.diploma.endpoint.rest.security.JwtService;
 import mg.yoan.diploma.repository.model.JUser;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
-@AutoConfigureMockMvc
 class AuthPermissionIT extends DiplomaIT {
 
-  @Autowired private MockMvc mockMvc;
+  @Autowired private TestRestTemplate restTemplate;
   @Autowired private JwtService jwtService;
 
   @Test
-  void anonymous_is_sent_to_login() throws Exception {
-    mockMvc.perform(get("/admin/dashboard.html")).andExpect(redirectedUrl("/login"));
-    mockMvc.perform(get("/teacher/dashboard.html")).andExpect(redirectedUrl("/login"));
+  void anonymous_is_sent_to_login() {
+    assertTrue(sentTo(get("/admin/dashboard.html", null), "/login", "id=\"email\""));
+    assertTrue(sentTo(get("/teacher/dashboard.html", null), "/login", "id=\"email\""));
   }
 
   @Test
-  void teacher_cannot_open_admin_pages() throws Exception {
+  void teacher_cannot_open_admin_pages() {
     Teacher teacher = newTeacher();
-    mockMvc
-        .perform(
-            get("/admin/dashboard.html")
-                .cookie(jwtCookie(teacher.getId().toString(), Role.TEACHER)))
-        .andExpect(redirectedUrl("/forbidden"));
+    assertTrue(
+        sentTo(
+            get("/admin/dashboard.html", jwt(teacher.getId().toString(), Role.TEACHER)),
+            "/forbidden",
+            "pas le droit"));
   }
 
   @Test
-  void admin_cannot_open_teacher_pages() throws Exception {
+  void admin_cannot_open_teacher_pages() {
     JUser admin = newAdmin();
-    mockMvc
-        .perform(get("/teacher/dashboard.html").cookie(jwtCookie(admin.getId(), Role.ADMIN)))
-        .andExpect(redirectedUrl("/forbidden"));
+    assertTrue(
+        sentTo(
+            get("/teacher/dashboard.html", jwt(admin.getId(), Role.ADMIN)),
+            "/forbidden",
+            "pas le droit"));
   }
 
   @Test
-  void teacher_reaches_teacher_home() throws Exception {
+  void teacher_reaches_teacher_home() {
     Teacher teacher = newTeacher();
-    mockMvc
-        .perform(
-            get("/teacher/dashboard.html")
-                .cookie(jwtCookie(teacher.getId().toString(), Role.TEACHER)))
-        .andExpect(status().isOk());
+    String body =
+        get("/teacher/dashboard.html", jwt(teacher.getId().toString(), Role.TEACHER)).getBody();
+    assertTrue(body != null && body.contains("Dashboard enseignant"));
   }
 
   @Test
-  void admin_reaches_admin_home() throws Exception {
+  void admin_reaches_admin_home() {
     JUser admin = newAdmin();
-    mockMvc
-        .perform(get("/admin/dashboard.html").cookie(jwtCookie(admin.getId(), Role.ADMIN)))
-        .andExpect(status().isOk());
-    mockMvc
-        .perform(get("/admin/students/list.html").cookie(jwtCookie(admin.getId(), Role.ADMIN)))
-        .andExpect(status().isOk());
+    String token = jwt(admin.getId(), Role.ADMIN);
+    String dashboard = get("/admin/dashboard.html", token).getBody();
+    String students = get("/admin/students/list.html", token).getBody();
+    assertTrue(dashboard != null && dashboard.contains("Dashboard admin"));
+    assertTrue(students != null && students.contains("Étudiants"));
   }
 
   @Test
-  void disabled_teacher_token_is_rejected() throws Exception {
+  void disabled_teacher_token_is_rejected() {
     Teacher teacher = newTeacher();
     var user = teacher.getUser();
     teacherService.update(
@@ -77,18 +77,34 @@ class AuthPermissionIT extends DiplomaIT {
         teacher.getEmployeeNumber(),
         null,
         false);
-    mockMvc
-        .perform(
-            get("/teacher/dashboard.html")
-                .cookie(jwtCookie(teacher.getId().toString(), Role.TEACHER)))
-        .andExpect(redirectedUrl("/login"));
+    assertTrue(
+        sentTo(
+            get("/teacher/dashboard.html", jwt(teacher.getId().toString(), Role.TEACHER)),
+            "/login",
+            "id=\"email\""));
   }
 
-  private Cookie jwtCookie(String userId, Role role) {
+  private ResponseEntity<String> get(String path, String token) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setAccept(List.of(MediaType.TEXT_HTML));
+    if (token != null) {
+      headers.add(HttpHeaders.COOKIE, "jwt=" + token);
+    }
+    return restTemplate.exchange(path, GET, new HttpEntity<>(headers), String.class);
+  }
+
+  private String jwt(String userId, Role role) {
     JUser user = userRepository.findById(userId).orElseThrow();
-    String token =
-        jwtService.generateToken(
-            user.getId(), user.getEmail(), role, user.getFirstName(), user.getLastName());
-    return new Cookie("jwt", token);
+    return jwtService.generateToken(
+        user.getId(), user.getEmail(), role, user.getFirstName(), user.getLastName());
+  }
+
+  private static boolean sentTo(ResponseEntity<String> response, String path, String pageMarker) {
+    var location = response.getHeaders().getLocation();
+    if (location != null && location.toString().contains(path)) {
+      return true;
+    }
+    String body = response.getBody();
+    return body != null && body.contains(pageMarker);
   }
 }

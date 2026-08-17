@@ -1,6 +1,7 @@
 package mg.yoan.diploma;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import mg.yoan.diploma.conf.FacadeIT;
 import mg.yoan.diploma.domain.Course;
@@ -89,8 +90,6 @@ public abstract class DiplomaIT extends FacadeIT {
 
   protected void assign(Course course, Teacher teacher, Group group) {
     assignmentService.assign(
-        course.getId().toString(),
-        teacher.getId().toString(),
-        java.util.List.of(group.getId().toString()));
+        course.getId().toString(), teacher.getId().toString(), List.of(group.getId().toString()));
   }
 }
