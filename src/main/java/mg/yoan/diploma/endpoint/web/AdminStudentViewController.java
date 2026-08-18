@@ -50,7 +50,7 @@ public class AdminStudentViewController {
       model.addAttribute("student", student);
       return "admin/students/profile";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/admin/students/list.html";
     }
   }
@@ -69,10 +69,10 @@ public class AdminStudentViewController {
     try {
       studentService.create(
           firstName, lastName, email, studentNumber, promotionId, groupId, password, enabled);
-      redirectAttributes.addFlashAttribute("success", "Étudiant enregistré.");
+      redirectAttributes.addAttribute("success", "Étudiant enregistré.");
       return "redirect:/admin/students/list.html";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/admin/students/form.html";
     }
   }
@@ -84,9 +84,9 @@ public class AdminStudentViewController {
       RedirectAttributes redirectAttributes) {
     try {
       studentService.suspend(id);
-      redirectAttributes.addFlashAttribute("success", "Étudiant suspendu.");
+      redirectAttributes.addAttribute("success", "Étudiant suspendu.");
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
     }
     return studentRedirect(id, redirect);
   }
@@ -98,9 +98,9 @@ public class AdminStudentViewController {
       RedirectAttributes redirectAttributes) {
     try {
       studentService.unsuspend(id);
-      redirectAttributes.addFlashAttribute("success", "Compte réactivé.");
+      redirectAttributes.addAttribute("success", "Compte réactivé.");
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
     }
     return studentRedirect(id, redirect);
   }
@@ -117,7 +117,7 @@ public class AdminStudentViewController {
           "groups", groupService.listByPromotion(student.getPromotion().getId().toString()));
       return "admin/students/edit-group";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/admin/students/list.html";
     }
   }
@@ -129,9 +129,9 @@ public class AdminStudentViewController {
       RedirectAttributes redirectAttributes) {
     try {
       studentService.changeGroup(id, groupId);
-      redirectAttributes.addFlashAttribute("success", "Groupe mis à jour.");
+      redirectAttributes.addAttribute("success", "Groupe mis à jour.");
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/admin/students/edit-group.html?id=" + id;
     }
     return "redirect:/admin/students/list.html";
@@ -141,9 +141,9 @@ public class AdminStudentViewController {
   public String delete(@PathVariable String id, RedirectAttributes redirectAttributes) {
     try {
       studentService.softDelete(id);
-      redirectAttributes.addFlashAttribute("success", "Étudiant supprimé.");
+      redirectAttributes.addAttribute("success", "Étudiant supprimé.");
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
     }
     return "redirect:/admin/students/list.html";
   }

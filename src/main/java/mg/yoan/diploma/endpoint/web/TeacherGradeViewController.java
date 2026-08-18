@@ -82,7 +82,7 @@ public class TeacherGradeViewController {
       model.addAttribute("pageHeading", "Saisie — " + sheet.courseRef());
       return "teacher/grades-edit";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/teacher/grades-home.html";
     }
   }
@@ -98,9 +98,9 @@ public class TeacherGradeViewController {
       RedirectAttributes redirectAttributes) {
     try {
       teacherGradeService.saveGrade(user.getUserId(), examId, studentId, value, reason);
-      redirectAttributes.addFlashAttribute("success", "Note enregistrée.");
+      redirectAttributes.addAttribute("success", "Note enregistrée.");
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
     }
     return redirectToEdit(examId, groupId);
   }
@@ -122,7 +122,7 @@ public class TeacherGradeViewController {
       model.addAttribute("groupId", groupId);
       return "teacher/grade-history";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return redirectToEdit(examId, groupId);
     }
   }

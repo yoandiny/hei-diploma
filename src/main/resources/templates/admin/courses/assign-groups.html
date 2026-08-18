@@ -16,6 +16,8 @@
   <div class="main-wrap">
     <header th:replace="~{fragments/topbar :: topbar('Affectations cours / enseignants / groupes', 'ADMIN')}"></header>
     <main class="content">
+      <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}">OK</div>
+      <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur.</div>
 
       <div class="card">
         <h2 class="section-title" th:text="${course.ref + ' — ' + course.title}">Cours</h2>

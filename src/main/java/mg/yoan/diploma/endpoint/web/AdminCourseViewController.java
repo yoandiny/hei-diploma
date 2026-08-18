@@ -51,6 +51,7 @@ public class AdminCourseViewController {
     model.addAttribute("activeNav", "cours");
     if (id == null || id.isBlank()) {
       model.addAttribute("pageHeading", "Nouveau cours");
+      model.addAttribute("course", null);
       return "admin/courses/form";
     }
     try {
@@ -58,7 +59,7 @@ public class AdminCourseViewController {
       model.addAttribute("course", courseService.getById(id));
       return "admin/courses/form";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/admin/courses/list.html";
     }
   }
@@ -72,10 +73,10 @@ public class AdminCourseViewController {
       RedirectAttributes redirectAttributes) {
     try {
       courseService.save(id, ref, title, credits);
-      redirectAttributes.addFlashAttribute("success", "Cours enregistré.");
+      redirectAttributes.addAttribute("success", "Cours enregistré.");
       return "redirect:/admin/courses/list.html";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       if (id == null || id.isBlank()) {
         return "redirect:/admin/courses/form.html";
       }
@@ -87,9 +88,9 @@ public class AdminCourseViewController {
   public String delete(@PathVariable String id, RedirectAttributes redirectAttributes) {
     try {
       courseService.delete(id);
-      redirectAttributes.addFlashAttribute("success", "Cours supprimé.");
+      redirectAttributes.addAttribute("success", "Cours supprimé.");
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
     }
     return "redirect:/admin/courses/list.html";
   }
@@ -109,9 +110,14 @@ public class AdminCourseViewController {
       model.addAttribute("groups", assignmentService.listGroups());
       return "admin/courses/assign-groups";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/admin/courses/list.html";
     }
+  }
+
+  @GetMapping("/admin/courses/{courseId}/assignments")
+  public String assignmentsGet(@PathVariable String courseId) {
+    return "redirect:/admin/courses/assign-groups.html?courseId=" + courseId;
   }
 
   @PostMapping("/admin/courses/{courseId}/assignments")
@@ -122,9 +128,9 @@ public class AdminCourseViewController {
       RedirectAttributes redirectAttributes) {
     try {
       assignmentService.assign(courseId, teacherId, groupIds);
-      redirectAttributes.addFlashAttribute("success", "Affectation enregistrée.");
+      redirectAttributes.addAttribute("success", "Affectation enregistrée.");
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
     }
     return "redirect:/admin/courses/assign-groups.html?courseId=" + courseId;
   }
@@ -136,9 +142,9 @@ public class AdminCourseViewController {
       RedirectAttributes redirectAttributes) {
     try {
       assignmentService.delete(id);
-      redirectAttributes.addFlashAttribute("success", "Affectation retirée.");
+      redirectAttributes.addAttribute("success", "Affectation retirée.");
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
     }
     return "redirect:/admin/courses/assign-groups.html?courseId=" + courseId;
   }
