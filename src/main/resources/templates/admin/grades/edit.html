@@ -62,25 +62,27 @@
 <div class="app-shell">
   <aside th:replace="~{fragments/sidebar :: sidebar('notes', 'ADMIN')}"></aside>
   <div class="main-wrap">
-    <header th:replace="~{fragments/topbar :: topbar('Saisie — ' + sheet.courseRef(), 'ADMIN')}"></header>
+    <header th:replace="~{fragments/topbar :: topbar(${pageHeading}, 'ADMIN')}"></header>
     <main class="content">
+      <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}">OK</div>
+      <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur.</div>
       <div class="breadcrumb" style="margin-bottom: 1rem;">
         <a th:href="@{/admin/grades/select-group.html(examId=${examId}, courseId=${courseId})}">← Retour aux groupes</a>
       </div>
 
       <div class="card">
         <div class="exam-info">
-          <h2 class="section-title" th:text="${exam.courseRef} + ' — ' + exam.courseTitle}">Examen</h2>
+          <h2 class="section-title" th:text="${exam.courseRef + ' — ' + exam.courseTitle}">Examen</h2>
           <p style="color: #666; margin: 0.5rem 0 0 0;">
             <i class="fa-solid fa-calendar"></i>
             <span th:text="${#temporals.format(exam.dateExam, 'dd/MM/yyyy')}">Date</span>
             <span> | </span>
             <i class="fa-solid fa-users"></i>
-            <span th:text="${sheet.group.ref}">Groupe</span>
+            <span th:text="${sheet.groupRef}">Groupe</span>
             <span> | </span>
             <i class="fa-solid fa-chart-column"></i>
             Coefficient <span th:text="${exam.coefficient}">1</span>
-            (Max: <span th:text="${exam.getMaxGrade()}">20</span>)
+            (Max: <span th:text="${exam.maxGrade}">20</span>)
           </p>
         </div>
       </div>
@@ -88,8 +90,8 @@
       <div class="card">
         <h3 class="section-title">Étudiants</h3>
         <p style="color: #666; margin-bottom: 1rem;">
-          <span th:text="${sheet.rows.size()}">0</span> étudiant(s) — 
-          <span th:text="${#lists.size(sheet.rows) - #lists.size(sheet.rows.?[currentValue == null])}">0</span> noté(s)
+          <span th:text="${sheet.studentCount}">0</span> étudiant(s) —
+          <span th:text="${sheet.gradedCount}">0</span> noté(s)
         </p>
 
         <div th:each="row : ${sheet.rows}" class="grade-row">
@@ -105,7 +107,7 @@
             <input type="hidden" name="studentId" th:value="${row.studentId}"/>
 
             <input type="number" name="value" class="grade-input" th:value="${row.currentValue}" 
-                   min="0" th:max="${exam.getMaxGrade()}" step="0.01" placeholder="Note" required/>
+                   min="0" th:max="${exam.maxGrade}" step="0.01" placeholder="Note" required/>
 
             <input type="text" name="reason" placeholder="Motif (si modification)" 
                    style="flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 0.875rem;"/>

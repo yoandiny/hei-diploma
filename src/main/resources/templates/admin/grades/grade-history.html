@@ -23,9 +23,9 @@
       <div class="card">
         <h2 class="section-title">Historique de la note</h2>
         <p style="color: #666; margin-bottom: 1.5rem;">
-          <strong>Étudiant :</strong> <span th:text="${history.grade.student.user.fullName}">Nom</span>
+          <strong>Étudiant :</strong> <span th:text="${history.studentName}">Nom</span>
           <br/>
-          <strong>Note actuelle :</strong> <span th:text="${history.grade.value}">0</span>
+          <strong>Note actuelle :</strong> <span th:text="${history.currentValue}">0</span>
         </p>
 
         <div class="table-wrap">

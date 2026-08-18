@@ -32,8 +32,7 @@ public class GroupService {
 
   @Transactional(readOnly = true)
   public List<Group> listByPromotion(String promotionId) {
-    return groupRepository.findAllDetailed().stream()
-        .filter(group -> group.getPromotion().getId().equals(promotionId))
+    return groupRepository.findDetailedByPromotionId(promotionId).stream()
         .map(GroupMapper::toDomain)
         .toList();
   }
