@@ -27,9 +27,9 @@ import mg.yoan.diploma.repository.mapper.CourseAssignmentMapper;
 import mg.yoan.diploma.repository.model.JCourse;
 import mg.yoan.diploma.repository.model.JExam;
 import mg.yoan.diploma.repository.model.JGrade;
-import mg.yoan.diploma.repository.model.JGradeHistory;
 import mg.yoan.diploma.repository.model.JGroup;
 import mg.yoan.diploma.repository.model.JStudent;
+import mg.yoan.diploma.repository.model.JTeacher;
 import mg.yoan.diploma.repository.model.JUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +44,7 @@ public class TeacherGradeService {
   private final JCourseAssignmentRepository assignmentRepository;
   private final JCourseRepository courseRepository;
   private final JExamRepository examRepository;
+  private final GradeHistoryService gradeHistoryService;
   private final JGradeRepository gradeRepository;
   private final JGradeHistoryRepository gradeHistoryRepository;
   private final JGroupRepository groupRepository;
@@ -265,6 +266,74 @@ public class TeacherGradeService {
 
   @Transactional
   public void saveGrade(String teacherId, String examId, String studentId, BigDecimal value) {
+    saveGrade(teacherId, examId, studentId, value, null);
+  }
+
+  @Transactional
+  public void saveGrade(
+      String teacherId, String examId, String studentId, BigDecimal value, String reason) {
+    GradeContext context = loadGradeContext(teacherId, examId, studentId, value);
+    JGrade existing =
+        gradeRepository.findByExamIdAndStudentId(context.exam.getId(), studentId).orElse(null);
+    if (existing == null) {
+      createNewGrade(context, value, reason);
+    } else {
+      updateExistingGrade(existing, context, value, reason);
+    }
+  }
+
+  @Transactional
+  public void createGrade(
+      String teacherId, String examId, String studentId, BigDecimal value, String reason) {
+    GradeContext context = loadGradeContext(teacherId, examId, studentId, value);
+    if (gradeRepository.findByExamIdAndStudentId(context.exam.getId(), studentId).isPresent()) {
+      throw new DomainException("Une note existe déjà pour cet étudiant et cet examen.");
+    }
+    createNewGrade(context, value, reason);
+  }
+
+  @Transactional
+  public void updateGrade(
+      String teacherId, String examId, String studentId, BigDecimal value, String reason) {
+    GradeContext context = loadGradeContext(teacherId, examId, studentId, value);
+    JGrade grade =
+        gradeRepository
+            .findByExamIdAndStudentId(context.exam.getId(), studentId)
+            .orElseThrow(() -> new DomainException("Note introuvable."));
+    updateExistingGrade(grade, context, value, reason);
+  }
+
+  private void createNewGrade(GradeContext context, BigDecimal value, String reason) {
+    JGrade grade = new JGrade();
+    grade.setId(UUID.randomUUID().toString());
+    grade.setExam(context.exam);
+    grade.setStudent(context.student);
+    grade.setValue(value);
+    grade.setGradedBy(context.teacher);
+    grade.setGradedAt(Instant.now());
+    JGrade saved = gradeRepository.save(grade);
+    gradeHistoryService.logGradeChange(
+        saved, null, value, resolveCreateReason(reason), context.changedBy);
+  }
+
+  private void updateExistingGrade(
+      JGrade grade, GradeContext context, BigDecimal value, String reason) {
+    if (grade.getValue().compareTo(value) == 0) {
+      throw new DomainException("La note n'a pas changé.");
+    }
+    if (reason == null || reason.isBlank()) {
+      throw new DomainException("Un motif est obligatoire pour modifier une note.");
+    }
+    BigDecimal previous = grade.getValue();
+    grade.setValue(value);
+    grade.setGradedBy(context.teacher);
+    grade.setGradedAt(Instant.now());
+    JGrade saved = gradeRepository.save(grade);
+    gradeHistoryService.logGradeChange(saved, previous, value, reason, context.changedBy);
+  }
+
+  private GradeContext loadGradeContext(
+      String teacherId, String examId, String studentId, BigDecimal value) {
     JExam exam = loadAccessibleExam(teacherId, examId);
     String courseId = exam.getCourse().getId();
     assertEditable(exam);
@@ -286,7 +355,7 @@ public class TeacherGradeService {
       throw new DomainException("Cet étudiant n'est pas concerné par cet examen.");
     }
     assertResponsible(teacherId, courseId, studentGroupId);
-    var teacher =
+    JTeacher teacher =
         teacherRepository
             .findById(teacherId)
             .orElseThrow(() -> new DomainException("Enseignant introuvable."));
@@ -294,37 +363,14 @@ public class TeacherGradeService {
         userRepository
             .findById(teacherId)
             .orElseThrow(() -> new DomainException("Utilisateur introuvable."));
-
-    JGrade grade =
-        gradeRepository
-            .findByExamIdAndStudentId(exam.getId(), studentId)
-            .orElseGet(
-                () -> {
-                  JGrade created = new JGrade();
-                  created.setId(UUID.randomUUID().toString());
-                  created.setExam(exam);
-                  created.setStudent(student);
-                  return created;
-                });
-    BigDecimal previous = grade.getValue();
-    if (previous != null && previous.compareTo(value) == 0) {
-      throw new DomainException("La note n'a pas changé.");
-    }
-    grade.setValue(value);
-    grade.setGradedBy(teacher);
-    grade.setGradedAt(Instant.now());
-    JGrade saved = gradeRepository.save(grade);
-
-    JGradeHistory history = new JGradeHistory();
-    history.setId(UUID.randomUUID().toString());
-    history.setGrade(saved);
-    history.setPreviousValue(previous);
-    history.setNewValue(value);
-    history.setReason(previous == null ? "Saisie initiale" : "Modification de note");
-    history.setChangedBy(changedBy);
-    history.setChangedAt(Instant.now());
-    gradeHistoryRepository.save(history);
+    return new GradeContext(exam, student, teacher, changedBy);
   }
+
+  private static String resolveCreateReason(String reason) {
+    return reason == null || reason.isBlank() ? "Saisie initiale" : reason;
+  }
+
+  private record GradeContext(JExam exam, JStudent student, JTeacher teacher, JUser changedBy) {}
 
   @Transactional(readOnly = true)
   public GradeHistoryView getHistory(String teacherId, String gradeId) {

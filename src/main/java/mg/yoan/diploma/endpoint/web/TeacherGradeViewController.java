@@ -94,9 +94,10 @@ public class TeacherGradeViewController {
       @RequestParam(value = "groupId", required = false) String groupId,
       @RequestParam("studentId") String studentId,
       @RequestParam("value") BigDecimal value,
+      @RequestParam(value = "reason", required = false) String reason,
       RedirectAttributes redirectAttributes) {
     try {
-      teacherGradeService.saveGrade(user.getUserId(), examId, studentId, value);
+      teacherGradeService.saveGrade(user.getUserId(), examId, studentId, value, reason);
       redirectAttributes.addFlashAttribute("success", "Note enregistrée.");
     } catch (DomainException exception) {
       redirectAttributes.addFlashAttribute("error", exception.getMessage());

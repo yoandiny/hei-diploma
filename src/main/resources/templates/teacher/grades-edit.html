@@ -75,14 +75,19 @@
               <td><span class="badge badge-info" th:text="${row.groupRef}">K1</span></td>
               <td th:if="${exam.submitted}" th:text="${row.currentValue != null ? row.currentValue : '—'}">—</td>
               <td th:unless="${exam.submitted}">
-                <form class="btn-group" style="align-items:center;" th:action="@{/teacher/grades}" method="post">
+                <form class="btn-group" style="align-items:center; flex-wrap:wrap; gap:0.5rem;" th:action="@{/teacher/grades}" method="post">
                   <input type="hidden" name="examId" th:value="${exam.examId}"/>
                   <input type="hidden" name="groupId" th:if="${groupId != null and !groupId.isEmpty()}" th:value="${groupId}"/>
                   <input type="hidden" name="studentId" th:value="${row.studentId}"/>
-                  <input type="number" name="value" step="0.01" min="0" required style="width:6rem;"
+                  <input type="number" name="value" step="0.01" min="0" required style="width:5rem;"
                          th:max="${exam.maxGrade}"
                          th:placeholder="${exam.maxGrade}"
                          th:value="${row.currentValue}"/>
+                  <input type="text" name="reason"
+                         placeholder="Motif"
+                         style="width:9rem;"
+                         th:title="${row.gradeId != null ? 'Obligatoire pour modifier une note' : 'Optionnel pour la saisie initiale'}"
+                         th:required="${row.gradeId != null}"/>
                   <button type="submit" class="btn btn-sm btn-primary">Enregistrer</button>
                 </form>
               </td>
