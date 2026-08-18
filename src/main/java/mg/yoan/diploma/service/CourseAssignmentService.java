@@ -1,6 +1,9 @@
 package mg.yoan.diploma.service;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import mg.yoan.diploma.domain.CourseAssignment;
@@ -32,6 +35,18 @@ public class CourseAssignmentService {
     return assignmentRepository.findDetailedByCourseId(courseId).stream()
         .map(CourseAssignmentMapper::toDomain)
         .toList();
+  }
+
+  @Transactional(readOnly = true)
+  public Map<String, List<CourseAssignment>> listGroupedByCourseId() {
+    Map<String, List<CourseAssignment>> byCourse = new LinkedHashMap<>();
+    for (var assignment : assignmentRepository.findAllDetailed()) {
+      var domain = CourseAssignmentMapper.toDomain(assignment);
+      byCourse
+          .computeIfAbsent(domain.getCourse().getId().toString(), key -> new ArrayList<>())
+          .add(domain);
+    }
+    return byCourse;
   }
 
   @Transactional(readOnly = true)

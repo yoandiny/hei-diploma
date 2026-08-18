@@ -75,6 +75,8 @@ public class TeacherService {
     teacher.setUser(user);
     teacher.setEmployeeNumber(normalizedEmployee);
     try {
+      userRepository.saveAndFlush(user);
+      teacher.setId(user.getId());
       JTeacher saved = teacherRepository.saveAndFlush(teacher);
       return TeacherMapper.toDomain(
           teacherRepository.findDetailedById(saved.getId()).orElse(saved));

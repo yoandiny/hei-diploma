@@ -30,13 +30,15 @@ public class AdminCourseViewController {
   public String list(Model model) {
     model.addAttribute("pageHeading", "Gestion des cours");
     model.addAttribute("activeNav", "cours");
+    var assignmentsByCourse = assignmentService.listGroupedByCourseId();
     model.addAttribute(
         "courseRows",
         courseService.listAll().stream()
             .map(
                 course ->
                     new CourseRow(
-                        course, assignmentService.listByCourse(course.getId().toString())))
+                        course,
+                        assignmentsByCourse.getOrDefault(course.getId().toString(), List.of())))
             .toList());
     return "admin/courses/list";
   }
