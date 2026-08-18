@@ -14,57 +14,30 @@
 <div class="app-shell">
   <aside th:replace="~{fragments/sidebar :: sidebar('notes', 'TEACHER')}"></aside>
   <div class="main-wrap">
-    <header th:replace="~{fragments/topbar :: topbar(${pageHeading}, 'TEACHER')}"></header>
+    <header th:replace="~{fragments/topbar :: topbar('Saisie des notes — PROG4', 'TEACHER')}"></header>
     <main class="content">
-      <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}">OK</div>
-      <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur.</div>
-
-      <div class="btn-group" style="margin-bottom:1rem;">
-        <a class="btn btn-outline" th:href="@{/teacher/grades-home.html}">
-          <i class="fa-solid fa-arrow-left"></i> Retour
-        </a>
-        <a class="btn btn-outline" th:href="@{/teacher/exams-detail.html(examId=${exam.examId})}">
-          Fiche examen
-        </a>
+      <div class="alert alert-warning">
+        Toute modification de note exige un <strong>motif obligatoire</strong> et alimente l'historique.
       </div>
 
       <div class="card">
-        <h2 class="section-title">
-          <span th:text="${exam.courseRef}">PROG4</span>
-          — notes sur
-          <span th:text="${exam.maxGrade}">20</span>
-          <span class="badge badge-ok" th:if="${exam.submitted}" style="margin-left:0.5rem;">Soumis</span>
-          <span class="badge badge-muted" th:unless="${exam.submitted}" style="margin-left:0.5rem;">Brouillon</span>
-        </h2>
-        <div class="exam-meta">
-          <span>Classes : <strong th:text="${exam.groupRefs}">K1</strong></span>
-          <span>Notes : <strong th:text="${exam.gradedCount + ' / ' + exam.studentCount}">0 / 0</strong></span>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
+          <h2 class="section-title" style="margin:0;">PROG4 — Examen final (groupe K2)</h2>
+          <a class="btn btn-outline btn-sm" th:href="@{/teacher/grade-history.html}">
+            <i class="fa-solid fa-clock-rotate-left"></i> Voir l'historique
+          </a>
         </div>
 
-        <form class="btn-group" method="get" th:action="@{/teacher/grades-edit.html}"
-              th:if="${examGroups != null and examGroups.size() > 1}" style="margin-bottom:1rem;">
-          <input type="hidden" name="examId" th:value="${exam.examId}"/>
-          <div class="form-field" style="min-width:200px;">
-            <label for="groupId">Classe</label>
-            <select id="groupId" name="groupId">
-              <option value="">Toutes les classes</option>
-              <option th:each="group : ${examGroups}" th:value="${group.groupId}"
-                      th:selected="${groupId != null and #strings.equals(groupId, group.groupId)}"
-                      th:text="${group.ref}">K1</option>
-            </select>
-          </div>
-          <button type="submit" class="btn btn-outline" style="align-self:flex-end;">Filtrer</button>
-        </form>
-
-        <div class="empty" th:if="${sheet.rows.empty}">Aucun étudiant.</div>
-        <div class="table-wrap" th:unless="${sheet.rows.empty}">
+        <div class="table-wrap">
           <table class="data">
             <thead>
             <tr>
               <th>Réf.</th>
               <th>Étudiant</th>
-              <th>Classe</th>
-              <th>Note / <span th:text="${exam.maxGrade}">20</span></th>
+              <th>Groupe</th>
+              <th>Note actuelle</th>
+              <th>Nouvelle note</th>
+              <th>Motif de modification</th>
               <th></th>
             </tr>
             </thead>
@@ -89,23 +62,27 @@
                          th:title="${row.gradeId != null ? 'Obligatoire pour modifier une note' : 'Optionnel pour la saisie initiale'}"
                          th:required="${row.gradeId != null}"/>
                   <button type="submit" class="btn btn-sm btn-primary">Enregistrer</button>
+                  <a class="btn btn-sm btn-outline" th:href="@{/teacher/grade-history.html}">Histo</a>
                 </form>
               </td>
-              <td>
-                <a class="btn btn-sm btn-outline" th:if="${row.gradeId != null}"
-                   th:href="@{/teacher/grade-history.html(gradeId=${row.gradeId}, examId=${exam.examId}, groupId=${groupId})}">
-                  Histo
-                </a>
+            </tr>
+            <tr>
+              <td>STD24012</td>
+              <td>Rasoanaivo Hery</td>
+              <td>K2</td>
+              <td>09.5</td>
+              <td colspan="3">
+                <form class="btn-group" style="align-items:flex-start;" th:action="@{/teacher/notes/PROG4}" method="post">
+                  <input type="hidden" name="studentId" value="STD24012"/>
+                  <input type="number" name="newValue" step="0.5" min="0" max="20" value="9.5" style="width:5.5rem;"/>
+                  <input type="text" name="reason" placeholder="Motif obligatoire…" required style="min-width:14rem;flex:1;"/>
+                  <button type="submit" class="btn btn-sm btn-primary">Enregistrer</button>
+                  <a class="btn btn-sm btn-outline" th:href="@{/teacher/grade-history.html}">Histo</a>
+                </form>
               </td>
             </tr>
             </tbody>
           </table>
-        </div>
-
-        <div class="btn-group" style="margin-top:1.1rem;" th:if="${!exam.submitted}">
-          <a class="btn btn-gold" th:href="@{/teacher/exams-detail.html(examId=${exam.examId})}">
-            Soumettre l'examen
-          </a>
         </div>
       </div>
     </main>

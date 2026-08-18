@@ -18,27 +18,32 @@
       <h1>HEI Diploma</h1>
     </div>
 
-    <div class="alert alert-warning" role="alert" th:if="${param.error}">
-      <strong th:if="${param.error[0] == 'disabled'}">Ce compte est désactivé.</strong>
-      <strong th:if="${param.error[0] == 'server'}">Impossible de se connecter pour le moment. Réessayez.</strong>
-      <strong th:unless="${param.error[0] == 'disabled' or param.error[0] == 'server'}">Email ou mot de passe incorrect.</strong>
-    </div>
-    <div class="alert alert-info" role="alert" th:if="${param.logout}">
-      Vous êtes déconnecté.
-    </div>
-
     <form th:action="@{/login}" method="post">
       <p class="hint" style="margin:0 0 0.75rem;color:var(--hei-muted);font-size:0.88rem;">
-        Connectez-vous avec votre compte HEI.
+        Choisissez un rôle pour prévisualiser les interfaces.
       </p>
+      <div class="role-switch">
+        <label>
+          <input type="radio" name="role" value="STUDENT" checked/>
+          <span>Étudiant</span>
+        </label>
+        <label>
+          <input type="radio" name="role" value="TEACHER"/>
+          <span>Enseignant</span>
+        </label>
+        <label>
+          <input type="radio" name="role" value="ADMIN"/>
+          <span>Admin</span>
+        </label>
+      </div>
 
       <div class="form-field" style="margin-bottom:0.85rem;">
         <label for="email">Email</label>
-        <input id="email" type="email" name="email" placeholder="prenom@mail.hei.school" required/>
+        <input id="email" type="email" name="email" placeholder="prenom@mail.hei.school" value="yoan@mail.hei.school"/>
       </div>
       <div class="form-field">
         <label for="password">Mot de passe</label>
-        <input id="password" type="password" name="password" placeholder="••••••••" required/>
+        <input id="password" type="password" name="password" placeholder="••••••••" value="demo"/>
       </div>
 
       <button type="submit" class="btn btn-primary">Se connecter</button>

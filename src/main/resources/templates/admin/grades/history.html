@@ -16,13 +16,13 @@
   <div class="main-wrap">
     <header th:replace="~{fragments/topbar :: topbar('Historique des notes', 'ADMIN')}"></header>
     <main class="content">
+      <div class="alert alert-warning">
+        Toute modification de note doit indiquer pourquoi, et rester visible dans cet historique.
+      </div>
+
       <div class="card">
-        <h2 class="section-title">
-          Journal des modifications
-          <span th:text="|(${#lists.size(changes)})|">(0)</span>
-        </h2>
-        <div class="empty" th:if="${#lists.isEmpty(changes)}">Aucune modification de note pour le moment.</div>
-        <div class="table-wrap" th:unless="${#lists.isEmpty(changes)}">
+        <h2 class="section-title">Journal des modifications</h2>
+        <div class="table-wrap">
           <table class="data">
             <thead>
             <tr>
@@ -36,14 +36,32 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="change : ${changes}">
-              <td th:text="${change.changedAt}">date</td>
-              <td th:text="${change.courseRef}">PROG4</td>
-              <td th:text="${change.studentNumber + ' — ' + change.studentName}">STD — Nom</td>
-              <td th:text="${change.previousValue != null ? change.previousValue : '—'}">—</td>
-              <td><strong th:text="${change.newValue}">16.5</strong></td>
-              <td th:text="${change.changedByName}">Enseignant</td>
-              <td th:text="${change.reason}">Motif</td>
+            <tr>
+              <td>12 juin 2026 — 14:22</td>
+              <td>PROG4</td>
+              <td>Fondàna Yoan DINY</td>
+              <td>15.0</td>
+              <td><strong>16.5</strong></td>
+              <td>Rakoto Jean</td>
+              <td>Erreur de saisie sur la copie n°12</td>
+            </tr>
+            <tr>
+              <td>08 juin 2026 — 09:10</td>
+              <td>WEB4</td>
+              <td>Andria Miora</td>
+              <td>10.0</td>
+              <td><strong>12.0</strong></td>
+              <td>Rakoto Jean</td>
+              <td>Réclamation acceptée après relecture</td>
+            </tr>
+            <tr>
+              <td>01 juin 2026 — 16:45</td>
+              <td>PROG4</td>
+              <td>Rasoanaivo Hery</td>
+              <td>—</td>
+              <td><strong>09.5</strong></td>
+              <td>Rakoto Jean</td>
+              <td>Première saisie</td>
             </tr>
             </tbody>
           </table>

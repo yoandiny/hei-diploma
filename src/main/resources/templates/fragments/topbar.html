@@ -6,10 +6,16 @@
   <div class="topbar-right">
     <button type="button" class="topbar-icon" aria-label="Calendrier"><i class="fa-regular fa-calendar"></i></button>
     <button type="button" class="topbar-icon" aria-label="Messages"><i class="fa-regular fa-comment-dots"></i></button>
-    <div class="user-chip" th:if="${currentUser != null}">
+    <div class="user-chip">
       <div class="user-meta">
-        <div class="name" th:text="${currentUser.displayName}">Utilisateur</div>
-        <div class="role" th:text="${currentUser.roleLabel}">Rôle</div>
+        <div class="name"
+             th:text="${role == 'TEACHER'} ? 'Rakoto Jean' : (${role == 'ADMIN'} ? 'Admin HEI' : 'Fondàna Yoan')">
+          Fondàna Yoan
+        </div>
+        <div class="role"
+             th:text="${role == 'TEACHER'} ? 'Enseignant' : (${role == 'ADMIN'} ? 'Administrateur' : 'Étudiant')">
+          Étudiant
+        </div>
       </div>
       <img class="avatar-sm" th:src="@{/img/avatar-default.svg}" src="/img/avatar-default.svg" alt="Avatar"/>
     </div>

@@ -21,8 +21,11 @@
         <div class="profile-head">
           <img class="profile-avatar" th:src="@{/img/avatar-default.svg}" src="/img/avatar-default.svg" alt="Photo de profil"/>
           <div class="profile-identity">
-            <h1>Fondàna Yoan DINY</h1>
-            <div class="meta">STD24005 · K2</div>
+            <h1 th:text="${transcript != null ? transcript.firstName + ' ' + transcript.lastName : '—'}">Nom Prénom</h1>
+            <div class="meta"
+                 th:text="${transcript != null ? transcript.studentNumber + ' · ' + (transcript.groupRef != null ? transcript.groupRef : '—') : '— · —'}">
+              STD · K
+            </div>
           </div>
           <div class="profile-actions">
             <a class="btn btn-outline" href="#"><i class="fa-solid fa-download"></i> Certificat</a>
@@ -45,28 +48,28 @@
                 <span class="info-icon"><i class="fa-regular fa-envelope"></i></span>
                 <div>
                   <span class="label">Email</span>
-                  <span class="value">yoan@mail.hei.school</span>
+                  <span class="value" th:text="${transcript != null && transcript.email != null ? transcript.email : '—'}">email</span>
                 </div>
               </div>
               <div class="info-item">
                 <span class="info-icon"><i class="fa-solid fa-phone"></i></span>
                 <div>
                   <span class="label">Téléphone</span>
-                  <span class="value">034 44 769 69</span>
+                  <span class="value">—</span>
                 </div>
               </div>
               <div class="info-item">
                 <span class="info-icon"><i class="fa-solid fa-location-dot"></i></span>
                 <div>
                   <span class="label">Adresse</span>
-                  <span class="value">III H 14 BIS RA Ouest Ambohijanahary</span>
+                  <span class="value">—</span>
                 </div>
               </div>
               <div class="info-item">
                 <span class="info-icon"><i class="fa-solid fa-map"></i></span>
                 <div>
                   <span class="label">Géolocalisation</span>
-                  <a class="value" href="#">47.5222692, -18.9236586</a>
+                  <span class="value">—</span>
                 </div>
               </div>
             </div>
@@ -79,28 +82,28 @@
                 <span class="info-icon"><i class="fa-solid fa-venus-mars"></i></span>
                 <div>
                   <span class="label">Sexe</span>
-                  <span class="value">Homme</span>
+                  <span class="value">—</span>
                 </div>
               </div>
               <div class="info-item">
                 <span class="info-icon"><i class="fa-regular fa-id-card"></i></span>
                 <div>
                   <span class="label">Numéro CIN</span>
-                  <span class="value">101241232449</span>
+                  <span class="value">—</span>
                 </div>
               </div>
               <div class="info-item">
                 <span class="info-icon"><i class="fa-solid fa-cake-candles"></i></span>
                 <div>
                   <span class="label">Date et lieu de naissance</span>
-                  <span class="value">12 mars 2004 — Antananarivo</span>
+                  <span class="value">—</span>
                 </div>
               </div>
               <div class="info-item">
                 <span class="info-icon"><i class="fa-solid fa-circle-check"></i></span>
                 <div>
                   <span class="label">Statut</span>
-                  <span class="value">Actif</span>
+                  <span class="value">—</span>
                 </div>
               </div>
             </div>
@@ -114,35 +117,35 @@
               <span class="info-icon"><i class="fa-regular fa-calendar"></i></span>
               <div>
                 <span class="label">Date d'entrée chez HEI</span>
-                <span class="value">18 octobre 2024</span>
+                <span class="value" th:text="${transcript != null && transcript.promotionStartYear != null ? transcript.promotionStartYear : '—'}">—</span>
               </div>
             </div>
             <div class="info-item">
               <span class="info-icon"><i class="fa-solid fa-rotate"></i></span>
               <div>
                 <span class="label">Redoublant</span>
-                <span class="value">Non</span>
+                <span class="value">—</span>
               </div>
             </div>
             <div class="info-item">
               <span class="info-icon"><i class="fa-solid fa-road"></i></span>
               <div>
                 <span class="label">Parcours de Spécialisation</span>
-                <span class="value">Tronc commun</span>
+                <span class="value" th:text="${transcript != null && transcript.promotionLabel != null ? transcript.promotionLabel : '—'}">—</span>
               </div>
             </div>
             <div class="info-item">
               <span class="info-icon"><i class="fa-solid fa-briefcase"></i></span>
               <div>
                 <span class="label">Statut professionnel</span>
-                <span class="value">N'a pas d'expérience professionnelle</span>
+                <span class="value">—</span>
               </div>
             </div>
             <div class="info-item">
               <span class="info-icon"><i class="fa-solid fa-list"></i></span>
               <div>
                 <span class="label">Type d'expérience professionnelle</span>
-                <span class="value">Pas d'expérience professionnelle</span>
+                <span class="value">—</span>
               </div>
             </div>
           </div>

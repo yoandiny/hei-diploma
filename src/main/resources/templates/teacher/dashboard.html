@@ -17,53 +17,19 @@
     <header th:replace="~{fragments/topbar :: topbar('Dashboard enseignant', 'TEACHER')}"></header>
     <main class="content">
       <div class="stats">
-        <div class="stat-card"><div class="label">Cours</div><div class="value" th:text="${courseCount}">0</div></div>
-        <div class="stat-card"><div class="label">Groupes</div><div class="value" th:text="${groupCount}">0</div></div>
-        <div class="stat-card"><div class="label">Étudiants</div><div class="value" th:text="${studentCount}">0</div></div>
-        <div class="stat-card"><div class="label">À saisir</div><div class="value" th:text="${openExamCount}">0</div></div>
+        <div class="stat-card"><div class="label">Cours assignés</div><div class="value">2</div></div>
+        <div class="stat-card"><div class="label">Groupes</div><div class="value">3</div></div>
+        <div class="stat-card"><div class="label">Étudiants</div><div class="value">80</div></div>
+        <div class="stat-card"><div class="label">Notes à saisir</div><div class="value">12</div></div>
       </div>
 
-      <div class="toolbar">
-        <div class="btn-group">
-          <a class="btn btn-primary" th:href="@{/teacher/exams-new.html}">Nouvel examen</a>
-          <a class="btn btn-outline" th:href="@{/teacher/exams.html}">Mes examens</a>
-          <a class="btn btn-outline" th:href="@{/teacher/grades-home.html}">Saisie des notes</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2 class="section-title">Examens à saisir</h2>
-        <div class="empty" th:if="${#lists.isEmpty(draftExams)}">Aucun examen en attente de saisie.</div>
-        <div class="table-wrap" th:unless="${#lists.isEmpty(draftExams)}">
-          <table class="data">
-            <thead>
-            <tr>
-              <th>Cours</th>
-              <th>Classes</th>
-              <th>Notes</th>
-              <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="exam : ${draftExams}">
-              <td th:text="${exam.courseRef + ' — ' + exam.courseTitle}">PROG4</td>
-              <td th:text="${exam.groupRefs}">K1</td>
-              <td th:text="${exam.gradedCount + ' / ' + exam.studentCount}">0 / 0</td>
-              <td>
-                <a class="btn btn-sm btn-primary" th:href="@{/teacher/grades-edit.html(examId=${exam.examId})}">
-                  Saisir
-                </a>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="alert alert-info">
+        Un enseignant peut voir et modifier toutes les notes de <strong>ses</strong> cours uniquement.
       </div>
 
       <div class="card">
         <h2 class="section-title">Mes cours</h2>
-        <div class="empty" th:if="${#lists.isEmpty(courses)}">Aucun cours ne vous est affecté.</div>
-        <div class="table-wrap" th:unless="${#lists.isEmpty(courses)}">
+        <div class="table-wrap">
           <table class="data">
             <thead>
             <tr>
@@ -75,19 +41,25 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="course : ${courses}">
-              <td th:text="${course.ref}">PROG4</td>
-              <td th:text="${course.title}">Programmation avancée</td>
+            <tr>
+              <td>PROG4</td>
+              <td>Programmation avancée</td>
               <td>
-                <span class="chip" th:each="group : ${course.groups}" th:text="${group.ref}">K1</span>
+                <span class="chip">K1</span>
+                <span class="chip">K2</span>
               </td>
-              <td th:text="${course.studentCount}">0</td>
-              <td class="btn-group">
-                <a class="btn btn-sm btn-outline"
-                   th:href="@{/teacher/exams.html(courseId=${course.courseId})}">Examens</a>
-                <a class="btn btn-sm btn-primary"
-                   th:href="@{/teacher/grades-home.html(courseId=${course.courseId})}">Notes</a>
+              <td>42</td>
+              <td><a class="btn btn-sm btn-primary" th:href="@{/teacher/grades-edit.html}">Saisir notes</a></td>
+            </tr>
+            <tr>
+              <td>WEB4</td>
+              <td>Développement web</td>
+              <td>
+                <span class="chip">K2</span>
+                <span class="chip">K3</span>
               </td>
+              <td>38</td>
+              <td><a class="btn btn-sm btn-primary" th:href="@{/teacher/grades-edit.html}">Saisir notes</a></td>
             </tr>
             </tbody>
           </table>

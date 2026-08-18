@@ -16,9 +16,6 @@
   <div class="main-wrap">
     <header th:replace="~{fragments/topbar :: topbar('Gestion des cours', 'ADMIN')}"></header>
     <main class="content">
-      <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}">Enregistré.</div>
-      <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur.</div>
-
       <div class="btn-group" style="margin-bottom:1rem;">
         <a class="btn btn-primary" th:href="@{/admin/courses/form.html}">
           <i class="fa-solid fa-plus"></i> Nouveau cours
@@ -26,33 +23,65 @@
       </div>
 
       <div class="card">
-        <h2 class="section-title">
-          Cours
-          <span th:text="|(${#lists.size(courses)})|">(0)</span>
-        </h2>
-        <div class="empty" th:if="${courses.empty}">Aucun cours pour le moment.</div>
-        <div class="table-wrap" th:unless="${courses.empty}">
+        <h2 class="section-title">Cours</h2>
+        <p style="color:var(--hei-muted);margin-top:0;font-size:0.9rem;">
+          Un cours peut être enseigné par plusieurs enseignants, et n'est pas forcément donné à tous les groupes.
+        </p>
+        <div class="table-wrap">
           <table class="data">
             <thead>
             <tr>
               <th>Code</th>
               <th>Intitulé</th>
-              <th>Crédits</th>
+              <th>Enseignants</th>
+              <th>Groupes</th>
               <th></th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="course : ${courses}">
-              <td th:text="${course.ref}">PROG4</td>
-              <td th:text="${course.title}">Programmation avancée</td>
-              <td th:text="${course.credits}">6</td>
+            <tr>
+              <td>PROG4</td>
+              <td>Programmation avancée</td>
+              <td>
+                <span class="chip">Rakoto Jean</span>
+                <span class="chip">Ravelo Marie</span>
+              </td>
+              <td>
+                <span class="chip">K1</span>
+                <span class="chip">K2</span>
+              </td>
               <td class="btn-group">
-                <a class="btn btn-sm btn-outline" th:href="@{/admin/courses/form.html(id=${course.id})}">Éditer</a>
-                <a class="btn btn-sm btn-primary" th:href="@{/admin/courses/assign-groups.html(courseId=${course.id})}">Affectations</a>
-                <form th:action="@{/admin/courses/{id}/delete(id=${course.id})}" method="post" style="display:inline;"
-                      onsubmit="return confirm('Supprimer ce cours ?');">
-                  <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
-                </form>
+                <a class="btn btn-sm btn-outline" th:href="@{/admin/courses/form.html}">Éditer</a>
+                <a class="btn btn-sm btn-primary" th:href="@{/admin/courses/assign-groups.html}">Affectations</a>
+              </td>
+            </tr>
+            <tr>
+              <td>WEB4</td>
+              <td>Développement web</td>
+              <td><span class="chip">Rakoto Jean</span></td>
+              <td>
+                <span class="chip">K2</span>
+                <span class="chip">K3</span>
+              </td>
+              <td class="btn-group">
+                <a class="btn btn-sm btn-outline" th:href="@{/admin/courses/form.html}">Éditer</a>
+                <a class="btn btn-sm btn-primary" th:href="@{/admin/courses/assign-groups.html}">Affectations</a>
+              </td>
+            </tr>
+            <tr>
+              <td>SYS2</td>
+              <td>Systèmes d'exploitation</td>
+              <td>
+                <span class="chip">Ravelo Marie</span>
+                <span class="chip">Andrianina Paul</span>
+              </td>
+              <td>
+                <span class="chip">K1</span>
+                <span class="chip">K3</span>
+              </td>
+              <td class="btn-group">
+                <a class="btn btn-sm btn-outline" th:href="@{/admin/courses/form.html}">Éditer</a>
+                <a class="btn btn-sm btn-primary" th:href="@{/admin/courses/assign-groups.html}">Affectations</a>
               </td>
             </tr>
             </tbody>
