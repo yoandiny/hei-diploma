@@ -1,5 +1,6 @@
 package mg.yoan.diploma.domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -57,6 +58,14 @@ class TranscriptTest {
     Transcript transcript = transcript(grade(COURSE_L1, "20.00"));
 
     assertFalse(transcript.isGraduated(Set.of()));
+  }
+
+  @Test
+  void computes_average_using_exam_coefficients() {
+    Transcript transcript =
+        transcript(grade(COURSE_L1, "10.00", "1"), grade(COURSE_L2, "16.00", "3"));
+
+    assertEquals(new BigDecimal("14.50"), transcript.weightedAverage());
   }
 
   private static Transcript transcript(Grade... grades) {

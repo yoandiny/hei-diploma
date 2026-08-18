@@ -14,21 +14,17 @@
 <div class="app-shell">
   <aside th:replace="~{fragments/sidebar :: sidebar('etudiants', 'ADMIN')}"></aside>
   <div class="main-wrap">
-    <header th:replace="~{fragments/topbar :: topbar('Changer de groupe', 'ADMIN')}"></header>
+    <header th:replace="~{fragments/topbar :: topbar(${pageHeading}, 'ADMIN')}"></header>
     <main class="content">
       <div class="card" style="max-width:560px;">
-        <h2 class="section-title">Fondàna Yoan DINY</h2>
-        <p style="margin-top:0;color:var(--hei-muted);">STD24005 · Groupe actuel : <strong>K2</strong></p>
+        <h2 class="section-title" th:text="${student.user.fullName}">Étudiant</h2>
+        <p style="margin-top:0;color:var(--hei-muted);" th:text="${student.studentNumber + ' · Groupe actuel : ' + (student.currentGroup != null ? student.currentGroup.ref : '—')}">Étudiant</p>
 
-        <form th:action="@{/admin/etudiants/STD24005/groupe}" method="post" class="form-grid">
+        <form th:action="@{/admin/students/{id}/group(id=${student.id})}" method="post" class="form-grid">
           <div class="form-field full">
             <label class="required" for="group">Nouveau groupe</label>
-            <select id="group" name="group" required>
-              <option value="K1">K1</option>
-              <option value="K2" selected>K2</option>
-              <option value="K3">K3</option>
-              <option value="G1">G1</option>
-              <option value="G2">G2</option>
+            <select id="group" name="groupId" required>
+              <option th:each="group : ${groups}" th:value="${group.id}" th:text="${group.ref}" th:selected="${student.currentGroup != null && group.id == student.currentGroup.id}">Groupe</option>
             </select>
             <span class="hint">Le changement est possible à tout moment du parcours.</span>
           </div>

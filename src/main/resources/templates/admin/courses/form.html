@@ -18,37 +18,21 @@
     <main class="content">
       <div class="card">
         <h2 class="section-title">Cours</h2>
-        <form th:action="@{/admin/cours}" method="post" class="form-grid">
+        <form th:action="@{/admin/courses/save}" method="post" class="form-grid">
+          <input type="hidden" name="id" th:if="${course != null}" th:value="${course.id}"/>
           <div class="form-field">
             <label class="required" for="code">Code</label>
-            <input id="code" name="code" type="text" value="PROG4" required/>
+            <input id="code" name="ref" type="text" required th:value="${course != null ? course.ref : ''}"/>
           </div>
           <div class="form-field">
             <label class="required" for="title">Intitulé</label>
-            <input id="title" name="title" type="text" value="Programmation avancée" required/>
+            <input id="title" name="title" type="text" required th:value="${course != null ? course.title : ''}"/>
           </div>
 
           <div class="form-field full">
-            <label class="required" for="teachers">Enseignants (multi-sélection)</label>
-            <select id="teachers" name="teachers" multiple required>
-              <option value="Rakoto Jean" selected>Rakoto Jean</option>
-              <option value="Ravelo Marie" selected>Ravelo Marie</option>
-              <option value="Andrianina Paul">Andrianina Paul</option>
-              <option value="Rasoa Lala">Rasoa Lala</option>
-            </select>
-            <span class="hint">Un cours peut être enseigné par plusieurs enseignants. Maintenez Ctrl/Cmd pour multi-sélectionner.</span>
-          </div>
-
-          <div class="form-field full">
-            <label for="groups">Groupes concernés</label>
-            <select id="groups" name="groups" multiple>
-              <option value="K1" selected>K1</option>
-              <option value="K2" selected>K2</option>
-              <option value="K3">K3</option>
-              <option value="G1">G1</option>
-              <option value="G2">G2</option>
-            </select>
-            <span class="hint">Pas forcément tous les groupes : sélectionnez uniquement ceux concernés.</span>
+            <label class="required" for="credits">Crédits</label>
+            <input id="credits" name="credits" type="number" min="0" required th:value="${course != null ? course.credits : ''}"/>
+            <span class="hint">Les enseignants et groupes sont gérés dans les affectations du cours.</span>
           </div>
 
           <div class="full btn-group">
