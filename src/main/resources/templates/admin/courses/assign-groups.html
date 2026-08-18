@@ -16,10 +16,6 @@
   <div class="main-wrap">
     <header th:replace="~{fragments/topbar :: topbar('Affectations cours / enseignants / groupes', 'ADMIN')}"></header>
     <main class="content">
-      <div class="alert alert-info">
-        Un cours est donné par un ou plusieurs enseignants à plusieurs groupes, mais pas toujours à tous.
-        Chaque ligne lie un enseignant à un sous-ensemble de groupes.
-      </div>
 
       <div class="card">
         <h2 class="section-title" th:text="${course.ref + ' — ' + course.title}">Cours</h2>
