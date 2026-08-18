@@ -18,7 +18,8 @@
     <main class="content">
       <div class="card">
         <h2 class="section-title">Relevés de notes</h2>
-        <div class="table-wrap">
+        <div class="empty" th:if="${transcript == null}">Aucun relevé pour le moment.</div>
+        <div class="table-wrap" th:unless="${transcript == null}">
           <table class="data">
             <thead>
             <tr>
@@ -31,25 +32,15 @@
             </thead>
             <tbody>
             <tr>
-              <td>2024-2025</td>
-              <td>S1</td>
-              <td>14.8</td>
-              <td><span class="badge badge-ok">Validé</span></td>
-              <td><a class="btn btn-sm btn-outline" href="#"><i class="fa-solid fa-download"></i> PDF</a></td>
-            </tr>
-            <tr>
-              <td>2024-2025</td>
-              <td>S2</td>
-              <td>15.2</td>
-              <td><span class="badge badge-ok">Validé</span></td>
-              <td><a class="btn btn-sm btn-outline" href="#"><i class="fa-solid fa-download"></i> PDF</a></td>
-            </tr>
-            <tr>
-              <td>2025-2026</td>
-              <td>S1</td>
-              <td>15.6</td>
-              <td><span class="badge badge-info">En cours</span></td>
-              <td><a class="btn btn-sm btn-outline" href="#"><i class="fa-solid fa-download"></i> PDF</a></td>
+              <td th:text="${transcript.promotionStartYear + '–' + transcript.promotionEndYear}">—</td>
+              <td>—</td>
+              <td th:text="${transcript.weightedAverage != null ? transcript.weightedAverage : '—'}">—</td>
+              <td>
+                <span class="badge badge-ok"
+                      th:if="${transcript.weightedAverage != null && transcript.weightedAverage.compareTo(T(java.math.BigDecimal).TEN) >= 0}">Validé</span>
+                <span class="badge badge-info" th:unless="${transcript.weightedAverage != null && transcript.weightedAverage.compareTo(T(java.math.BigDecimal).TEN) >= 0}">En cours</span>
+              </td>
+              <td><a class="btn btn-sm btn-outline" th:href="@{/students/me/transcript}"><i class="fa-solid fa-download"></i> JSON</a></td>
             </tr>
             </tbody>
           </table>

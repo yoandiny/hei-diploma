@@ -19,19 +19,19 @@
       <div class="stats">
         <div class="stat-card">
           <div class="label">Moyenne générale</div>
-          <div class="value">15.2</div>
+          <div class="value" th:text="${transcript != null && transcript.weightedAverage != null ? transcript.weightedAverage : '—'}">0</div>
         </div>
         <div class="stat-card">
           <div class="label">Notes visibles</div>
-          <div class="value">3</div>
+          <div class="value" th:text="${transcript != null ? #lists.size(transcript.grades) : 0}">0</div>
         </div>
         <div class="stat-card">
           <div class="label">Groupe</div>
-          <div class="value">K2</div>
+          <div class="value" th:text="${transcript != null && transcript.groupRef != null ? transcript.groupRef : '—'}">—</div>
         </div>
         <div class="stat-card">
           <div class="label">Relevés</div>
-          <div class="value">3</div>
+          <div class="value" th:text="${transcript != null ? 1 : 0}">0</div>
         </div>
       </div>
 
@@ -41,7 +41,8 @@
 
       <div class="card">
         <h2 class="section-title">Dernières notes</h2>
-        <div class="table-wrap">
+        <div class="empty" th:if="${transcript == null || #lists.isEmpty(transcript.grades)}">Aucune note pour le moment.</div>
+        <div class="table-wrap" th:unless="${transcript == null || #lists.isEmpty(transcript.grades)}">
           <table class="data">
             <thead>
             <tr>
@@ -52,23 +53,11 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td>PROG4 — Programmation avancée</td>
-              <td>Examen final</td>
-              <td><strong>16.5</strong></td>
-              <td>10 juin 2026</td>
-            </tr>
-            <tr>
-              <td>WEB4 — Développement web</td>
-              <td>Contrôle continu</td>
-              <td><strong>14.0</strong></td>
-              <td>02 juin 2026</td>
-            </tr>
-            <tr>
-              <td>SYS2 — Systèmes d'exploitation</td>
-              <td>TP noté</td>
-              <td><strong>15.0</strong></td>
-              <td>20 mai 2026</td>
+            <tr th:each="grade : ${transcript.grades}">
+              <td th:text="${grade.courseRef + ' — ' + grade.courseTitle}">PROG4 — Programmation avancée</td>
+              <td>—</td>
+              <td><strong th:text="${grade.value}">0</strong></td>
+              <td th:text="${grade.examDate}">—</td>
             </tr>
             </tbody>
           </table>

@@ -21,8 +21,9 @@
       </div>
 
       <div class="card">
-        <h2 class="section-title">Notes de Fondàna Yoan DINY</h2>
-        <div class="table-wrap">
+        <h2 class="section-title">Mes notes</h2>
+        <div class="empty" th:if="${transcript == null || #lists.isEmpty(transcript.grades)}">Aucune note pour le moment.</div>
+        <div class="table-wrap" th:unless="${transcript == null || #lists.isEmpty(transcript.grades)}">
           <table class="data">
             <thead>
             <tr>
@@ -35,29 +36,13 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td>PROG4</td>
-              <td>Programmation avancée</td>
-              <td>Examen final</td>
-              <td><strong>16.5</strong></td>
-              <td>3</td>
-              <td>10 juin 2026</td>
-            </tr>
-            <tr>
-              <td>WEB4</td>
-              <td>Développement web</td>
-              <td>Contrôle continu</td>
-              <td><strong>14.0</strong></td>
-              <td>2</td>
-              <td>02 juin 2026</td>
-            </tr>
-            <tr>
-              <td>SYS2</td>
-              <td>Systèmes d'exploitation</td>
-              <td>TP noté</td>
-              <td><strong>15.0</strong></td>
-              <td>2</td>
-              <td>20 mai 2026</td>
+            <tr th:each="grade : ${transcript.grades}">
+              <td th:text="${grade.courseRef}">PROG4</td>
+              <td th:text="${grade.courseTitle}">Programmation avancée</td>
+              <td>—</td>
+              <td><strong th:text="${grade.value}">0</strong></td>
+              <td th:text="${grade.coefficient}">0</td>
+              <td th:text="${grade.examDate}">—</td>
             </tr>
             </tbody>
           </table>

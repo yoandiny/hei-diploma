@@ -18,32 +18,34 @@
     <main class="content">
       <div class="card">
         <h2 class="section-title">Cours enseignés</h2>
-        <div class="empty" th:if="${courses.empty}">Aucun cours ne vous est affecté.</div>
-        <div class="table-wrap" th:unless="${courses.empty}">
+        <p style="color:var(--hei-muted);margin-top:0;font-size:0.9rem;">
+          Un cours peut être partagé entre plusieurs enseignants ; seuls les groupes qui vous sont affectés apparaissent ici.
+        </p>
+        <div class="table-wrap">
           <table class="data">
             <thead>
             <tr>
               <th>Code</th>
               <th>Intitulé</th>
-              <th>Groupes</th>
+              <th>Groupes concernés</th>
               <th>Effectif</th>
               <th></th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="course : ${courses}">
-              <td th:text="${course.ref}">PROG4</td>
-              <td th:text="${course.title}">Programmation avancée</td>
-              <td>
-                <span class="chip" th:each="group : ${course.groups}" th:text="${group.ref}">K1</span>
-              </td>
-              <td th:text="${course.studentCount}">0</td>
-              <td class="btn-group">
-                <a class="btn btn-sm btn-outline"
-                   th:href="@{/teacher/exams.html(courseId=${course.courseId})}">Examens</a>
-                <a class="btn btn-sm btn-primary"
-                   th:href="@{/teacher/grades-home.html(courseId=${course.courseId})}">Notes</a>
-              </td>
+            <tr>
+              <td>PROG4</td>
+              <td>Programmation avancée</td>
+              <td><span class="chip">K1</span> <span class="chip">K2</span></td>
+              <td>42</td>
+              <td><a class="btn btn-sm btn-outline" th:href="@{/teacher/grades-edit.html}">Notes</a></td>
+            </tr>
+            <tr>
+              <td>WEB4</td>
+              <td>Développement web</td>
+              <td><span class="chip">K2</span> <span class="chip">K3</span></td>
+              <td>38</td>
+              <td><a class="btn btn-sm btn-outline" th:href="@{/teacher/grades-edit.html}">Notes</a></td>
             </tr>
             </tbody>
           </table>

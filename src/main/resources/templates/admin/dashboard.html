@@ -17,10 +17,14 @@
     <header th:replace="~{fragments/topbar :: topbar('Dashboard admin', 'ADMIN')}"></header>
     <main class="content">
       <div class="stats">
-        <div class="stat-card"><div class="label">Cours</div><div class="value" th:text="${courseCount}">0</div></div>
-        <div class="stat-card"><div class="label">Étudiants</div><div class="value" th:text="${studentCount}">0</div></div>
-        <div class="stat-card"><div class="label">Enseignants</div><div class="value" th:text="${teacherCount}">0</div></div>
-        <div class="stat-card"><div class="label">Modifs notes</div><div class="value" th:text="${gradeChangeCount}">0</div></div>
+        <div class="stat-card"><div class="label">Cours</div><div class="value">3</div></div>
+        <div class="stat-card"><div class="label">Étudiants</div><div class="value">4</div></div>
+        <div class="stat-card"><div class="label">Enseignants</div><div class="value">4</div></div>
+        <div class="stat-card"><div class="label">Modifs notes</div><div class="value">3</div></div>
+      </div>
+
+      <div class="alert alert-info">
+        L'admin peut tout faire, y compris consulter les résultats de promotion sur 3 ans.
       </div>
 
       <div class="grid-2">
@@ -28,26 +32,22 @@
           <h2 class="section-title">Accès rapides</h2>
           <div class="btn-group">
             <a class="btn btn-primary" th:href="@{/admin/courses/form.html}">Nouveau cours</a>
-            <a class="btn btn-outline" th:href="@{/admin/students/form.html}">Nouvel étudiant</a>
-            <a class="btn btn-outline" th:href="@{/admin/teachers/form.html}">Nouvel enseignant</a>
-            <a class="btn btn-outline" th:href="@{/admin/promotion/results.html}">Diplômés</a>
+            <a class="btn btn-outline" th:href="@{/admin/students/list.html}">Changer un groupe</a>
+            <a class="btn btn-outline" th:href="@{/admin/promotion/results.html}">Résultats promo</a>
             <a class="btn btn-outline" th:href="@{/admin/grades/history.html}">Historique notes</a>
           </div>
         </div>
         <div class="card">
-          <h2 class="section-title">Dernières modifications de notes</h2>
-          <div class="empty" th:if="${#lists.isEmpty(recentChanges)}">Aucune modification pour le moment.</div>
-          <div class="table-wrap" th:unless="${#lists.isEmpty(recentChanges)}">
+          <h2 class="section-title">Promo 2023 — aperçu 3 ans</h2>
+          <div class="table-wrap">
             <table class="data">
               <thead>
-              <tr><th>Cours</th><th>Étudiant</th><th>Après</th></tr>
+              <tr><th>Année</th><th>Moyenne</th><th>Réussite</th></tr>
               </thead>
               <tbody>
-              <tr th:each="change : ${recentChanges}">
-                <td th:text="${change.courseRef}">PROG4</td>
-                <td th:text="${change.studentName}">Nom</td>
-                <td th:text="${change.newValue}">16.5</td>
-              </tr>
+              <tr><td>Année 1</td><td>13.4</td><td>82%</td></tr>
+              <tr><td>Année 2</td><td>14.1</td><td>78%</td></tr>
+              <tr><td>Année 3</td><td>14.8</td><td>85%</td></tr>
               </tbody>
             </table>
           </div>

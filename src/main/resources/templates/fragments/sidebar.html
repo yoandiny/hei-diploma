@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 <aside class="sidebar" th:fragment="sidebar(activeNav, role)">
-  <a class="sidebar-brand" th:href="@{|/${#strings.toLowerCase(role)}/dashboard.html|}">
+  <a class="sidebar-brand" href="#">
     <span class="brand-mark">HEI</span>
     <span class="brand-text">HEI Diploma</span>
   </a>
@@ -30,7 +30,7 @@
       </a>
     </li>
     <li>
-      <a th:href="@{/logout}">
+      <a th:href="@{/auth/login.html}">
         <i class="fa-solid fa-right-from-bracket"></i> Se déconnecter
       </a>
     </li>
@@ -49,17 +49,12 @@
       </a>
     </li>
     <li>
-      <a th:href="@{/teacher/exams.html}" th:classappend="${activeNav == 'examens'} ? ' active'">
-        <i class="fa-solid fa-file-pen"></i> Examens
-      </a>
-    </li>
-    <li>
       <a th:href="@{/teacher/grades-home.html}" th:classappend="${activeNav == 'notes'} ? ' active'">
-        <i class="fa-solid fa-pen-to-square"></i> Saisie des notes
+        <i class="fa-solid fa-pen-to-square"></i> Notes
       </a>
     </li>
     <li>
-      <a th:href="@{/logout}">
+      <a th:href="@{/auth/login.html}">
         <i class="fa-solid fa-right-from-bracket"></i> Se déconnecter
       </a>
     </li>
@@ -78,16 +73,6 @@
       </a>
     </li>
     <li>
-      <a th:href="@{/admin/teachers/list.html}" th:classappend="${activeNav == 'enseignants'} ? ' active'">
-        <i class="fa-solid fa-chalkboard-user"></i> Enseignants
-      </a>
-    </li>
-    <li>
-      <a th:href="@{/admin/groups/list.html}" th:classappend="${activeNav == 'groupes'} ? ' active'">
-        <i class="fa-solid fa-layer-group"></i> Groupes
-      </a>
-    </li>
-    <li>
       <a th:href="@{/admin/students/list.html}" th:classappend="${activeNav == 'etudiants'} ? ' active'">
         <i class="fa-solid fa-users"></i> Étudiants
       </a>
@@ -99,11 +84,11 @@
     </li>
     <li>
       <a th:href="@{/admin/promotion/results.html}" th:classappend="${activeNav == 'promotion'} ? ' active'">
-        <i class="fa-solid fa-graduation-cap"></i> Diplômés
+        <i class="fa-solid fa-chart-column"></i> Promo (3 ans)
       </a>
     </li>
     <li>
-      <a th:href="@{/logout}">
+      <a th:href="@{/auth/login.html}">
         <i class="fa-solid fa-right-from-bracket"></i> Se déconnecter
       </a>
     </li>

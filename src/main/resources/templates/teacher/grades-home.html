@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Saisie des notes — HEI Diploma</title>
+  <title>Notes — HEI Diploma</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
@@ -14,81 +14,29 @@
 <div class="app-shell">
   <aside th:replace="~{fragments/sidebar :: sidebar('notes', 'TEACHER')}"></aside>
   <div class="main-wrap">
-    <header th:replace="~{fragments/topbar :: topbar('Saisie des notes', 'TEACHER')}"></header>
+    <header th:replace="~{fragments/topbar :: topbar('Notes de mes cours', 'TEACHER')}"></header>
     <main class="content">
-      <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}">OK</div>
-      <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur.</div>
-
-      <div class="toolbar">
-        <form class="btn-group" method="get" th:action="@{/teacher/grades-home.html}">
-          <div class="form-field" style="min-width:220px;">
-            <label for="courseId">Cours</label>
-            <select id="courseId" name="courseId" onchange="this.form.submit()">
-              <option value="">Tous mes cours</option>
-              <option th:each="course : ${courses}" th:value="${course.courseId}"
-                      th:selected="${courseId != null and #strings.equals(courseId, course.courseId)}"
-                      th:text="${course.ref + ' — ' + course.title}">PROG4</option>
-            </select>
-          </div>
-        </form>
-      </div>
-
       <div class="card">
-        <h2 class="section-title">À saisir</h2>
-        <div class="empty" th:if="${draftExams.empty}">Aucun examen en attente de saisie.</div>
-        <div class="table-wrap" th:unless="${draftExams.empty}">
+        <h2 class="section-title">Choisir un cours</h2>
+        <div class="table-wrap">
           <table class="data">
             <thead>
             <tr>
               <th>Cours</th>
-              <th>Classes</th>
-              <th>Sur</th>
-              <th>Notes</th>
+              <th>Groupes</th>
               <th></th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="exam : ${draftExams}">
-              <td th:text="${exam.courseRef}">PROG4</td>
-              <td th:text="${exam.groupRefs}">K1</td>
-              <td th:text="${exam.maxGrade}">20</td>
-              <td th:text="${exam.gradedCount + ' / ' + exam.studentCount}">0 / 0</td>
-              <td>
-                <a class="btn btn-sm btn-primary" th:href="@{/teacher/grades-edit.html(examId=${exam.examId})}">
-                  Saisir
-                </a>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2 class="section-title">Examens soumis</h2>
-        <div class="empty" th:if="${submittedExams.empty}">Aucun examen soumis.</div>
-        <div class="table-wrap" th:unless="${submittedExams.empty}">
-          <table class="data">
-            <thead>
             <tr>
-              <th>Cours</th>
-              <th>Classes</th>
-              <th>Sur</th>
-              <th>Notes</th>
-              <th></th>
+              <td>PROG4 — Programmation avancée</td>
+              <td><span class="chip">K1</span> <span class="chip">K2</span></td>
+              <td><a class="btn btn-sm btn-primary" th:href="@{/teacher/grades-edit.html}">Ouvrir</a></td>
             </tr>
-            </thead>
-            <tbody>
-            <tr th:each="exam : ${submittedExams}">
-              <td th:text="${exam.courseRef}">PROG4</td>
-              <td th:text="${exam.groupRefs}">K1</td>
-              <td th:text="${exam.maxGrade}">20</td>
-              <td th:text="${exam.gradedCount + ' / ' + exam.studentCount}">0 / 0</td>
-              <td>
-                <a class="btn btn-sm btn-outline" th:href="@{/teacher/grades-edit.html(examId=${exam.examId})}">
-                  Consulter
-                </a>
-              </td>
+            <tr>
+              <td>WEB4 — Développement web</td>
+              <td><span class="chip">K2</span> <span class="chip">K3</span></td>
+              <td><a class="btn btn-sm btn-primary" th:href="@{/teacher/grades-edit.html}">Ouvrir</a></td>
             </tr>
             </tbody>
           </table>
