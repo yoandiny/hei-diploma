@@ -29,7 +29,9 @@ public class AdminGradeViewController {
 
   @GetMapping("/admin/grades/select-exam.html")
   public String selectExam(
-      @RequestParam("courseId") String courseId, Model model, RedirectAttributes redirectAttributes) {
+      @RequestParam("courseId") String courseId,
+      Model model,
+      RedirectAttributes redirectAttributes) {
     try {
       model.addAttribute("pageHeading", "Sélectionner un examen");
       model.addAttribute("activeNav", "notes");
@@ -99,8 +101,12 @@ public class AdminGradeViewController {
     } catch (DomainException exception) {
       redirectAttributes.addFlashAttribute("error", exception.getMessage());
     }
-    return "redirect:/admin/grades/edit.html?examId=" + examId + "&groupId=" + groupId
-        + "&courseId=" + courseId;
+    return "redirect:/admin/grades/edit.html?examId="
+        + examId
+        + "&groupId="
+        + groupId
+        + "&courseId="
+        + courseId;
   }
 
   @GetMapping("/admin/grades/grade-history.html")
@@ -122,8 +128,12 @@ public class AdminGradeViewController {
       return "admin/grades/grade-history";
     } catch (DomainException exception) {
       redirectAttributes.addFlashAttribute("error", exception.getMessage());
-      return "redirect:/admin/grades/edit.html?examId=" + examId + "&groupId=" + groupId
-          + "&courseId=" + courseId;
+      return "redirect:/admin/grades/edit.html?examId="
+          + examId
+          + "&groupId="
+          + groupId
+          + "&courseId="
+          + courseId;
     }
   }
 }

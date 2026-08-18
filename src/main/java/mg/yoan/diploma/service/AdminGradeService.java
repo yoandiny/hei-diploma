@@ -132,11 +132,7 @@ public class AdminGradeService {
     }
 
     return new GradeSheet(
-        toExamOption(exam),
-        exam.getCourse().getId(),
-        exam.getCourse().getRef(),
-        group,
-        rows);
+        toExamOption(exam), exam.getCourse().getId(), exam.getCourse().getRef(), group, rows);
   }
 
   @Transactional
@@ -159,10 +155,12 @@ public class AdminGradeService {
     }
   }
 
-  private void createNewGrade(GradeContext context, BigDecimal value, String reason, String adminId) {
-    JUser admin = userRepository
-        .findById(adminId)
-        .orElseThrow(() -> new DomainException("Admin introuvable."));
+  private void createNewGrade(
+      GradeContext context, BigDecimal value, String reason, String adminId) {
+    JUser admin =
+        userRepository
+            .findById(adminId)
+            .orElseThrow(() -> new DomainException("Admin introuvable."));
 
     JGrade grade = new JGrade();
     grade.setId(UUID.randomUUID().toString());
@@ -173,8 +171,7 @@ public class AdminGradeService {
     grade.setGradedAt(Instant.now());
 
     JGrade saved = gradeRepository.save(grade);
-    gradeHistoryService.logGradeChange(
-        saved, null, value, resolveCreateReason(reason), admin);
+    gradeHistoryService.logGradeChange(saved, null, value, resolveCreateReason(reason), admin);
   }
 
   private void updateExistingGrade(
@@ -186,9 +183,10 @@ public class AdminGradeService {
       throw new DomainException("Un motif est obligatoire pour modifier une note.");
     }
 
-    JUser admin = userRepository
-        .findById(adminId)
-        .orElseThrow(() -> new DomainException("Admin introuvable."));
+    JUser admin =
+        userRepository
+            .findById(adminId)
+            .orElseThrow(() -> new DomainException("Admin introuvable."));
 
     BigDecimal previous = grade.getValue();
     grade.setValue(value);
@@ -331,7 +329,9 @@ public class AdminGradeService {
       int gradedCount,
       int studentCount) {
     public String getGroupRefs() {
-      return groups.stream().map(GroupOption::ref).collect(java.util.stream.Collectors.joining(", "));
+      return groups.stream()
+          .map(GroupOption::ref)
+          .collect(java.util.stream.Collectors.joining(", "));
     }
 
     public BigDecimal getMaxGrade() {
@@ -353,11 +353,7 @@ public class AdminGradeService {
       BigDecimal currentValue) {}
 
   public record GradeSheet(
-      ExamOption exam,
-      String courseId,
-      String courseRef,
-      JGroup group,
-      List<GradeRow> rows) {}
+      ExamOption exam, String courseId, String courseRef, JGroup group, List<GradeRow> rows) {}
 
   public record HistoryRow(
       Instant changedAt,
