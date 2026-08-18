@@ -90,6 +90,7 @@ class RestApiIT extends DiplomaIT {
         exam.examId(),
         student.getId().toString(),
         new BigDecimal("14.00"));
+    teacherGradeService.submitExam(teacher.getId().toString(), exam.examId());
 
     String token = login(student.getUser().getEmail());
 
