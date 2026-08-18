@@ -123,6 +123,61 @@ class TeacherWorkspaceIT extends DiplomaIT {
     assertEquals(new BigDecimal("11.00"), history.entries().get(0).newValue());
   }
 
+  @Test
+  void grade_update_requires_reason() {
+    var fixture = workspace();
+    ExamOption exam =
+        teacherGradeService.createExam(
+            fixture.teacherId(),
+            fixture.courseId(),
+            Instant.parse("2026-06-01T08:00:00Z"),
+            BigDecimal.ONE,
+            List.of(fixture.groupId()));
+    teacherGradeService.saveGrade(
+        fixture.teacherId(), exam.examId(), fixture.studentId(), new BigDecimal("11.00"));
+
+    DomainException exception =
+        assertThrows(
+            DomainException.class,
+            () ->
+                teacherGradeService.saveGrade(
+                    fixture.teacherId(),
+                    exam.examId(),
+                    fixture.studentId(),
+                    new BigDecimal("13.00")));
+    assertEquals("Un motif est obligatoire pour modifier une note.", exception.getMessage());
+  }
+
+  @Test
+  void grade_update_with_reason_is_recorded() {
+    var fixture = workspace();
+    ExamOption exam =
+        teacherGradeService.createExam(
+            fixture.teacherId(),
+            fixture.courseId(),
+            Instant.parse("2026-06-01T08:00:00Z"),
+            BigDecimal.ONE,
+            List.of(fixture.groupId()));
+    teacherGradeService.saveGrade(
+        fixture.teacherId(), exam.examId(), fixture.studentId(), new BigDecimal("11.00"));
+    var sheet = teacherGradeService.getGradeSheet(fixture.teacherId(), exam.examId(), null);
+    String gradeId = sheet.rows().get(0).gradeId();
+
+    teacherGradeService.updateGrade(
+        fixture.teacherId(),
+        exam.examId(),
+        fixture.studentId(),
+        new BigDecimal("13.00"),
+        "Erreur de saisie");
+
+    var history = teacherGradeService.getHistory(fixture.teacherId(), gradeId);
+    assertEquals(2, history.entries().size());
+    var latest = history.entries().get(0);
+    assertEquals(new BigDecimal("11.00"), latest.previousValue());
+    assertEquals(new BigDecimal("13.00"), latest.newValue());
+    assertEquals("Erreur de saisie", latest.reason());
+  }
+
   private Workspace workspace() {
     Promotion promotion = newPromotion();
     Group group = newGroup(promotion);
