@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Historique de note — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <aside th:replace="~{fragments/sidebar :: sidebar('notes', 'ADMIN')}"></aside>
+  <div class="main-wrap">
+    <header th:replace="~{fragments/topbar :: topbar('Historique de note', 'ADMIN')}"></header>
+    <main class="content">
+      <div class="breadcrumb" style="margin-bottom: 1rem;">
+        <a th:href="@{/admin/grades/edit.html(examId=${examId}, groupId=${groupId}, courseId=${courseId})}">← Retour à la saisie</a>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Historique de la note</h2>
+        <p style="color: #666; margin-bottom: 1.5rem;">
+          <strong>Étudiant :</strong> <span th:text="${history.grade.student.user.fullName}">Nom</span>
+          <br/>
+          <strong>Note actuelle :</strong> <span th:text="${history.grade.value}">0</span>
+        </p>
+
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+            <tr>
+              <th>Date/Heure</th>
+              <th>Modifié par</th>
+              <th>Ancienne valeur</th>
+              <th>Nouvelle valeur</th>
+              <th>Motif</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="entry : ${history.entries}">
+              <td>
+                <small th:text="${#temporals.format(entry.changedAt, 'dd/MM/yyyy HH:mm')}">Date</small>
+              </td>
+              <td th:text="${entry.changedByName}">Utilisateur</td>
+              <td>
+                <span th:if="${entry.previousValue != null}" th:text="${entry.previousValue}">0</span>
+                <span th:unless="${entry.previousValue != null}">—</span>
+              </td>
+              <td>
+                <strong th:text="${entry.newValue}">0</strong>
+              </td>
+              <td th:text="${entry.reason}">Motif</td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(history.entries)}"><td colspan="5" class="text-center">Aucun historique disponible.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<style>
+.breadcrumb {
+  padding: 0.5rem 0;
+}
+.breadcrumb a {
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+</style>
+</body>
+</html>
