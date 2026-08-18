@@ -22,6 +22,7 @@ import mg.yoan.diploma.repository.model.JGrade;
 import mg.yoan.diploma.repository.model.JGroup;
 import mg.yoan.diploma.repository.model.JStudent;
 import mg.yoan.diploma.repository.model.JTeacher;
+import mg.yoan.diploma.repository.model.JUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
