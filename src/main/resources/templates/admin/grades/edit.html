@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Saisie des notes — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+  <style>
+    .grade-input-group {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .grade-input {
+      width: 80px;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    .grade-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
+    }
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .action-buttons .btn {
+      margin: 0;
+    }
+    .grade-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      padding: 0.75rem;
+      border-bottom: 1px solid #eee;
+    }
+    .grade-row:last-child {
+      border-bottom: none;
+    }
+    .grade-row-info {
+      flex: 1;
+    }
+    .student-name {
+      font-weight: 600;
+      margin: 0;
+    }
+    .student-number {
+      font-size: 0.875rem;
+      color: #666;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <aside th:replace="~{fragments/sidebar :: sidebar('notes', 'ADMIN')}"></aside>
+  <div class="main-wrap">
+    <header th:replace="~{fragments/topbar :: topbar('Saisie — ' + sheet.courseRef(), 'ADMIN')}"></header>
+    <main class="content">
+      <div class="breadcrumb" style="margin-bottom: 1rem;">
+        <a th:href="@{/admin/grades/select-group.html(examId=${examId}, courseId=${courseId})}">← Retour aux groupes</a>
+      </div>
+
+      <div class="card">
+        <div class="exam-info">
+          <h2 class="section-title" th:text="${exam.courseRef} + ' — ' + exam.courseTitle}">Examen</h2>
+          <p style="color: #666; margin: 0.5rem 0 0 0;">
+            <i class="fa-solid fa-calendar"></i>
+            <span th:text="${#temporals.format(exam.dateExam, 'dd/MM/yyyy')}">Date</span>
+            <span> | </span>
+            <i class="fa-solid fa-users"></i>
+            <span th:text="${sheet.group.ref}">Groupe</span>
+            <span> | </span>
+            <i class="fa-solid fa-chart-column"></i>
+            Coefficient <span th:text="${exam.coefficient}">1</span>
+            (Max: <span th:text="${exam.getMaxGrade()}">20</span>)
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title">Étudiants</h3>
+        <p style="color: #666; margin-bottom: 1rem;">
+          <span th:text="${sheet.rows.size()}">0</span> étudiant(s) — 
+          <span th:text="${#lists.size(sheet.rows) - #lists.size(sheet.rows.?[currentValue == null])}">0</span> noté(s)
+        </p>
+
+        <div th:each="row : ${sheet.rows}" class="grade-row">
+          <div class="grade-row-info">
+            <p class="student-name" th:text="${row.fullName}">Étudiant</p>
+            <p class="student-number" th:text="${row.studentNumber}">N° Étudiant</p>
+          </div>
+
+          <form class="grade-input-group" th:action="@{/admin/grades/save}" method="post" style="margin: 0;">
+            <input type="hidden" name="examId" th:value="${examId}"/>
+            <input type="hidden" name="groupId" th:value="${groupId}"/>
+            <input type="hidden" name="courseId" th:value="${courseId}"/>
+            <input type="hidden" name="studentId" th:value="${row.studentId}"/>
+
+            <input type="number" name="value" class="grade-input" th:value="${row.currentValue}" 
+                   min="0" th:max="${exam.getMaxGrade()}" step="0.01" placeholder="Note" required/>
+
+            <input type="text" name="reason" placeholder="Motif (si modification)" 
+                   style="flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 0.875rem;"/>
+
+            <button type="submit" class="btn btn-sm btn-primary">
+              <i class="fa-solid fa-save"></i> Enregistrer
+            </button>
+
+            <th:block th:if="${row.gradeId != null}">
+              <a th:href="@{/admin/grades/grade-history.html(gradeId=${row.gradeId}, examId=${examId}, groupId=${groupId}, courseId=${courseId})}"
+                 class="btn btn-sm btn-outline">
+                <i class="fa-solid fa-history"></i> Historique
+              </a>
+            </th:block>
+          </form>
+        </div>
+
+        <div th:if="${#lists.isEmpty(sheet.rows)}" class="text-center" style="padding: 2rem;">
+          <p>Aucun étudiant dans ce groupe.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 <aside class="sidebar" th:fragment="sidebar(activeNav, role)">
-  <a class="sidebar-brand" href="#">
+  <a class="sidebar-brand" th:href="@{|/${#strings.toLowerCase(role)}/dashboard.html|}">
     <span class="brand-mark">HEI</span>
     <span class="brand-text">HEI Diploma</span>
   </a>
@@ -30,7 +30,7 @@
       </a>
     </li>
     <li>
-      <a th:href="@{/auth/login.html}">
+      <a th:href="@{/logout}">
         <i class="fa-solid fa-right-from-bracket"></i> Se déconnecter
       </a>
     </li>
@@ -54,7 +54,7 @@
       </a>
     </li>
     <li>
-      <a th:href="@{/auth/login.html}">
+      <a th:href="@{/logout}">
         <i class="fa-solid fa-right-from-bracket"></i> Se déconnecter
       </a>
     </li>
@@ -73,8 +73,23 @@
       </a>
     </li>
     <li>
+      <a th:href="@{/admin/grades/home.html}" th:classappend="${activeNav == 'notes'} ? ' active'">
+        <i class="fa-solid fa-pen-to-square"></i> Gestion notes
+      </a>
+    </li>
+    <li>
       <a th:href="@{/admin/students/list.html}" th:classappend="${activeNav == 'etudiants'} ? ' active'">
         <i class="fa-solid fa-users"></i> Étudiants
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/admin/groups/list.html}" th:classappend="${activeNav == 'groupes'} ? ' active'">
+        <i class="fa-solid fa-sitemap"></i> Groupes
+      </a>
+    </li>
+    <li>
+      <a th:href="@{/admin/teachers/list.html}" th:classappend="${activeNav == 'enseignants'} ? ' active'">
+        <i class="fa-solid fa-chalkboard-user"></i> Enseignants
       </a>
     </li>
     <li>
@@ -88,7 +103,7 @@
       </a>
     </li>
     <li>
-      <a th:href="@{/auth/login.html}">
+      <a th:href="@{/logout}">
         <i class="fa-solid fa-right-from-bracket"></i> Se déconnecter
       </a>
     </li>
