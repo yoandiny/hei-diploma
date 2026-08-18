@@ -35,6 +35,7 @@ public class AdminTeacherViewController {
     model.addAttribute("activeNav", "enseignants");
     if (id == null || id.isBlank()) {
       model.addAttribute("pageHeading", "Nouvel enseignant");
+      model.addAttribute("teacher", null);
       return "admin/teachers/form";
     }
     try {

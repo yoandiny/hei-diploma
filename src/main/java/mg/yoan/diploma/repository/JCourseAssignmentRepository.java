@@ -34,6 +34,17 @@ public interface JCourseAssignmentRepository extends JpaRepository<JCourseAssign
       left join fetch g.promotion
       join fetch a.teacher t
       join fetch t.user
+      """)
+  List<JCourseAssignment> findAllDetailed();
+
+  @Query(
+      """
+      select distinct a from JCourseAssignment a
+      join fetch a.course
+      join fetch a.group g
+      left join fetch g.promotion
+      join fetch a.teacher t
+      join fetch t.user
       where a.course.id = :courseId
       order by t.employeeNumber, g.ref
       """)
