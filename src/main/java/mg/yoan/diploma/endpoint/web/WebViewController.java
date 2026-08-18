@@ -46,9 +46,8 @@ public class WebViewController {
 
   @GetMapping("/student/transcripts.html")
   @PreAuthorize("hasRole('STUDENT')")
-  public String studentTranscripts(@AuthenticationPrincipal AuthenticatedUser user, Model model) {
-    addTranscript(model, user);
-    return page(model, "student/transcripts", "Mes relevés", "releves");
+  public String studentTranscripts() {
+    return "redirect:/student/grades.html";
   }
 
   private String page(Model model, String view, String heading, String nav) {
