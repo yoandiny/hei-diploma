@@ -16,10 +16,22 @@
   <div class="main-wrap">
     <header th:replace="~{fragments/topbar :: topbar('Étudiants', 'ADMIN')}"></header>
     <main class="content">
+      <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}">Enregistré.</div>
+      <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur.</div>
+
+      <div class="btn-group" style="margin-bottom:1rem;">
+        <a class="btn btn-primary" th:href="@{/admin/students/form.html}">
+          <i class="fa-solid fa-plus"></i> Nouvel étudiant
+        </a>
+      </div>
 
       <div class="card">
-        <h2 class="section-title">Liste des étudiants</h2>
-        <div class="table-wrap">
+        <h2 class="section-title">
+          Étudiants
+          <span th:text="|(${#lists.size(students)})|">(0)</span>
+        </h2>
+        <div class="empty" th:if="${students.empty}">Aucun étudiant pour le moment.</div>
+        <div class="table-wrap" th:unless="${students.empty}">
           <table class="data">
             <thead>
             <tr>
@@ -38,7 +50,6 @@
               <td th:text="${student.promotion != null ? student.promotion.label : '—'}">—</td>
               <td class="btn-group"><a class="btn btn-sm btn-outline" th:href="@{/admin/students/profile.html(id=${student.id})}">Profil</a><a class="btn btn-sm btn-primary" th:href="@{/admin/students/edit-group.html(id=${student.id})}">Changer de groupe</a></td>
             </tr>
-            <tr th:if="${#lists.isEmpty(students)}"><td colspan="5">Aucun étudiant pour le moment.</td></tr>
             </tbody>
           </table>
         </div>
