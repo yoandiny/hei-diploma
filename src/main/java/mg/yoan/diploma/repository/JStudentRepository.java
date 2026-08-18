@@ -16,6 +16,8 @@ public interface JStudentRepository extends JpaRepository<JStudent, String> {
 
   boolean existsByStudentNumber(String studentNumber);
 
+  boolean existsByStudentNumberAndIdNot(String studentNumber, String id);
+
   long countByDeletedAtIsNull();
 
   List<JStudent> findByPromotionId(String promotionId);

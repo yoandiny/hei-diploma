@@ -48,6 +48,40 @@ public class AdminTeacherViewController {
     }
   }
 
+  @GetMapping("/admin/teachers/profile.html")
+  public String profile(
+      @RequestParam("id") String id, Model model, RedirectAttributes redirectAttributes) {
+    model.addAttribute("activeNav", "enseignants");
+    try {
+      var teacher = teacherService.getById(id);
+      model.addAttribute("pageHeading", teacher.getUser().getFullName());
+      model.addAttribute("teacher", teacher);
+      return "admin/teachers/profile";
+    } catch (DomainException exception) {
+      redirectAttributes.addAttribute("error", exception.getMessage());
+      return "redirect:/admin/teachers/list.html";
+    }
+  }
+
+  @PostMapping("/admin/teachers/{id}/profile")
+  public String updateProfile(
+      @PathVariable String id,
+      @RequestParam("firstName") String firstName,
+      @RequestParam("lastName") String lastName,
+      @RequestParam("email") String email,
+      @RequestParam("employeeNumber") String employeeNumber,
+      @RequestParam(value = "password", required = false) String password,
+      @RequestParam(value = "enabled", defaultValue = "false") boolean enabled,
+      RedirectAttributes redirectAttributes) {
+    try {
+      teacherService.update(id, firstName, lastName, email, employeeNumber, password, enabled);
+      redirectAttributes.addAttribute("success", "Profil mis à jour.");
+    } catch (DomainException exception) {
+      redirectAttributes.addAttribute("error", exception.getMessage());
+    }
+    return "redirect:/admin/teachers/profile.html?id=" + id;
+  }
+
   @PostMapping("/admin/teachers/save")
   public String save(
       @RequestParam(value = "id", required = false) String id,

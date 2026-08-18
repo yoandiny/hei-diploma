@@ -55,6 +55,24 @@ public class AdminStudentViewController {
     }
   }
 
+  @PostMapping("/admin/students/{id}/profile")
+  public String updateProfile(
+      @PathVariable String id,
+      @RequestParam("firstName") String firstName,
+      @RequestParam("lastName") String lastName,
+      @RequestParam("email") String email,
+      @RequestParam("studentNumber") String studentNumber,
+      @RequestParam(value = "password", required = false) String password,
+      RedirectAttributes redirectAttributes) {
+    try {
+      studentService.update(id, firstName, lastName, email, studentNumber, password);
+      redirectAttributes.addAttribute("success", "Profil mis à jour.");
+    } catch (DomainException exception) {
+      redirectAttributes.addAttribute("error", exception.getMessage());
+    }
+    return "redirect:/admin/students/profile.html?id=" + id;
+  }
+
   @PostMapping("/admin/students/save")
   public String save(
       @RequestParam("firstName") String firstName,

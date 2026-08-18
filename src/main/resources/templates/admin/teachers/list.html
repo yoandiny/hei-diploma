@@ -52,7 +52,7 @@
                 <span th:if="${teacher.user == null || !teacher.user.enabled}">Désactivé</span>
               </td>
               <td class="btn-group">
-                <a class="btn btn-sm btn-outline" th:href="@{/admin/teachers/form.html(id=${teacher.id})}">Éditer</a>
+                <a class="btn btn-sm btn-outline" th:href="@{/admin/teachers/profile.html(id=${teacher.id})}">Profil</a>
                 <form th:action="@{/admin/teachers/{id}/delete(id=${teacher.id})}" method="post" style="display:inline;"
                       onsubmit="return confirm('Supprimer cet enseignant ?');">
                   <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
