@@ -39,8 +39,8 @@
             <tr th:each="row : ${courseRows}">
               <td th:text="${row.course.ref}">CODE</td>
               <td th:text="${row.course.title}">Cours</td>
-              <td><span class="chip" th:each="assignment : ${row.assignments}" th:text="${assignment.teacher.user.fullName}">Enseignant</span><span th:if="${#lists.isEmpty(row.assignments)}">—</span></td>
-              <td><span class="chip" th:each="assignment : ${row.assignments}" th:text="${assignment.group.ref}">Groupe</span><span th:if="${#lists.isEmpty(row.assignments)}">—</span></td>
+              <td><span class="chip" th:each="teacher : ${row.teachers}" th:text="${teacher.user.fullName}">Enseignant</span><span th:if="${#lists.isEmpty(row.teachers)}">—</span></td>
+              <td><span class="chip" th:each="group : ${row.groups}" th:text="${group.ref}">Groupe</span><span th:if="${#lists.isEmpty(row.groups)}">—</span></td>
               <td class="btn-group">
                 <a class="btn btn-sm btn-outline" th:href="@{/admin/courses/form.html(id=${row.course.id})}">Éditer</a>
                 <a class="btn btn-sm btn-primary" th:href="@{/admin/courses/assign-groups.html(courseId=${row.course.id})}">Affectations</a>
