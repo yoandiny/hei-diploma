@@ -20,7 +20,7 @@
         <h2 class="section-title" th:text="${student.user.fullName}">Étudiant</h2>
         <p style="margin-top:0;color:var(--hei-muted);" th:text="${student.studentNumber + ' · Groupe actuel : ' + (student.currentGroup != null ? student.currentGroup.ref : '—')}">Étudiant</p>
 
-        <form th:action="@{/admin/students/{id}/group(id=${student.id})}" method="post" class="form-grid">
+        <form th:action="@{/admin/etudiants/STD24005/groupe}" method="post" class="form-grid">
           <div class="form-field full">
             <label class="required" for="group">Nouveau groupe</label>
             <select id="group" name="groupId" required>

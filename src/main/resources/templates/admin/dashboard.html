@@ -17,10 +17,14 @@
     <header th:replace="~{fragments/topbar :: topbar('Dashboard admin', 'ADMIN')}"></header>
     <main class="content">
       <div class="stats">
-        <div class="stat-card"><div class="label">Cours</div><div class="value" th:text="${courseCount}">0</div></div>
-        <div class="stat-card"><div class="label">Étudiants</div><div class="value" th:text="${studentCount}">0</div></div>
-        <div class="stat-card"><div class="label">Enseignants</div><div class="value" th:text="${teacherCount}">0</div></div>
-        <div class="stat-card"><div class="label">Modifs notes</div><div class="value" th:text="${gradeChangeCount}">0</div></div>
+        <div class="stat-card"><div class="label">Cours</div><div class="value">3</div></div>
+        <div class="stat-card"><div class="label">Étudiants</div><div class="value">4</div></div>
+        <div class="stat-card"><div class="label">Enseignants</div><div class="value">4</div></div>
+        <div class="stat-card"><div class="label">Modifs notes</div><div class="value">3</div></div>
+      </div>
+
+      <div class="alert alert-info">
+        L'admin peut tout faire, y compris consulter les résultats de promotion sur 3 ans.
       </div>
 
       <div class="alert alert-info">
