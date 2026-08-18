@@ -16,12 +16,22 @@
   <div class="main-wrap">
     <header th:replace="~{fragments/topbar :: topbar('Mes notes', 'STUDENT')}"></header>
     <main class="content">
-      <div class="alert alert-info">
-        Consultation en lecture seule : un étudiant ne peut voir que ses propres notes.
+      <div class="alert alert-success" role="alert" th:if="${param.mailed}">
+        Le relevé sera envoyé par email.
+      </div>
+      <div class="alert alert-warning" role="alert" th:if="${param.mailError}">
+        Impossible d'envoyer le relevé pour le moment.
       </div>
 
       <div class="card">
-        <h2 class="section-title">Mes notes</h2>
+        <div class="btn-group" style="justify-content:space-between;align-items:center;width:100%;margin-bottom:1rem;flex-wrap:wrap;">
+          <h2 class="section-title" style="margin:0;">Mes notes</h2>
+          <form th:action="@{/students/me/transcript/email}" method="post">
+            <button type="submit" class="btn btn-primary" th:disabled="${transcript == null}">
+              <i class="fa-regular fa-envelope"></i> Recevoir mon relevé par email
+            </button>
+          </form>
+        </div>
         <div class="empty" th:if="${transcript == null || #lists.isEmpty(transcript.grades)}">Aucune note pour le moment.</div>
         <div class="table-wrap" th:unless="${transcript == null || #lists.isEmpty(transcript.grades)}">
           <table class="data">
@@ -29,7 +39,6 @@
             <tr>
               <th>Code</th>
               <th>Cours</th>
-              <th>Épreuve</th>
               <th>Note</th>
               <th>Coeff.</th>
               <th>Date</th>
@@ -39,7 +48,6 @@
             <tr th:each="grade : ${transcript.grades}">
               <td th:text="${grade.courseRef}">PROG4</td>
               <td th:text="${grade.courseTitle}">Programmation avancée</td>
-              <td>—</td>
               <td><strong th:text="${grade.value}">0</strong></td>
               <td th:text="${grade.coefficient}">0</td>
               <td th:text="${grade.examDate}">—</td>

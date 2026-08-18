@@ -29,14 +29,6 @@
           <div class="label">Groupe</div>
           <div class="value" th:text="${transcript != null && transcript.groupRef != null ? transcript.groupRef : '—'}">—</div>
         </div>
-        <div class="stat-card">
-          <div class="label">Relevés</div>
-          <div class="value" th:text="${transcript != null ? 1 : 0}">0</div>
-        </div>
-      </div>
-
-      <div class="alert alert-info">
-        En tant qu'étudiant, vous ne voyez que <strong>vos</strong> notes et <strong>vos</strong> relevés.
       </div>
 
       <div class="card">
@@ -47,7 +39,6 @@
             <thead>
             <tr>
               <th>Cours</th>
-              <th>Épreuve</th>
               <th>Note</th>
               <th>Date</th>
             </tr>
@@ -55,7 +46,6 @@
             <tbody>
             <tr th:each="grade : ${transcript.grades}">
               <td th:text="${grade.courseRef + ' — ' + grade.courseTitle}">PROG4 — Programmation avancée</td>
-              <td>—</td>
               <td><strong th:text="${grade.value}">0</strong></td>
               <td th:text="${grade.examDate}">—</td>
             </tr>
