@@ -19,11 +19,6 @@ import mg.yoan.diploma.service.TeacherGradeService.ExamOption;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * Covers the subject rule "on doit toujours dire pourquoi on modifie la note, et on doit avoir un
- * historique" as enforced on the admin's own code path (AdminGradeService), which is entirely
- * separate from the teacher's (TeacherGradeService) and was not covered by any existing test.
- */
 class AdminGradeIT extends DiplomaIT {
 
   @Autowired private AdminGradeService adminGradeService;
@@ -106,7 +101,6 @@ class AdminGradeIT extends DiplomaIT {
   void admin_cannot_grade_beyond_the_exam_max_grade() {
     var fixture = workspace();
 
-    // coefficient is 1 in workspace(), so max grade is 20.
     assertThrows(
         DomainException.class,
         () ->

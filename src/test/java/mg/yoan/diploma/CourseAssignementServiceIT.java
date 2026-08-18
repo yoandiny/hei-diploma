@@ -50,9 +50,6 @@ class CourseAssignmentServiceIT extends DiplomaIT {
     Teacher teacher = newTeacher();
     assign(course, teacher, group);
 
-    // The implementation skips already-assigned groups and only throws if
-    // the resulting created count is 0 - so a batch made entirely of
-    // already-assigned groups is rejected, not silently ignored.
     assertThrows(
         DomainException.class,
         () ->
