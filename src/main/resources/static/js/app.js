@@ -22,4 +22,23 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
+  document.querySelectorAll("form[data-sending]").forEach((form) => {
+    form.addEventListener("submit", () => {
+      const button = form.querySelector("button[type='submit']");
+      if (!button || button.disabled || button.classList.contains("is-sending")) {
+        return;
+      }
+      button.classList.add("is-sending");
+      button.setAttribute("aria-busy", "true");
+      const icon = button.querySelector("i");
+      if (icon) {
+        icon.className = "fa-solid fa-spinner fa-spin";
+      }
+      const label = button.querySelector(".btn-label");
+      if (label) {
+        label.textContent = button.getAttribute("data-sending-label") || "Envoi en cours…";
+      }
+    });
+  });
 });

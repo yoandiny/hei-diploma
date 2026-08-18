@@ -39,6 +39,7 @@ public class AdminGroupViewController {
     model.addAttribute("promotions", promotionService.listAll());
     if (id == null || id.isBlank()) {
       model.addAttribute("pageHeading", "Nouveau groupe");
+      model.addAttribute("group", null);
       return "admin/groups/form";
     }
     try {
@@ -46,7 +47,7 @@ public class AdminGroupViewController {
       model.addAttribute("group", groupService.getById(id));
       return "admin/groups/form";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/admin/groups/list.html";
     }
   }
@@ -59,10 +60,10 @@ public class AdminGroupViewController {
       RedirectAttributes redirectAttributes) {
     try {
       groupService.save(id, ref, promotionId);
-      redirectAttributes.addFlashAttribute("success", "Groupe enregistré.");
+      redirectAttributes.addAttribute("success", "Groupe enregistré.");
       return "redirect:/admin/groups/list.html";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       if (id == null || id.isBlank()) {
         return "redirect:/admin/groups/form.html";
       }
@@ -74,9 +75,9 @@ public class AdminGroupViewController {
   public String delete(@PathVariable String id, RedirectAttributes redirectAttributes) {
     try {
       groupService.delete(id);
-      redirectAttributes.addFlashAttribute("success", "Groupe supprimé.");
+      redirectAttributes.addAttribute("success", "Groupe supprimé.");
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
     }
     return "redirect:/admin/groups/list.html";
   }
@@ -96,7 +97,7 @@ public class AdminGroupViewController {
       model.addAttribute("promotion", promotionService.getById(id));
       return "admin/promotions/form";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/admin/groups/list.html";
     }
   }
@@ -110,10 +111,10 @@ public class AdminGroupViewController {
       RedirectAttributes redirectAttributes) {
     try {
       promotionService.save(id, label, startYear, endYear);
-      redirectAttributes.addFlashAttribute("success", "Promotion enregistrée.");
+      redirectAttributes.addAttribute("success", "Promotion enregistrée.");
       return "redirect:/admin/groups/list.html";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       if (id == null || id.isBlank()) {
         return "redirect:/admin/promotions/form.html";
       }
@@ -125,9 +126,9 @@ public class AdminGroupViewController {
   public String deletePromotion(@PathVariable String id, RedirectAttributes redirectAttributes) {
     try {
       promotionService.delete(id);
-      redirectAttributes.addFlashAttribute("success", "Promotion supprimée.");
+      redirectAttributes.addAttribute("success", "Promotion supprimée.");
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
     }
     return "redirect:/admin/groups/list.html";
   }

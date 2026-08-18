@@ -41,7 +41,7 @@ public class AdminGradeViewController {
       model.addAttribute("exams", adminGradeService.listExamsByCourse(courseId));
       return "admin/grades/select-exam";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/admin/grades/home.html";
     }
   }
@@ -60,7 +60,7 @@ public class AdminGradeViewController {
       model.addAttribute("groups", adminGradeService.listGroupsByExam(examId));
       return "admin/grades/select-group";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/admin/grades/select-exam.html?courseId=" + courseId;
     }
   }
@@ -83,7 +83,7 @@ public class AdminGradeViewController {
       model.addAttribute("courseId", courseId);
       return "admin/grades/edit";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/admin/grades/select-group.html?examId=" + examId + "&courseId=" + courseId;
     }
   }
@@ -100,9 +100,9 @@ public class AdminGradeViewController {
       RedirectAttributes redirectAttributes) {
     try {
       adminGradeService.saveGrade(user.getUserId(), examId, studentId, value, reason);
-      redirectAttributes.addFlashAttribute("success", "Note enregistrée.");
+      redirectAttributes.addAttribute("success", "Note enregistrée.");
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
     }
     return "redirect:/admin/grades/edit.html?examId="
         + examId
@@ -130,7 +130,7 @@ public class AdminGradeViewController {
       model.addAttribute("courseId", courseId);
       return "admin/grades/grade-history";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/admin/grades/edit.html?examId="
           + examId
           + "&groupId="

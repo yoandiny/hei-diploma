@@ -71,7 +71,7 @@ public class TeacherExamViewController {
       model.addAttribute("assignedGroups", course.groups());
       return "teacher/exams-new";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/teacher/exams-new.html";
     }
   }
@@ -89,7 +89,7 @@ public class TeacherExamViewController {
       model.addAttribute("pageHeading", "Examen — " + exam.courseRef());
       return "teacher/exams-detail";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/teacher/exams.html";
     }
   }
@@ -106,10 +106,10 @@ public class TeacherExamViewController {
       ExamOption exam =
           teacherGradeService.createExam(
               user.getUserId(), courseId, parseDateTime(dateExam), coefficient, groupIds);
-      redirectAttributes.addFlashAttribute("success", "Examen créé.");
+      redirectAttributes.addAttribute("success", "Examen créé.");
       return "redirect:/teacher/exams-detail.html?examId=" + exam.examId();
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/teacher/exams-new.html?courseId=" + courseId;
     }
   }
@@ -121,9 +121,9 @@ public class TeacherExamViewController {
       RedirectAttributes redirectAttributes) {
     try {
       teacherGradeService.submitExam(user.getUserId(), examId);
-      redirectAttributes.addFlashAttribute("success", "Examen soumis.");
+      redirectAttributes.addAttribute("success", "Examen soumis.");
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
     }
     return "redirect:/teacher/exams-detail.html?examId=" + examId;
   }

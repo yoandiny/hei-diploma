@@ -43,7 +43,7 @@ public class AdminTeacherViewController {
       model.addAttribute("teacher", teacherService.getById(id));
       return "admin/teachers/form";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       return "redirect:/admin/teachers/list.html";
     }
   }
@@ -64,10 +64,10 @@ public class AdminTeacherViewController {
       } else {
         teacherService.update(id, firstName, lastName, email, employeeNumber, password, enabled);
       }
-      redirectAttributes.addFlashAttribute("success", "Enseignant enregistré.");
+      redirectAttributes.addAttribute("success", "Enseignant enregistré.");
       return "redirect:/admin/teachers/list.html";
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
       if (id == null || id.isBlank()) {
         return "redirect:/admin/teachers/form.html";
       }
@@ -79,9 +79,9 @@ public class AdminTeacherViewController {
   public String delete(@PathVariable String id, RedirectAttributes redirectAttributes) {
     try {
       teacherService.delete(id);
-      redirectAttributes.addFlashAttribute("success", "Enseignant supprimé.");
+      redirectAttributes.addAttribute("success", "Enseignant supprimé.");
     } catch (DomainException exception) {
-      redirectAttributes.addFlashAttribute("error", exception.getMessage());
+      redirectAttributes.addAttribute("error", exception.getMessage());
     }
     return "redirect:/admin/teachers/list.html";
   }

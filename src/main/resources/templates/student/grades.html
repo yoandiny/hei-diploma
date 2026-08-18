@@ -26,9 +26,11 @@
       <div class="card">
         <div class="btn-group" style="justify-content:space-between;align-items:center;width:100%;margin-bottom:1rem;flex-wrap:wrap;">
           <h2 class="section-title" style="margin:0;">Mes notes</h2>
-          <form th:action="@{/students/me/transcript/email}" method="post">
-            <button type="submit" class="btn btn-primary" th:disabled="${transcript == null}">
-              <i class="fa-regular fa-envelope"></i> Recevoir mon relevé par email
+          <form th:action="@{/students/me/transcript/email}" method="post" data-sending>
+            <button type="submit" class="btn btn-primary" data-sending-label="Envoi en cours…"
+                    th:disabled="${transcript == null}">
+              <i class="fa-regular fa-envelope" aria-hidden="true"></i>
+              <span class="btn-label">Recevoir mon relevé par email</span>
             </button>
           </form>
         </div>

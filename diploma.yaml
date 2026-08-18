@@ -1,18 +1,22 @@
 openapi: 3.0.3
 info:
-  title: HEI Diplômés - Auth API
+  title: HEI Graduates - API and web interface
   description: >
-    Authentication & authorization endpoints for the HEI graduates management API.
-    Issues short-lived JWT access tokens and long-lived opaque refresh tokens.
-    Role is embedded in the access token so downstream endpoints can authorize
-    STUDENT / TEACHER / ADMIN access without an extra DB round-trip.
+    REST API and web routes for the student, grades and graduates management application.
+    REST endpoints use JWT authentication. HTML routes are handled by Thymeleaf
+    controllers and protected by role.
   version: "1.0.0"
 
 servers:
-  - url: /api
+  - url: /
 
 tags:
   - name: Auth
+  - name: Student
+  - name: Teacher
+  - name: Admin
+  - name: Health
+  - name: Web
 
 paths:
   /auth/login:
@@ -41,90 +45,1218 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /auth/refresh:
+  /admin/students:
+    get:
+      tags: [Admin]
+      summary: List all students
+      operationId: listStudents
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Student list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentSummary'
+        '401':
+          description: Missing or invalid token
+        '403':
+          description: Caller is not ADMIN
+
+  /admin/students/verify-emails:
     post:
-      tags: [Auth]
-      summary: Exchange a valid refresh token for a new access token
-      operationId: refresh
+      tags: [Admin]
+      summary: Request email verification for all students
+      operationId: verifyAllStudentEmails
+      security:
+        - bearerAuth: []
+      responses:
+        '202':
+          description: Verification events accepted
+        '401':
+          description: Missing or invalid token
+        '403':
+          description: Caller is not ADMIN
+
+  /admin/promotions/{promotionId}/graduates:
+    get:
+      tags: [Admin]
+      summary: List graduates of a promotion
+      operationId: listGraduates
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PromotionId'
+      responses:
+        '200':
+          description: Graduated students
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GraduatedStudent'
+        '401':
+          description: Missing or invalid token
+        '403':
+          description: Caller is not ADMIN
+        '404':
+          description: Promotion not found
+
+  /students/me/transcript:
+    get:
+      tags: [Student]
+      summary: Return the authenticated student's transcript
+      operationId: getOwnTranscript
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Student transcript
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transcript'
+        '401':
+          description: Missing or invalid token
+        '403':
+          description: Caller is not STUDENT
+        '404':
+          description: Transcript not found
+
+  /students/me/transcript/email:
+    post:
+      tags: [Student]
+      summary: Request the authenticated student's transcript by email
+      operationId: emailOwnTranscript
+      security:
+        - bearerAuth: []
+      responses:
+        '202':
+          description: Email request accepted
+        '303':
+          description: HTML clients are redirected to the grades page
+          headers:
+            Location:
+              schema:
+                type: string
+        '401':
+          description: Missing or invalid token
+        '403':
+          description: Caller is not STUDENT
+        '404':
+          description: Transcript not found
+
+  /ping:
+    get:
+      tags: [Health]
+      summary: Check application availability
+      operationId: ping
+      security: []
+      responses:
+        '200':
+          description: Application is available
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: pong
+
+  /health/db:
+    get:
+      tags: [Health]
+      summary: Check database connectivity and seed data
+      operationId: healthDb
+      security: []
+      responses:
+        '200':
+          description: Database check succeeded
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: OK
+        '500':
+          description: Database check failed
+
+  /health/email:
+    get:
+      tags: [Health]
+      summary: Exercise email delivery features
+      operationId: healthEmail
+      security: []
+      parameters:
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        '200':
+          description: Email checks succeeded
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: OK
+        '400':
+          description: Invalid email address
+
+  /health/bucket:
+    get:
+      tags: [Health]
+      summary: Exercise file upload, download and presigning
+      operationId: healthBucket
+      security: []
+      responses:
+        '200':
+          description: Bucket checks succeeded; body contains a presigned URL
+          content:
+            text/plain:
+              schema:
+                type: string
+                format: uri
+        '500':
+          description: Bucket check failed
+
+  /health/event1:
+    get:
+      tags: [Health]
+      summary: Publish first durable event type
+      operationId: healthEvent1
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/NbEvent'
+        - $ref: '#/components/parameters/WaitInSeconds'
+      responses:
+        '200':
+          description: Generated event UUIDs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+        '400':
+          description: nbEvent must be between 1 and 500
+
+  /health/event2:
+    get:
+      tags: [Health]
+      summary: Publish second durable event type
+      operationId: healthEvent2
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/NbEvent'
+        - $ref: '#/components/parameters/WaitInSeconds'
+      responses:
+        '200':
+          description: Generated event UUIDs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+        '400':
+          description: nbEvent must be between 1 and 500
+
+  /health/event/uuids:
+    post:
+      tags: [Health]
+      summary: Check that event UUIDs were persisted
+      operationId: checkEventUuids
       security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RefreshRequest'
+              type: array
+              items:
+                type: string
+                format: uuid
       responses:
         '200':
-          description: New token pair issued
+          description: All UUIDs were persisted
           content:
-            application/json:
+            text/plain:
               schema:
-                $ref: '#/components/schemas/TokenResponse'
-        '401':
-          description: Refresh token invalid, expired or revoked
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                type: string
+                example: OK
+        '500':
+          description: At least one UUID was not persisted
 
-  /auth/logout:
-    post:
-      tags: [Auth]
-      summary: Revoke the given refresh token (client should also drop the access token)
-      operationId: logout
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RefreshRequest'
-      responses:
-        '204':
-          description: Token revoked
-
-  /auth/me:
+  /:
     get:
-      tags: [Auth]
-      summary: Return the currently authenticated user, including role
-      operationId: getCurrentUser
+      tags: [Web]
+      summary: Display the login page or redirect the authenticated user
+      operationId: webHome
+      security: []
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '302':
+          $ref: '#/components/responses/Redirect'
+
+  /login:
+    get:
+      tags: [Web]
+      summary: Display the login page or redirect the authenticated user
+      operationId: webLogin
+      security: []
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '302':
+          $ref: '#/components/responses/Redirect'
+
+  /forbidden:
+    get:
+      tags: [Web]
+      summary: Display the forbidden access page
+      operationId: webForbidden
+      security: []
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+
+  /student/dashboard.html:
+    get:
+      tags: [Student]
+      summary: Display the student dashboard
+      operationId: studentDashboard
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Current user
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
+          $ref: '#/components/responses/HtmlPage'
         '401':
-          description: Missing or invalid token
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
-  /auth/register:
+  /student/profile.html:
+    get:
+      tags: [Student]
+      summary: Display the student profile
+      operationId: studentProfile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /student/grades.html:
+    get:
+      tags: [Student]
+      summary: Display the student's submitted grades
+      operationId: studentGrades
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /student/transcripts.html:
+    get:
+      tags: [Student]
+      summary: Redirect to the student's grades page
+      operationId: studentTranscripts
+      security:
+        - bearerAuth: []
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /teacher/dashboard.html:
+    get:
+      tags: [Teacher]
+      summary: Display the teacher dashboard
+      operationId: teacherDashboard
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /teacher/courses.html:
+    get:
+      tags: [Teacher]
+      summary: List courses assigned to the teacher
+      operationId: teacherCourses
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /teacher/exams.html:
+    get:
+      tags: [Teacher]
+      summary: List the teacher's exams
+      operationId: teacherExams
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CourseIdQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /teacher/exams-new.html:
+    get:
+      tags: [Teacher]
+      summary: Display the new exam form
+      operationId: newTeacherExamForm
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CourseIdQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /teacher/exams-detail.html:
+    get:
+      tags: [Teacher]
+      summary: Display an exam detail
+      operationId: teacherExamDetail
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ExamIdQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /teacher/exams:
     post:
-      tags: [Auth]
-      summary: Create a new account (ADMIN only - students/teachers are provisioned by an admin)
-      operationId: registerUser
+      tags: [Teacher]
+      summary: Create an exam
+      operationId: createTeacherExam
       security:
         - bearerAuth: []
       requestBody:
         required: true
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/RegisterRequest'
+              $ref: '#/components/schemas/TeacherExamForm'
       responses:
-        '201':
-          description: User created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '403':
-          description: Caller is not ADMIN
-        '409':
-          description: Email already in use
+          $ref: '#/components/responses/Forbidden'
+
+  /teacher/exams/submit:
+    post:
+      tags: [Teacher]
+      summary: Submit and lock an exam
+      operationId: submitTeacherExam
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExamSubmitForm'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /teacher/grades-home.html:
+    get:
+      tags: [Teacher]
+      summary: Display teacher grade entry home
+      operationId: teacherGradesHome
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CourseIdQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /teacher/grades-edit.html:
+    get:
+      tags: [Teacher]
+      summary: Display a teacher grade sheet
+      operationId: teacherGradesEdit
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ExamIdQuery'
+        - $ref: '#/components/parameters/GroupIdQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /teacher/grades:
+    post:
+      tags: [Teacher]
+      summary: Create or update a teacher grade
+      operationId: saveTeacherGrade
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GradeForm'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /teacher/grade-history.html:
+    get:
+      tags: [Teacher]
+      summary: Display the history of a grade
+      operationId: teacherGradeHistory
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/GradeIdQuery'
+        - $ref: '#/components/parameters/ExamIdQuery'
+        - $ref: '#/components/parameters/GroupIdQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/dashboard.html:
+    get:
+      tags: [Admin]
+      summary: Display the administrator dashboard
+      operationId: adminDashboard
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/grades/history.html:
+    get:
+      tags: [Admin]
+      summary: Display the global grade change history
+      operationId: adminGradeHistory
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/students/list.html:
+    get:
+      tags: [Admin]
+      summary: Display the student list
+      operationId: adminStudentsList
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/students/form.html:
+    get:
+      tags: [Admin]
+      summary: Display the new student form
+      operationId: adminStudentForm
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/students/profile.html:
+    get:
+      tags: [Admin]
+      summary: Display a student profile
+      operationId: adminStudentProfile
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/students/save:
+    post:
+      tags: [Admin]
+      summary: Create a student
+      operationId: adminStudentSave
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudentForm'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/students/edit-group.html:
+    get:
+      tags: [Admin]
+      summary: Display the student group change form
+      operationId: adminStudentGroupForm
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/students/{id}/suspend:
+    post:
+      tags: [Admin]
+      summary: Suspend a student account
+      operationId: suspendStudent
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+        - $ref: '#/components/parameters/RedirectQuery'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/students/{id}/unsuspend:
+    post:
+      tags: [Admin]
+      summary: Reactivate a student account
+      operationId: unsuspendStudent
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+        - $ref: '#/components/parameters/RedirectQuery'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/students/{id}/group:
+    post:
+      tags: [Admin]
+      summary: Change a student's group
+      operationId: changeStudentGroup
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GroupChangeForm'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/students/{id}/delete:
+    post:
+      tags: [Admin]
+      summary: Soft-delete a student
+      operationId: deleteStudent
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/teachers/list.html:
+    get:
+      tags: [Admin]
+      summary: Display the teacher list
+      operationId: adminTeachersList
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/teachers/form.html:
+    get:
+      tags: [Admin]
+      summary: Display the teacher form
+      operationId: adminTeacherForm
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OptionalIdQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/teachers/save:
+    post:
+      tags: [Admin]
+      summary: Create or update a teacher
+      operationId: adminTeacherSave
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TeacherForm'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/teachers/{id}/delete:
+    post:
+      tags: [Admin]
+      summary: Delete a teacher
+      operationId: deleteTeacher
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/groups/list.html:
+    get:
+      tags: [Admin]
+      summary: Display groups and promotions
+      operationId: adminGroupsList
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/groups/form.html:
+    get:
+      tags: [Admin]
+      summary: Display the group form
+      operationId: adminGroupForm
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OptionalIdQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/groups/save:
+    post:
+      tags: [Admin]
+      summary: Create or update a group
+      operationId: adminGroupSave
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GroupForm'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/groups/{id}/delete:
+    post:
+      tags: [Admin]
+      summary: Delete a group
+      operationId: deleteGroup
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/promotions/form.html:
+    get:
+      tags: [Admin]
+      summary: Display the promotion form
+      operationId: adminPromotionForm
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OptionalIdQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/promotions/save:
+    post:
+      tags: [Admin]
+      summary: Create or update a promotion
+      operationId: adminPromotionSave
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PromotionForm'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/promotions/{id}/delete:
+    post:
+      tags: [Admin]
+      summary: Delete a promotion
+      operationId: deletePromotion
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/courses/list.html:
+    get:
+      tags: [Admin]
+      summary: Display the course list and assignments
+      operationId: adminCoursesList
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/courses/form.html:
+    get:
+      tags: [Admin]
+      summary: Display the course form
+      operationId: adminCourseForm
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OptionalIdQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/courses/save:
+    post:
+      tags: [Admin]
+      summary: Create or update a course
+      operationId: adminCourseSave
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CourseForm'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/courses/{id}/delete:
+    post:
+      tags: [Admin]
+      summary: Delete a course
+      operationId: deleteCourse
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/courses/assign-groups.html:
+    get:
+      tags: [Admin]
+      summary: Display course assignments
+      operationId: adminCourseAssignments
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CourseIdRequiredQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/courses/{courseId}/assignments:
+    get:
+      tags: [Admin]
+      summary: Redirect to course assignments
+      operationId: adminCourseAssignmentsRedirect
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CourseIdPath'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Admin]
+      summary: Assign a teacher and groups to a course
+      operationId: assignCourse
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CourseIdPath'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CourseAssignmentForm'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/courses/assignments/{id}/delete:
+    post:
+      tags: [Admin]
+      summary: Remove a course assignment
+      operationId: deleteCourseAssignment
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+        - name: courseId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/grades/home.html:
+    get:
+      tags: [Admin]
+      summary: Display course selection for grade management
+      operationId: adminGradesHome
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/grades.html:
+    get:
+      tags: [Admin]
+      summary: Display course selection for grade management
+      operationId: adminGradesHomeAlias
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/grades/select-exam.html:
+    get:
+      tags: [Admin]
+      summary: Select an exam for grade management
+      operationId: adminSelectExam
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CourseIdRequiredQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/grades/select-group.html:
+    get:
+      tags: [Admin]
+      summary: Select an exam group for grade management
+      operationId: adminSelectGroup
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ExamIdQuery'
+        - $ref: '#/components/parameters/CourseIdRequiredQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/grades/edit.html:
+    get:
+      tags: [Admin]
+      summary: Display the administrator grade sheet
+      operationId: adminGradesEdit
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ExamIdQuery'
+        - $ref: '#/components/parameters/GroupIdRequiredQuery'
+        - $ref: '#/components/parameters/CourseIdRequiredQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/grades/save:
+    post:
+      tags: [Admin]
+      summary: Create or update an administrator grade
+      operationId: saveAdminGrade
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdminGradeForm'
+      responses:
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/grades/grade-history.html:
+    get:
+      tags: [Admin]
+      summary: Display an administrator grade history
+      operationId: adminGradeHistoryDetail
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/GradeIdQuery'
+        - $ref: '#/components/parameters/ExamIdQuery'
+        - $ref: '#/components/parameters/GroupIdRequiredQuery'
+        - $ref: '#/components/parameters/CourseIdRequiredQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '302':
+          $ref: '#/components/responses/Redirect'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/promotion/results.html:
+    get:
+      tags: [Admin]
+      summary: Display graduates for a selected promotion
+      operationId: adminPromotionResults
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: promotionId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          $ref: '#/components/responses/HtmlPage'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/promotion/graduates.xlsx:
+    get:
+      tags: [Admin]
+      summary: Export promotion graduates as XLSX
+      operationId: exportGraduatesExcel
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PromotionIdRequiredQuery'
+      responses:
+        '200':
+          description: XLSX export
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Promotion not found
 
 components:
   securitySchemes:
@@ -132,6 +1264,148 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+  responses:
+    HtmlPage:
+      description: HTML page
+      content:
+        text/html:
+          schema:
+            type: string
+    Redirect:
+      description: Redirect to another web page
+      headers:
+        Location:
+          schema:
+            type: string
+    Unauthorized:
+      description: Missing or invalid authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Authenticated user does not have the required role
+      content:
+        text/html:
+          schema:
+            type: string
+    BadRequest:
+      description: Invalid form data or business rule violation
+      content:
+        text/html:
+          schema:
+            type: string
+
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    IdQuery:
+      name: id
+      in: query
+      required: true
+      schema:
+        type: string
+        format: uuid
+    OptionalIdQuery:
+      name: id
+      in: query
+      required: false
+      schema:
+        type: string
+        format: uuid
+    PromotionId:
+      name: promotionId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PromotionIdRequiredQuery:
+      name: promotionId
+      in: query
+      required: true
+      schema:
+        type: string
+        format: uuid
+    CourseIdPath:
+      name: courseId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    CourseIdQuery:
+      name: courseId
+      in: query
+      required: false
+      schema:
+        type: string
+        format: uuid
+    CourseIdRequiredQuery:
+      name: courseId
+      in: query
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ExamIdQuery:
+      name: examId
+      in: query
+      required: true
+      schema:
+        type: string
+        format: uuid
+    GradeIdQuery:
+      name: gradeId
+      in: query
+      required: true
+      schema:
+        type: string
+        format: uuid
+    GroupIdQuery:
+      name: groupId
+      in: query
+      required: false
+      schema:
+        type: string
+        format: uuid
+    GroupIdRequiredQuery:
+      name: groupId
+      in: query
+      required: true
+      schema:
+        type: string
+        format: uuid
+    RedirectQuery:
+      name: redirect
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [profile]
+    NbEvent:
+      name: nbEvent
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 500
+        default: 1
+    WaitInSeconds:
+      name: waitInSeconds
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 2
 
   schemas:
     Role:
@@ -158,19 +1432,22 @@ components:
 
     TokenResponse:
       type: object
+      required: [accessToken, tokenType, expiresIn, userId, role]
       properties:
         accessToken:
           type: string
-          description: Short-lived JWT (e.g. 15 min), contains sub, role, exp claims
-        refreshToken:
-          type: string
-          description: Opaque long-lived token (e.g. 30 days), stored hashed server-side
+          description: JWT access token containing the user identity and role
         tokenType:
           type: string
           example: Bearer
         expiresIn:
           type: integer
           description: Access token TTL in seconds
+        userId:
+          type: string
+          format: uuid
+        role:
+          $ref: '#/components/schemas/Role'
 
     RegisterRequest:
       type: object
@@ -211,6 +1488,159 @@ components:
           type: string
         message:
           type: string
+
+    StudentSummary:
+      type: object
+      properties:
+        id: {type: string, format: uuid}
+        studentNumber: {type: string}
+        firstName: {type: string, nullable: true}
+        lastName: {type: string, nullable: true}
+        email: {type: string, format: email, nullable: true}
+        groupRef: {type: string, nullable: true}
+        promotionLabel: {type: string, nullable: true}
+        promotionStartYear: {type: integer, nullable: true}
+
+    GraduatedStudent:
+      type: object
+      properties:
+        id: {type: string, format: uuid}
+        studentNumber: {type: string}
+        firstName: {type: string, nullable: true}
+        lastName: {type: string, nullable: true}
+        email: {type: string, format: email, nullable: true}
+        groupRef: {type: string, nullable: true}
+        promotionLabel: {type: string, nullable: true}
+        promotionStartYear: {type: integer, nullable: true}
+        promotionEndYear: {type: integer, nullable: true}
+        weightedAverage: {type: number, format: double, nullable: true}
+
+    Transcript:
+      type: object
+      properties:
+        studentId: {type: string, format: uuid}
+        studentNumber: {type: string}
+        firstName: {type: string, nullable: true}
+        lastName: {type: string, nullable: true}
+        email: {type: string, format: email, nullable: true}
+        promotionLabel: {type: string, nullable: true}
+        promotionStartYear: {type: integer, nullable: true}
+        promotionEndYear: {type: integer, nullable: true}
+        groupRef: {type: string, nullable: true}
+        grades:
+          type: array
+          items:
+            $ref: '#/components/schemas/TranscriptGrade'
+        weightedAverage: {type: number, format: double, nullable: true}
+
+    TranscriptGrade:
+      type: object
+      properties:
+        id: {type: string, format: uuid}
+        courseRef: {type: string, nullable: true}
+        courseTitle: {type: string, nullable: true}
+        examDate: {type: string, format: date-time, nullable: true}
+        coefficient: {type: number, format: double, nullable: true}
+        value: {type: number, format: double, nullable: true}
+        gradedAt: {type: string, format: date-time, nullable: true}
+
+    TeacherExamForm:
+      type: object
+      required: [courseId, dateExam, coefficient, groupIds]
+      properties:
+        courseId: {type: string, format: uuid}
+        dateExam: {type: string, description: Local date-time in Africa/Nairobi}
+        coefficient: {type: number, format: double, exclusiveMinimum: 0}
+        groupIds:
+          type: array
+          items: {type: string, format: uuid}
+
+    ExamSubmitForm:
+      type: object
+      required: [examId]
+      properties:
+        examId: {type: string, format: uuid}
+
+    GradeForm:
+      type: object
+      required: [examId, studentId, value]
+      properties:
+        examId: {type: string, format: uuid}
+        groupId: {type: string, format: uuid}
+        studentId: {type: string, format: uuid}
+        value: {type: number, format: double, minimum: 0}
+        reason: {type: string}
+
+    AdminGradeForm:
+      allOf:
+        - $ref: '#/components/schemas/GradeForm'
+      description: GradeForm with required groupId and courseId for administrator navigation
+
+    StudentForm:
+      type: object
+      required: [firstName, lastName, email, studentNumber, promotionId, password]
+      properties:
+        firstName: {type: string}
+        lastName: {type: string}
+        email: {type: string, format: email}
+        studentNumber: {type: string}
+        promotionId: {type: string, format: uuid}
+        groupId: {type: string, format: uuid}
+        password: {type: string, format: password}
+        enabled: {type: boolean, default: false}
+
+    TeacherForm:
+      type: object
+      required: [firstName, lastName, email, employeeNumber]
+      properties:
+        id: {type: string, format: uuid}
+        firstName: {type: string}
+        lastName: {type: string}
+        email: {type: string, format: email}
+        employeeNumber: {type: string}
+        password: {type: string, format: password}
+        enabled: {type: boolean, default: false}
+
+    GroupForm:
+      type: object
+      required: [ref, promotionId]
+      properties:
+        id: {type: string, format: uuid}
+        ref: {type: string}
+        promotionId: {type: string, format: uuid}
+
+    GroupChangeForm:
+      type: object
+      required: [groupId]
+      properties:
+        groupId: {type: string, format: uuid}
+
+    PromotionForm:
+      type: object
+      required: [label, startYear, endYear]
+      properties:
+        id: {type: string, format: uuid}
+        label: {type: string}
+        startYear: {type: integer}
+        endYear: {type: integer}
+
+    CourseForm:
+      type: object
+      required: [ref, title, credits]
+      properties:
+        id: {type: string, format: uuid}
+        ref: {type: string}
+        title: {type: string}
+        credits: {type: integer, minimum: 0}
+
+    CourseAssignmentForm:
+      type: object
+      required: [teacherId]
+      properties:
+        teacherId: {type: string, format: uuid}
+        groupIds:
+          type: array
+          items: {type: string, format: uuid}
 
 security:
   - bearerAuth: []
