@@ -37,10 +37,6 @@ class AdminCourseViewControllerTest {
   }
 
   private static CourseAssignment assignment(Teacher teacher, Group group) {
-    return CourseAssignment.builder()
-        .id(UUID.randomUUID())
-        .teacher(teacher)
-        .group(group)
-        .build();
+    return CourseAssignment.builder().id(UUID.randomUUID()).teacher(teacher).group(group).build();
   }
 }
