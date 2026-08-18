@@ -1,10 +1,14 @@
 package mg.yoan.diploma.endpoint.web;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import mg.yoan.diploma.domain.Promotion;
 import mg.yoan.diploma.service.DomainException;
 import mg.yoan.diploma.service.GraduatesExcelExporter;
 import mg.yoan.diploma.service.GraduationService;
+import mg.yoan.diploma.service.GraduationService.GraduatedStudent;
 import mg.yoan.diploma.service.PromotionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -39,7 +43,10 @@ public class AdminPromotionViewController {
     try {
       model.addAttribute("selectedPromotionId", promotionId);
       model.addAttribute("promotion", promotionService.getById(promotionId));
-      model.addAttribute("graduates", graduationService.listGraduates(promotionId));
+      List<GraduatedStudent> graduates = graduationService.listGraduates(promotionId);
+      model.addAttribute("graduates", graduates);
+      model.addAttribute("graduateCount", graduates.size());
+      model.addAttribute("promotionAverage", averageOf(graduates));
     } catch (DomainException exception) {
       model.addAttribute("error", exception.getMessage());
     }
@@ -60,6 +67,19 @@ public class AdminPromotionViewController {
     } catch (DomainException exception) {
       return ResponseEntity.notFound().build();
     }
+  }
+
+  private static BigDecimal averageOf(List<GraduatedStudent> graduates) {
+    List<BigDecimal> averages =
+        graduates.stream()
+            .map(GraduatedStudent::weightedAverage)
+            .filter(value -> value != null)
+            .toList();
+    if (averages.isEmpty()) {
+      return null;
+    }
+    BigDecimal sum = averages.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+    return sum.divide(BigDecimal.valueOf(averages.size()), 2, RoundingMode.HALF_UP);
   }
 
   private static String safeFilename(String label) {
