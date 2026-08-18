@@ -60,4 +60,15 @@ public interface JGradeRepository extends JpaRepository<JGrade, String> {
       where g.student.id in :studentIds
       """)
   List<JGrade> findDetailedByStudentIdIn(@Param("studentIds") Collection<String> studentIds);
+
+  @Query(
+      """
+      select new mg.yoan.diploma.repository.JGradeRepository$ExamGradeCountDto(g.exam.id, count(g))
+      from JGrade g
+      where g.exam.id in :examIds
+      group by g.exam.id
+      """)
+  List<ExamGradeCountDto> countByExamIdIn(@Param("examIds") Collection<String> examIds);
+
+  record ExamGradeCountDto(String examId, long count) {}
 }
