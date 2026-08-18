@@ -77,13 +77,11 @@ public class AdminGradeService {
             .sorted(Comparator.comparing(JExam::getDateExam).reversed())
             .toList();
 
-    // Bulk load grade counts
     List<String> examIds = exams.stream().map(JExam::getId).toList();
     Map<String, Long> gradeCountsByExamId =
         gradeRepository.countByExamIdIn(examIds).stream()
             .collect(LinkedHashMap::new, (m, dto) -> m.put(dto.examId(), dto.count()), Map::putAll);
 
-    // Bulk load student counts by group
     List<String> groupIds =
         exams.stream().flatMap(e -> e.getGroups().stream()).map(JGroup::getId).distinct().toList();
     Map<String, Long> studentCountsByGroupId =
