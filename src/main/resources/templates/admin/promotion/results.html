@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Résultats promotion — HEI Diploma</title>
+  <title>Diplômés — HEI Diploma</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
@@ -14,38 +14,93 @@
 <div class="app-shell">
   <aside th:replace="~{fragments/sidebar :: sidebar('promotion', 'ADMIN')}"></aside>
   <div class="main-wrap">
-    <header th:replace="~{fragments/topbar :: topbar('Résultats de promotion (3 ans)', 'ADMIN')}"></header>
+    <header th:replace="~{fragments/topbar :: topbar(${pageHeading}, 'ADMIN')}"></header>
     <main class="content">
+      <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur.</div>
+
       <div class="card" style="margin-bottom:1rem;">
-        <form class="btn-group" method="get" th:action="@{/admin/promotion/results.html}">
-          <div class="form-field" style="min-width:200px;">
+        <form class="filter-bar" method="get" th:action="@{/admin/promotion/results.html}">
+          <div class="form-field" style="min-width:240px;flex:1;">
             <label for="promo">Promotion</label>
-            <select id="promo" name="promotionId" required>
+            <select id="promo" name="promotionId" required onchange="this.form.submit()">
               <option value="">Choisir une promotion</option>
-              <option th:each="item : ${promotions}" th:value="${item.id}" th:text="${item.label + ' (' + item.startYear + '–' + item.endYear + ')'}" th:selected="${item.id == selectedPromotionId}">Promotion</option>
+              <option th:each="item : ${promotions}"
+                      th:value="${item.id}"
+                      th:selected="${selectedPromotionId != null and #strings.equals(item.id.toString(), selectedPromotionId)}"
+                      th:text="|${item.label} (${item.startYear}–${item.endYear})|">
+                Promotion
+              </option>
             </select>
           </div>
-          <button type="submit" class="btn btn-primary" style="align-self:flex-end;">Afficher</button>
+          <button type="submit" class="btn btn-primary">Afficher</button>
+          <a class="btn btn-outline"
+             th:if="${promotion != null}"
+             th:href="@{/admin/promotion/graduates.xlsx(promotionId=${promotion.id})}">
+            <i class="fa-regular fa-file-excel"></i> Exporter Excel
+          </a>
         </form>
       </div>
 
-      <div class="alert alert-warning" th:if="${error}" th:text="${error}">Erreur.</div>
-      <div class="card" th:if="${promotion != null}">
-        <h2 class="section-title" th:text="${'Promotion ' + promotion.label + ' — diplômés'}">Diplômés</h2>
-        <div class="table-wrap">
-          <table class="data">
-            <thead>
-            <tr>
-              <th>Étudiant</th><th>Matricule</th><th>Groupe</th><th>Moyenne générale</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="graduate : ${graduates}"><td th:text="${graduate.student.user.fullName}">Étudiant</td><td th:text="${graduate.student.studentNumber}">STD</td><td th:text="${graduate.student.currentGroup != null ? graduate.student.currentGroup.ref : '—'}">—</td><td th:text="${graduate.weightedAverage}">0</td></tr>
-            <tr th:if="${#lists.isEmpty(graduates)}"><td colspan="4">Aucun diplômé pour cette promotion.</td></tr>
-            </tbody>
-          </table>
+      <div class="empty" th:if="${promotion == null and promotions.empty}">Aucune promotion pour le moment.</div>
+
+      <th:block th:if="${promotion != null}">
+        <div class="stats">
+          <div class="stat-card">
+            <div class="label">Promotion</div>
+            <div class="value" th:text="${promotion.label}">Promo</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Période</div>
+            <div class="value" th:text="|${promotion.startYear}–${promotion.endYear}|">2024–2027</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Diplômés</div>
+            <div class="value" th:text="${graduateCount}">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Moyenne générale</div>
+            <div class="value" th:text="${promotionAverage != null ? promotionAverage : '—'}">—</div>
+          </div>
         </div>
-      </div>
+
+        <div class="card">
+          <h2 class="section-title">
+            Diplômés
+            <span th:text="|(${graduateCount})|">(0)</span>
+          </h2>
+          <div class="empty" th:if="${#lists.isEmpty(graduates)}">Aucun diplômé pour cette promotion.</div>
+          <div class="table-wrap" th:unless="${#lists.isEmpty(graduates)}">
+            <table class="data">
+              <thead>
+              <tr>
+                <th>Étudiant</th>
+                <th>Matricule</th>
+                <th>Email</th>
+                <th>Groupe</th>
+                <th>Moyenne</th>
+                <th></th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="graduate : ${graduates}">
+                <td th:text="${graduate.student.user != null ? graduate.student.user.fullName : '—'}">Étudiant</td>
+                <td th:text="${graduate.student.studentNumber}">STD</td>
+                <td th:text="${graduate.student.user != null ? graduate.student.user.email : '—'}">mail@hei.school</td>
+                <td>
+                  <span class="badge badge-info"
+                        th:text="${graduate.student.currentGroup != null ? graduate.student.currentGroup.ref : '—'}">—</span>
+                </td>
+                <td><strong th:text="${graduate.weightedAverage}">0</strong></td>
+                <td class="btn-group">
+                  <a class="btn btn-sm btn-outline"
+                     th:href="@{/admin/students/profile.html(id=${graduate.student.id})}">Profil</a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </th:block>
     </main>
   </div>
 </div>

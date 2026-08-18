@@ -46,6 +46,7 @@
               <td th:text="${promotion.startYear}">2024</td>
               <td th:text="${promotion.endYear}">2027</td>
               <td class="btn-group">
+                <a class="btn btn-sm btn-primary" th:href="@{/admin/promotion/results.html(promotionId=${promotion.id})}">Diplômés</a>
                 <a class="btn btn-sm btn-outline" th:href="@{/admin/promotions/form.html(id=${promotion.id})}">Éditer</a>
                 <form th:action="@{/admin/promotions/{id}/delete(id=${promotion.id})}" method="post" style="display:inline;"
                       onsubmit="return confirm('Supprimer cette promotion ?');">
