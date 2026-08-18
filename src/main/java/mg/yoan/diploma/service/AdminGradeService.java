@@ -269,7 +269,7 @@ public class AdminGradeService {
           gradeRepository
               .findDetailedById(gradeId)
               .orElseThrow(() -> new DomainException("Note introuvable."));
-      return new GradeHistoryView(grade, List.of());
+      return toHistoryView(grade, List.of());
     }
 
     JGrade grade = histories.get(0).getGrade();
@@ -284,7 +284,7 @@ public class AdminGradeService {
                         history.getNewValue(),
                         history.getReason()))
             .toList();
-    return new GradeHistoryView(grade, rows);
+    return toHistoryView(grade, rows);
   }
 
   private static void assertEditable(JExam exam) {
@@ -408,7 +408,28 @@ public class AdminGradeService {
       BigDecimal currentValue) {}
 
   public record GradeSheet(
-      ExamOption exam, String courseId, String courseRef, JGroup group, List<GradeRow> rows) {}
+      ExamOption exam, String courseId, String courseRef, JGroup group, List<GradeRow> rows) {
+    public String groupRef() {
+      return group == null ? "" : group.getRef();
+    }
+
+    public int studentCount() {
+      return rows == null ? 0 : rows.size();
+    }
+
+    public int gradedCount() {
+      if (rows == null) {
+        return 0;
+      }
+      int count = 0;
+      for (GradeRow row : rows) {
+        if (row.currentValue() != null) {
+          count++;
+        }
+      }
+      return count;
+    }
+  }
 
   public record HistoryRow(
       Instant changedAt,
@@ -417,5 +438,12 @@ public class AdminGradeService {
       BigDecimal newValue,
       String reason) {}
 
-  public record GradeHistoryView(JGrade grade, List<HistoryRow> entries) {}
+  private static GradeHistoryView toHistoryView(JGrade grade, List<HistoryRow> rows) {
+    JStudent student = grade.getStudent();
+    JUser user = student == null ? null : student.getUser();
+    return new GradeHistoryView(fullName(user), grade.getValue(), rows);
+  }
+
+  public record GradeHistoryView(
+      String studentName, BigDecimal currentValue, List<HistoryRow> entries) {}
 }

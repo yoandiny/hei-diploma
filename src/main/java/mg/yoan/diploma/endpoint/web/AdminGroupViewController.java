@@ -90,6 +90,7 @@ public class AdminGroupViewController {
     model.addAttribute("activeNav", "groupes");
     if (id == null || id.isBlank()) {
       model.addAttribute("pageHeading", "Nouvelle promotion");
+      model.addAttribute("promotion", null);
       return "admin/promotions/form";
     }
     try {

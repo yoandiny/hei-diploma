@@ -29,6 +29,15 @@ public interface JGroupRepository extends JpaRepository<JGroup, String> {
 
   @Query(
       """
+      select distinct g from JGroup g
+      join fetch g.promotion
+      where g.promotion.id = :promotionId
+      order by g.ref
+      """)
+  List<JGroup> findDetailedByPromotionId(@Param("promotionId") String promotionId);
+
+  @Query(
+      """
       select g from JGroup g
       join fetch g.promotion
       where g.id = :id
