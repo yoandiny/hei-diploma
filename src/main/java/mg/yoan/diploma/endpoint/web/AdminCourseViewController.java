@@ -1,9 +1,13 @@
 package mg.yoan.diploma.endpoint.web;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import mg.yoan.diploma.domain.Course;
 import mg.yoan.diploma.domain.CourseAssignment;
+import mg.yoan.diploma.domain.Group;
+import mg.yoan.diploma.domain.Teacher;
 import mg.yoan.diploma.service.CourseAssignmentService;
 import mg.yoan.diploma.service.CourseService;
 import mg.yoan.diploma.service.DomainException;
@@ -149,5 +153,29 @@ public class AdminCourseViewController {
     return "redirect:/admin/courses/assign-groups.html?courseId=" + courseId;
   }
 
-  public record CourseRow(Course course, List<CourseAssignment> assignments) {}
+  public record CourseRow(Course course, List<CourseAssignment> assignments) {
+    public List<Teacher> teachers() {
+      Map<String, Teacher> unique = new LinkedHashMap<>();
+      for (CourseAssignment assignment : assignments) {
+        Teacher teacher = assignment.getTeacher();
+        if (teacher == null || teacher.getId() == null) {
+          continue;
+        }
+        unique.putIfAbsent(teacher.getId().toString(), teacher);
+      }
+      return List.copyOf(unique.values());
+    }
+
+    public List<Group> groups() {
+      Map<String, Group> unique = new LinkedHashMap<>();
+      for (CourseAssignment assignment : assignments) {
+        Group group = assignment.getGroup();
+        if (group == null || group.getId() == null) {
+          continue;
+        }
+        unique.putIfAbsent(group.getId().toString(), group);
+      }
+      return List.copyOf(unique.values());
+    }
+  }
 }
