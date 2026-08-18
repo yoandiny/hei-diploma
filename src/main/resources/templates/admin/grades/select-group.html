@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Sélectionner un groupe — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <aside th:replace="~{fragments/sidebar :: sidebar('notes', 'ADMIN')}"></aside>
+  <div class="main-wrap">
+    <header th:replace="~{fragments/topbar :: topbar('Sélectionner un groupe', 'ADMIN')}"></header>
+    <main class="content">
+      <div class="breadcrumb" style="margin-bottom: 1rem;">
+        <a th:href="@{/admin/grades/select-exam.html(courseId=${courseId})}">← Retour aux examens</a>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Groupes concernés par l'examen</h2>
+        <p>Choisissez un groupe pour accéder à la saisie des notes.</p>
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+            <tr>
+              <th>Groupe</th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="group : ${groups}">
+              <td th:text="${group.ref}">Groupe</td>
+              <td class="btn-group">
+                <a class="btn btn-sm btn-primary" th:href="@{/admin/grades/edit.html(examId=${examId}, groupId=${group.groupId}, courseId=${courseId})}">
+                  <i class="fa-solid fa-arrow-right"></i> Saisir les notes
+                </a>
+              </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(groups)}"><td colspan="2" class="text-center">Aucun groupe pour cet examen.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<style>
+.breadcrumb {
+  padding: 0.5rem 0;
+}
+.breadcrumb a {
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+</style>
+</body>
+</html>

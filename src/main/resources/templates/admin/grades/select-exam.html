@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Sélectionner un examen — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <aside th:replace="~{fragments/sidebar :: sidebar('notes', 'ADMIN')}"></aside>
+  <div class="main-wrap">
+    <header th:replace="~{fragments/topbar :: topbar('Sélectionner un examen', 'ADMIN')}"></header>
+    <main class="content">
+      <div class="breadcrumb" style="margin-bottom: 1rem;">
+        <a th:href="@{/admin/grades/home.html}">← Retour aux cours</a>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Examens disponibles</h2>
+        <p>Choisissez un examen pour accéder aux groupes et modifier les notes.</p>
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+            <tr>
+              <th>Date</th>
+              <th>Groupes</th>
+              <th>Coefficient</th>
+              <th>Étudiants</th>
+              <th>Notés</th>
+              <th>Statut</th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="exam : ${exams}">
+              <td th:text="${#temporals.format(exam.dateExam, 'dd/MM/yyyy')}">Date</td>
+              <td th:text="${exam.getGroupRefs()}">Groupes</td>
+              <td th:text="${exam.coefficient}">1</td>
+              <td th:text="${exam.studentCount}">0</td>
+              <td th:text="${exam.gradedCount}">0</td>
+              <td>
+                <span th:if="${exam.submitted}" class="chip chip-success">Soumis</span>
+                <span th:unless="${exam.submitted}" class="chip chip-warning">Brouillon</span>
+              </td>
+              <td class="btn-group">
+                <a class="btn btn-sm btn-primary" th:href="@{/admin/grades/select-group.html(examId=${exam.examId}, courseId=${courseId})}">
+                  <i class="fa-solid fa-arrow-right"></i> Groupes
+                </a>
+              </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(exams)}"><td colspan="7" class="text-center">Aucun examen pour ce cours.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<style>
+.breadcrumb {
+  padding: 0.5rem 0;
+}
+.breadcrumb a {
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+.chip {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.chip-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+.chip-warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+</style>
+</body>
+</html>

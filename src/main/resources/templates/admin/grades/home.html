@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Gestion des notes — HEI Diploma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/hei-admin.css}" href="/css/hei-admin.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <aside th:replace="~{fragments/sidebar :: sidebar('notes', 'ADMIN')}"></aside>
+  <div class="main-wrap">
+    <header th:replace="~{fragments/topbar :: topbar('Gestion des notes', 'ADMIN')}"></header>
+    <main class="content">
+      <div th:if="${#fields.hasErrors('*')}" class="alert alert-error">
+        <span th:each="err : ${#fields.errors('*')}" th:text="${err}">Erreur</span>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Sélectionner un cours</h2>
+        <p>Choisissez un cours pour accéder à ses examens et modifier les notes.</p>
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+            <tr>
+              <th>Code</th>
+              <th>Intitulé</th>
+              <th>Crédits</th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="course : ${courses}">
+              <td th:text="${course.ref}">CODE</td>
+              <td th:text="${course.title}">Cours</td>
+              <td th:text="${course.credits}">0</td>
+              <td class="btn-group">
+                <a class="btn btn-sm btn-primary" th:href="@{/admin/grades/select-exam.html(courseId=${course.courseId})}">
+                  <i class="fa-solid fa-arrow-right"></i> Voir examens
+                </a>
+              </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(courses)}"><td colspan="4" class="text-center">Aucun cours disponible.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>
