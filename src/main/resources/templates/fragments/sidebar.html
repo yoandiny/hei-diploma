@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 <aside class="sidebar" th:fragment="sidebar(activeNav, role)">
-  <a class="sidebar-brand" href="#">
+  <a class="sidebar-brand" th:href="@{|/${#strings.toLowerCase(role)}/dashboard.html|}">
     <span class="brand-mark">HEI</span>
     <span class="brand-text">HEI Diploma</span>
   </a>
@@ -30,7 +30,7 @@
       </a>
     </li>
     <li>
-      <a th:href="@{/auth/login.html}">
+      <a th:href="@{/logout}">
         <i class="fa-solid fa-right-from-bracket"></i> Se déconnecter
       </a>
     </li>
@@ -54,7 +54,7 @@
       </a>
     </li>
     <li>
-      <a th:href="@{/auth/login.html}">
+      <a th:href="@{/logout}">
         <i class="fa-solid fa-right-from-bracket"></i> Se déconnecter
       </a>
     </li>
@@ -103,7 +103,7 @@
       </a>
     </li>
     <li>
-      <a th:href="@{/auth/login.html}">
+      <a th:href="@{/logout}">
         <i class="fa-solid fa-right-from-bracket"></i> Se déconnecter
       </a>
     </li>

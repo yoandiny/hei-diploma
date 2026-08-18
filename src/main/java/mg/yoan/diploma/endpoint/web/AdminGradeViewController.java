@@ -2,9 +2,11 @@ package mg.yoan.diploma.endpoint.web;
 
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
+import mg.yoan.diploma.endpoint.rest.security.AuthenticatedUser;
 import mg.yoan.diploma.service.AdminGradeService;
 import mg.yoan.diploma.service.DomainException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +21,7 @@ public class AdminGradeViewController {
 
   private final AdminGradeService adminGradeService;
 
-  @GetMapping("/admin/grades/home.html")
+  @GetMapping({"/admin/grades/home.html", "/admin/grades.html"})
   public String gradesHome(Model model) {
     model.addAttribute("pageHeading", "Gestion des notes");
     model.addAttribute("activeNav", "notes");
@@ -88,6 +90,7 @@ public class AdminGradeViewController {
 
   @PostMapping("/admin/grades/save")
   public String saveGrade(
+      @AuthenticationPrincipal AuthenticatedUser user,
       @RequestParam("examId") String examId,
       @RequestParam("groupId") String groupId,
       @RequestParam("courseId") String courseId,
@@ -96,7 +99,7 @@ public class AdminGradeViewController {
       @RequestParam(value = "reason", required = false) String reason,
       RedirectAttributes redirectAttributes) {
     try {
-      adminGradeService.saveGrade(null, examId, studentId, value, reason);
+      adminGradeService.saveGrade(user.getUserId(), examId, studentId, value, reason);
       redirectAttributes.addFlashAttribute("success", "Note enregistrée.");
     } catch (DomainException exception) {
       redirectAttributes.addFlashAttribute("error", exception.getMessage());

@@ -72,9 +72,37 @@ public class AdminGradeService {
         .findById(courseId)
         .orElseThrow(() -> new DomainException("Cours introuvable."));
 
-    return examRepository.findDetailedByCourseId(courseId).stream()
-        .sorted(Comparator.comparing(JExam::getDateExam).reversed())
-        .map(this::toExamOption)
+    List<JExam> exams =
+        examRepository.findDetailedByCourseId(courseId).stream()
+            .sorted(Comparator.comparing(JExam::getDateExam).reversed())
+            .toList();
+    if (exams.isEmpty()) {
+      return List.of();
+    }
+
+    List<String> examIds = exams.stream().map(JExam::getId).toList();
+    Map<String, Long> gradeCountsByExamId =
+        gradeRepository.countByExamIdIn(examIds).stream()
+            .collect(
+                LinkedHashMap::new, (map, dto) -> map.put(dto.examId(), dto.count()), Map::putAll);
+
+    List<String> groupIds =
+        exams.stream()
+            .flatMap(exam -> exam.getGroups().stream())
+            .map(JGroup::getId)
+            .distinct()
+            .toList();
+    Map<String, Long> studentCountsByGroupId =
+        groupIds.isEmpty()
+            ? Map.of()
+            : studentRepository.countByGroupIdIn(groupIds).stream()
+                .collect(
+                    LinkedHashMap::new,
+                    (map, dto) -> map.put(dto.groupId(), dto.count()),
+                    Map::putAll);
+
+    return exams.stream()
+        .map(exam -> toExamOption(exam, gradeCountsByExamId, studentCountsByGroupId))
         .toList();
   }
 
@@ -280,6 +308,32 @@ public class AdminGradeService {
     int gradedCount = (int) gradeRepository.countByExamId(exam.getId());
     var course = exam.getCourse();
 
+    return new ExamOption(
+        exam.getId(),
+        exam.getDateExam(),
+        exam.getCoefficient(),
+        groups,
+        course.getId(),
+        course.getRef(),
+        course.getTitle(),
+        exam.getSubmittedAt(),
+        gradedCount,
+        studentCount);
+  }
+
+  private ExamOption toExamOption(
+      JExam exam, Map<String, Long> gradeCountsByExamId, Map<String, Long> studentCountsByGroupId) {
+    List<GroupOption> groups =
+        exam.getGroups().stream()
+            .sorted(Comparator.comparing(JGroup::getRef, String.CASE_INSENSITIVE_ORDER))
+            .map(group -> new GroupOption(group.getId(), group.getRef()))
+            .toList();
+    int studentCount =
+        groups.stream()
+            .mapToInt(group -> studentCountsByGroupId.getOrDefault(group.groupId(), 0L).intValue())
+            .sum();
+    int gradedCount = gradeCountsByExamId.getOrDefault(exam.getId(), 0L).intValue();
+    var course = exam.getCourse();
     return new ExamOption(
         exam.getId(),
         exam.getDateExam(),

@@ -91,12 +91,13 @@ public interface JStudentRepository extends JpaRepository<JStudent, String> {
 
   @Query(
       """
-select new mg.yoan.diploma.repository.JStudentRepository$GroupStudentCountDto(s.currentGroup.id, count(s))
-from JStudent s
-where s.currentGroup.id in :groupIds
-  and s.deletedAt is null
-group by s.currentGroup.id
-""")
+      select new mg.yoan.diploma.repository.JStudentRepository$GroupStudentCountDto(
+          s.currentGroup.id, count(s))
+      from JStudent s
+      where s.currentGroup.id in :groupIds
+        and s.deletedAt is null
+      group by s.currentGroup.id
+      """)
   List<GroupStudentCountDto> countByGroupIdIn(@Param("groupIds") Collection<String> groupIds);
 
   record GroupStudentCountDto(String groupId, long count) {}

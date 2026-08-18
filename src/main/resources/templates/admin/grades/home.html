@@ -16,9 +16,8 @@
   <div class="main-wrap">
     <header th:replace="~{fragments/topbar :: topbar('Gestion des notes', 'ADMIN')}"></header>
     <main class="content">
-      <div th:if="${#fields.hasErrors('*')}" class="alert alert-error">
-        <span th:each="err : ${#fields.errors('*')}" th:text="${err}">Erreur</span>
-      </div>
+      <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}">OK</div>
+      <div class="alert alert-warning" role="alert" th:if="${error}" th:text="${error}">Erreur.</div>
 
       <div class="card">
         <h2 class="section-title">Sélectionner un cours</h2>
