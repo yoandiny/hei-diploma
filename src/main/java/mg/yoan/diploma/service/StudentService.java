@@ -110,6 +110,43 @@ public class StudentService {
   }
 
   @Transactional
+  public Student update(
+      String id,
+      String firstName,
+      String lastName,
+      String email,
+      String studentNumber,
+      String rawPassword) {
+    JStudent student = requireActive(id);
+    JUser user = student.getUser();
+
+    String normalizedEmail = normalizeEmail(email);
+    String normalizedStudentNumber =
+        required(studentNumber, "Le numéro d'étudiant est obligatoire.").trim();
+
+    userRepository
+        .findByEmail(normalizedEmail)
+        .filter(existing -> !existing.getId().equals(id))
+        .ifPresent(
+            ignored -> {
+              throw new DomainException("Cet email est déjà utilisé.");
+            });
+    if (studentRepository.existsByStudentNumberAndIdNot(normalizedStudentNumber, id)) {
+      throw new DomainException("Ce numéro d'étudiant existe déjà.");
+    }
+
+    user.setEmail(normalizedEmail);
+    user.setFirstName(required(firstName, "Le prénom est obligatoire.").trim());
+    user.setLastName(required(lastName, "Le nom est obligatoire.").trim());
+    if (rawPassword != null && !rawPassword.isBlank()) {
+      user.setPassword(passwordEncoder.encode(rawPassword));
+    }
+    student.setStudentNumber(normalizedStudentNumber);
+    userRepository.save(user);
+    return StudentMapper.toDomain(studentRepository.save(student));
+  }
+
+  @Transactional
   public Student changeGroup(String id, String groupId) {
     JStudent student = requireActive(id);
     JGroup group =

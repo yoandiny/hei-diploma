@@ -93,4 +93,44 @@ class AdminStudentIT extends DiplomaIT {
                 PASSWORD,
                 true));
   }
+
+  @Test
+  void update_changes_identity_fields() {
+    Promotion promotion = newPromotion();
+    Student student = newStudent(promotion, newGroup(promotion));
+    String newEmail = email("upd" + uid());
+    String newNumber = "S" + uid();
+
+    Student updated =
+        studentService.update(
+            student.getId().toString(), "Miora", "Andria", newEmail, newNumber, null);
+
+    assertEquals("Miora", updated.getUser().getFirstName());
+    assertEquals("Andria", updated.getUser().getLastName());
+    assertEquals(newEmail, updated.getUser().getEmail());
+    assertEquals(newNumber, updated.getStudentNumber());
+    assertTrue(
+        passwordEncoder.matches(
+            PASSWORD,
+            userRepository.findById(student.getId().toString()).orElseThrow().getPassword()));
+  }
+
+  @Test
+  void update_rejects_duplicate_email() {
+    Promotion promotion = newPromotion();
+    Group group = newGroup(promotion);
+    Student first = newStudent(promotion, group);
+    Student second = newStudent(promotion, group);
+
+    assertThrows(
+        DomainException.class,
+        () ->
+            studentService.update(
+                second.getId().toString(),
+                "Miora",
+                "Andria",
+                first.getUser().getEmail(),
+                second.getStudentNumber(),
+                null));
+  }
 }

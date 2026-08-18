@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title th:text="${student != null && student.user != null ? student.user.fullName + ' — HEI Diploma' : 'Profil étudiant — HEI Diploma'}">
-    Profil étudiant — HEI Diploma
+  <title th:text="${teacher != null && teacher.user != null ? teacher.user.fullName + ' — HEI Diploma' : 'Profil enseignant — HEI Diploma'}">
+    Profil enseignant — HEI Diploma
   </title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
@@ -14,7 +14,7 @@
 </head>
 <body>
 <div class="app-shell">
-  <aside th:replace="~{fragments/sidebar :: sidebar('etudiants', 'ADMIN')}"></aside>
+  <aside th:replace="~{fragments/sidebar :: sidebar('enseignants', 'ADMIN')}"></aside>
   <div class="main-wrap">
     <header th:replace="~{fragments/topbar :: topbar(${pageHeading}, 'ADMIN')}"></header>
     <main class="content">
@@ -26,28 +26,14 @@
         <div class="profile-head">
           <img class="profile-avatar" th:src="@{/img/avatar-default.svg}" src="/img/avatar-default.svg" alt="Photo de profil"/>
           <div class="profile-identity">
-            <h1 th:text="${student.user != null ? student.user.fullName : 'Étudiant'}">Nom</h1>
+            <h1 th:text="${teacher.user != null ? teacher.user.fullName : 'Enseignant'}">Nom</h1>
             <div class="meta">
-              <span th:text="${student.studentNumber}">STD24001</span>
-              <span th:if="${student.currentGroup != null}"
-                    th:text="${' · ' + student.currentGroup.ref}"> · K1</span>
+              <span th:text="${teacher.employeeNumber}">TCH001</span>
             </div>
           </div>
           <div class="profile-actions btn-group">
-            <a class="btn btn-outline"
-               th:href="@{/admin/students/edit-group.html(id=${student.id})}">Changer de groupe</a>
-            <form th:if="${student.user != null && student.user.enabled}"
-                  th:action="@{/admin/students/{id}/suspend(id=${student.id}, redirect='profile')}"
-                  method="post">
-              <button type="submit" class="btn btn-outline">Suspendre</button>
-            </form>
-            <form th:if="${student.user == null || !student.user.enabled}"
-                  th:action="@{/admin/students/{id}/unsuspend(id=${student.id}, redirect='profile')}"
-                  method="post">
-              <button type="submit" class="btn btn-outline">Réactiver</button>
-            </form>
-            <form th:action="@{/admin/students/{id}/delete(id=${student.id})}" method="post"
-                  onsubmit="return confirm('Supprimer cet étudiant ?');">
+            <form th:action="@{/admin/teachers/{id}/delete(id=${teacher.id})}" method="post"
+                  onsubmit="return confirm('Supprimer cet enseignant ?');">
               <button type="submit" class="btn btn-danger">Supprimer</button>
             </form>
           </div>
@@ -57,31 +43,39 @@
       <div class="grid-2">
         <div class="card">
           <h2 class="section-title">Modifier le profil</h2>
-          <form th:action="@{/admin/students/{id}/profile(id=${student.id})}" method="post" class="form-grid">
+          <form th:action="@{/admin/teachers/{id}/profile(id=${teacher.id})}" method="post" class="form-grid">
             <div class="form-field">
               <label class="required" for="firstName">Prénom</label>
               <input id="firstName" name="firstName" type="text" required
-                     th:value="${student.user != null ? student.user.firstName : ''}"/>
+                     th:value="${teacher.user != null ? teacher.user.firstName : ''}"/>
             </div>
             <div class="form-field">
               <label class="required" for="lastName">Nom</label>
               <input id="lastName" name="lastName" type="text" required
-                     th:value="${student.user != null ? student.user.lastName : ''}"/>
+                     th:value="${teacher.user != null ? teacher.user.lastName : ''}"/>
             </div>
             <div class="form-field">
               <label class="required" for="email">Email</label>
               <input id="email" name="email" type="email" required
-                     th:value="${student.user != null ? student.user.email : ''}"/>
+                     th:value="${teacher.user != null ? teacher.user.email : ''}"/>
             </div>
             <div class="form-field">
-              <label class="required" for="studentNumber">Numéro d'étudiant</label>
-              <input id="studentNumber" name="studentNumber" type="text" required
-                     th:value="${student.studentNumber}"/>
+              <label class="required" for="employeeNumber">Numéro d'employé</label>
+              <input id="employeeNumber" name="employeeNumber" type="text" required
+                     th:value="${teacher.employeeNumber}"/>
             </div>
-            <div class="form-field full">
+            <div class="form-field">
               <label for="password">Nouveau mot de passe</label>
               <input id="password" name="password" type="password" autocomplete="new-password"
                      placeholder="Laisser vide pour ne pas changer"/>
+            </div>
+            <div class="form-field">
+              <label for="enabled">Compte actif</label>
+              <label style="font-weight:500;display:flex;gap:0.5rem;align-items:center;">
+                <input id="enabled" name="enabled" type="checkbox" value="true"
+                       th:checked="${teacher.user != null && teacher.user.enabled}"/>
+                Peut se connecter
+              </label>
             </div>
             <div class="full btn-group">
               <button type="submit" class="btn btn-primary">Enregistrer</button>
@@ -89,37 +83,28 @@
           </form>
         </div>
         <div class="card">
-          <h2 class="section-title">Scolarité</h2>
+          <h2 class="section-title">Compte</h2>
           <div class="info-stack">
             <div class="info-item">
-              <span class="info-icon"><i class="fa-solid fa-graduation-cap"></i></span>
+              <span class="info-icon"><i class="fa-regular fa-envelope"></i></span>
               <div>
-                <span class="label">Promotion</span>
-                <span class="value"
-                      th:text="${student.promotion != null ? student.promotion.label : '—'}">Promo</span>
+                <span class="label">Email</span>
+                <span class="value" th:text="${teacher.user != null ? teacher.user.email : '—'}">mail@hei.school</span>
               </div>
             </div>
             <div class="info-item">
-              <span class="info-icon"><i class="fa-solid fa-users"></i></span>
+              <span class="info-icon"><i class="fa-solid fa-id-badge"></i></span>
               <div>
-                <span class="label">Groupe actuel</span>
-                <span class="value"
-                      th:text="${student.currentGroup != null ? student.currentGroup.ref : '—'}">K1</span>
-              </div>
-            </div>
-            <div class="info-item">
-              <span class="info-icon"><i class="fa-regular fa-id-card"></i></span>
-              <div>
-                <span class="label">Numéro d'étudiant</span>
-                <span class="value" th:text="${student.studentNumber}">STD24001</span>
+                <span class="label">Numéro d'employé</span>
+                <span class="value" th:text="${teacher.employeeNumber}">TCH001</span>
               </div>
             </div>
             <div class="info-item">
               <span class="info-icon"><i class="fa-solid fa-circle-check"></i></span>
               <div>
                 <span class="label">Statut</span>
-                <span class="value" th:if="${student.user != null && student.user.enabled}">Actif</span>
-                <span class="value" th:if="${student.user == null || !student.user.enabled}">Suspendu</span>
+                <span class="value" th:if="${teacher.user != null && teacher.user.enabled}">Actif</span>
+                <span class="value" th:if="${teacher.user == null || !teacher.user.enabled}">Désactivé</span>
               </div>
             </div>
           </div>
@@ -127,7 +112,7 @@
       </div>
 
       <p style="margin-top:1rem;">
-        <a class="btn btn-outline" th:href="@{/admin/students/list.html}">Retour à la liste</a>
+        <a class="btn btn-outline" th:href="@{/admin/teachers/list.html}">Retour à la liste</a>
       </p>
     </main>
   </div>
