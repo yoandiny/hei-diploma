@@ -17,27 +17,32 @@
     <header th:replace="~{fragments/topbar :: topbar('Notes de mes cours', 'TEACHER')}"></header>
     <main class="content">
       <div class="card">
-        <h2 class="section-title">Choisir un cours</h2>
+        <h2 class="section-title">Examens à corriger ou consulter</h2>
         <div class="table-wrap">
           <table class="data">
             <thead>
             <tr>
-              <th>Cours</th>
-              <th>Groupes</th>
-              <th></th>
+              <th>Cours</th><th>Date</th><th>Groupes</th><th>Notes</th><th>Statut</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td>PROG4 — Programmation avancée</td>
-              <td><span class="chip">K1</span> <span class="chip">K2</span></td>
-              <td><a class="btn btn-sm btn-primary" th:href="@{/teacher/grades-edit.html}">Ouvrir</a></td>
+            <tr th:each="exam : ${draftExams}">
+              <td th:text="${exam.courseRef + ' — ' + exam.courseTitle}">Cours</td>
+              <td th:text="${#temporals.format(exam.dateExam, 'dd/MM/yyyy')}">Date</td>
+              <td><span class="chip" th:each="group : ${exam.groups}" th:text="${group.ref}">Groupe</span></td>
+              <td th:text="${exam.gradedCount + ' / ' + exam.studentCount}">0 / 0</td>
+              <td><span class="badge badge-warn">Brouillon</span></td>
+              <td><a class="btn btn-sm btn-primary" th:href="@{/teacher/grades-edit.html(examId=${exam.examId})}">Ouvrir</a></td>
             </tr>
-            <tr>
-              <td>WEB4 — Développement web</td>
-              <td><span class="chip">K2</span> <span class="chip">K3</span></td>
-              <td><a class="btn btn-sm btn-primary" th:href="@{/teacher/grades-edit.html}">Ouvrir</a></td>
+            <tr th:each="exam : ${submittedExams}">
+              <td th:text="${exam.courseRef + ' — ' + exam.courseTitle}">Cours</td>
+              <td th:text="${#temporals.format(exam.dateExam, 'dd/MM/yyyy')}">Date</td>
+              <td><span class="chip" th:each="group : ${exam.groups}" th:text="${group.ref}">Groupe</span></td>
+              <td th:text="${exam.gradedCount + ' / ' + exam.studentCount}">0 / 0</td>
+              <td><span class="badge badge-ok">Soumis</span></td>
+              <td><a class="btn btn-sm btn-outline" th:href="@{/teacher/grades-edit.html(examId=${exam.examId})}">Consulter</a></td>
             </tr>
+            <tr th:if="${#lists.isEmpty(draftExams) && #lists.isEmpty(submittedExams)}"><td colspan="6">Aucun examen pour ce cours.</td></tr>
             </tbody>
           </table>
         </div>

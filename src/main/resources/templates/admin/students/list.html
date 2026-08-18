@@ -34,34 +34,14 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td>STD24001</td>
-              <td>Andria Miora</td>
-              <td><span class="badge badge-info">K1</span></td>
-              <td>L2</td>
-              <td><a class="btn btn-sm btn-primary" th:href="@{/admin/students/edit-group.html}">Changer de groupe</a></td>
+            <tr th:each="student : ${students}">
+              <td th:text="${student.studentNumber}">STD</td>
+              <td th:text="${student.user != null ? student.user.fullName : '—'}">Étudiant</td>
+              <td><span class="badge badge-info" th:text="${student.currentGroup != null ? student.currentGroup.ref : '—'}">—</span></td>
+              <td th:text="${student.promotion != null ? student.promotion.label : '—'}">—</td>
+              <td class="btn-group"><a class="btn btn-sm btn-outline" th:href="@{/admin/students/profile.html(id=${student.id})}">Profil</a><a class="btn btn-sm btn-primary" th:href="@{/admin/students/edit-group.html(id=${student.id})}">Changer de groupe</a></td>
             </tr>
-            <tr>
-              <td>STD24005</td>
-              <td>Fondàna Yoan DINY</td>
-              <td><span class="badge badge-info">K2</span></td>
-              <td>L2</td>
-              <td><a class="btn btn-sm btn-primary" th:href="@{/admin/students/edit-group.html}">Changer de groupe</a></td>
-            </tr>
-            <tr>
-              <td>STD24012</td>
-              <td>Rasoanaivo Hery</td>
-              <td><span class="badge badge-info">K2</span></td>
-              <td>L2</td>
-              <td><a class="btn btn-sm btn-primary" th:href="@{/admin/students/edit-group.html}">Changer de groupe</a></td>
-            </tr>
-            <tr>
-              <td>STD23008</td>
-              <td>Rakotomalala Soa</td>
-              <td><span class="badge badge-info">G1</span></td>
-              <td>L3</td>
-              <td><a class="btn btn-sm btn-primary" th:href="@{/admin/students/edit-group.html}">Changer de groupe</a></td>
-            </tr>
+            <tr th:if="${#lists.isEmpty(students)}"><td colspan="5">Aucun étudiant pour le moment.</td></tr>
             </tbody>
           </table>
         </div>

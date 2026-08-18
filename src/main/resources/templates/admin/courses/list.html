@@ -39,51 +39,17 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td>PROG4</td>
-              <td>Programmation avancée</td>
-              <td>
-                <span class="chip">Rakoto Jean</span>
-                <span class="chip">Ravelo Marie</span>
-              </td>
-              <td>
-                <span class="chip">K1</span>
-                <span class="chip">K2</span>
-              </td>
+            <tr th:each="row : ${courseRows}">
+              <td th:text="${row.course.ref}">CODE</td>
+              <td th:text="${row.course.title}">Cours</td>
+              <td><span class="chip" th:each="assignment : ${row.assignments}" th:text="${assignment.teacher.user.fullName}">Enseignant</span><span th:if="${#lists.isEmpty(row.assignments)}">—</span></td>
+              <td><span class="chip" th:each="assignment : ${row.assignments}" th:text="${assignment.group.ref}">Groupe</span><span th:if="${#lists.isEmpty(row.assignments)}">—</span></td>
               <td class="btn-group">
-                <a class="btn btn-sm btn-outline" th:href="@{/admin/courses/form.html}">Éditer</a>
-                <a class="btn btn-sm btn-primary" th:href="@{/admin/courses/assign-groups.html}">Affectations</a>
+                <a class="btn btn-sm btn-outline" th:href="@{/admin/courses/form.html(id=${row.course.id})}">Éditer</a>
+                <a class="btn btn-sm btn-primary" th:href="@{/admin/courses/assign-groups.html(courseId=${row.course.id})}">Affectations</a>
               </td>
             </tr>
-            <tr>
-              <td>WEB4</td>
-              <td>Développement web</td>
-              <td><span class="chip">Rakoto Jean</span></td>
-              <td>
-                <span class="chip">K2</span>
-                <span class="chip">K3</span>
-              </td>
-              <td class="btn-group">
-                <a class="btn btn-sm btn-outline" th:href="@{/admin/courses/form.html}">Éditer</a>
-                <a class="btn btn-sm btn-primary" th:href="@{/admin/courses/assign-groups.html}">Affectations</a>
-              </td>
-            </tr>
-            <tr>
-              <td>SYS2</td>
-              <td>Systèmes d'exploitation</td>
-              <td>
-                <span class="chip">Ravelo Marie</span>
-                <span class="chip">Andrianina Paul</span>
-              </td>
-              <td>
-                <span class="chip">K1</span>
-                <span class="chip">K3</span>
-              </td>
-              <td class="btn-group">
-                <a class="btn btn-sm btn-outline" th:href="@{/admin/courses/form.html}">Éditer</a>
-                <a class="btn btn-sm btn-primary" th:href="@{/admin/courses/assign-groups.html}">Affectations</a>
-              </td>
-            </tr>
+            <tr th:if="${#lists.isEmpty(courseRows)}"><td colspan="5">Aucun cours pour le moment.</td></tr>
             </tbody>
           </table>
         </div>

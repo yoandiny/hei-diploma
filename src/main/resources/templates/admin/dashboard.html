@@ -27,6 +27,10 @@
         L'admin peut tout faire, y compris consulter les résultats de promotion sur 3 ans.
       </div>
 
+      <div class="alert alert-info">
+        L'admin peut tout faire, y compris consulter les résultats de promotion sur 3 ans.
+      </div>
+
       <div class="grid-2">
         <div class="card">
           <h2 class="section-title">Accès rapides</h2>
@@ -38,16 +42,20 @@
           </div>
         </div>
         <div class="card">
-          <h2 class="section-title">Promo 2023 — aperçu 3 ans</h2>
+          <h2 class="section-title">Dernières modifications de notes</h2>
           <div class="table-wrap">
             <table class="data">
               <thead>
-              <tr><th>Année</th><th>Moyenne</th><th>Réussite</th></tr>
+              <tr><th>Date</th><th>Cours</th><th>Étudiant</th><th>Nouvelle note</th></tr>
               </thead>
               <tbody>
-              <tr><td>Année 1</td><td>13.4</td><td>82%</td></tr>
-              <tr><td>Année 2</td><td>14.1</td><td>78%</td></tr>
-              <tr><td>Année 3</td><td>14.8</td><td>85%</td></tr>
+              <tr th:each="change : ${recentChanges}">
+                <td th:text="${#temporals.format(change.changedAt, 'dd/MM/yyyy HH:mm')}">Date</td>
+                <td th:text="${change.courseRef}">Cours</td>
+                <td th:text="${change.studentName}">Étudiant</td>
+                <td th:text="${change.newValue}">0</td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(recentChanges)}"><td colspan="4">Aucune modification de note.</td></tr>
               </tbody>
             </table>
           </div>

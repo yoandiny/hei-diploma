@@ -33,20 +33,14 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td>PROG4</td>
-              <td>Programmation avancée</td>
-              <td><span class="chip">K1</span> <span class="chip">K2</span></td>
-              <td>42</td>
-              <td><a class="btn btn-sm btn-outline" th:href="@{/teacher/grades-edit.html}">Notes</a></td>
+            <tr th:each="course : ${courses}">
+              <td th:text="${course.ref}">CODE</td>
+              <td th:text="${course.title}">Cours</td>
+              <td><span class="chip" th:each="group : ${course.groups}" th:text="${group.ref}">Groupe</span></td>
+              <td th:text="${course.studentCount}">0</td>
+              <td><a class="btn btn-sm btn-outline" th:href="@{/teacher/grades-home.html(courseId=${course.courseId})}">Examens</a></td>
             </tr>
-            <tr>
-              <td>WEB4</td>
-              <td>Développement web</td>
-              <td><span class="chip">K2</span> <span class="chip">K3</span></td>
-              <td>38</td>
-              <td><a class="btn btn-sm btn-outline" th:href="@{/teacher/grades-edit.html}">Notes</a></td>
-            </tr>
+            <tr th:if="${#lists.isEmpty(courses)}"><td colspan="5">Aucun cours ne vous est affecté.</td></tr>
             </tbody>
           </table>
         </div>

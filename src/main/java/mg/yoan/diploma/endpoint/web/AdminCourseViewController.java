@@ -2,6 +2,8 @@ package mg.yoan.diploma.endpoint.web;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
+import mg.yoan.diploma.domain.Course;
+import mg.yoan.diploma.domain.CourseAssignment;
 import mg.yoan.diploma.service.CourseAssignmentService;
 import mg.yoan.diploma.service.CourseService;
 import mg.yoan.diploma.service.DomainException;
@@ -28,7 +30,14 @@ public class AdminCourseViewController {
   public String list(Model model) {
     model.addAttribute("pageHeading", "Gestion des cours");
     model.addAttribute("activeNav", "cours");
-    model.addAttribute("courses", courseService.listAll());
+    model.addAttribute(
+        "courseRows",
+        courseService.listAll().stream()
+            .map(
+                course ->
+                    new CourseRow(
+                        course, assignmentService.listByCourse(course.getId().toString())))
+            .toList());
     return "admin/courses/list";
   }
 
@@ -131,4 +140,6 @@ public class AdminCourseViewController {
     }
     return "redirect:/admin/courses/assign-groups.html?courseId=" + courseId;
   }
+
+  public record CourseRow(Course course, List<CourseAssignment> assignments) {}
 }

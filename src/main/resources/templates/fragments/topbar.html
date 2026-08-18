@@ -9,12 +9,11 @@
     <div class="user-chip">
       <div class="user-meta">
         <div class="name"
-             th:text="${role == 'TEACHER'} ? 'Rakoto Jean' : (${role == 'ADMIN'} ? 'Admin HEI' : 'Fondàna Yoan')">
-          Fondàna Yoan
+             th:text="${currentUser != null ? currentUser.displayName : 'Utilisateur'}">
+          Utilisateur
         </div>
         <div class="role"
-             th:text="${role == 'TEACHER'} ? 'Enseignant' : (${role == 'ADMIN'} ? 'Administrateur' : 'Étudiant')">
-          Étudiant
+             th:text="${currentUser != null ? currentUser.roleLabel : ''}">Rôle
         </div>
       </div>
       <img class="avatar-sm" th:src="@{/img/avatar-default.svg}" src="/img/avatar-default.svg" alt="Avatar"/>
