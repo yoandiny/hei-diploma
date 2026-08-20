@@ -16,6 +16,12 @@
   <div class="main-wrap">
     <header th:replace="~{fragments/topbar :: topbar('Notes de mes cours', 'TEACHER')}"></header>
     <main class="content">
+      <div class="btn-group" style="margin-bottom:1rem;">
+        <a class="btn btn-primary" th:href="@{/teacher/exams-new.html}">
+          <i class="fa-solid fa-plus"></i> Nouvel examen
+        </a>
+      </div>
+
       <div class="card">
         <h2 class="section-title">Examens à corriger ou consulter</h2>
         <div class="table-wrap">
