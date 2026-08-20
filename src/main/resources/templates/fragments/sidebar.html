@@ -44,6 +44,11 @@
       </a>
     </li>
     <li>
+      <a th:href="@{/teacher/exams.html}" th:classappend="${activeNav == 'examens'} ? ' active'">
+        <i class="fa-solid fa-file-lines"></i> Examens
+      </a>
+    </li>
+    <li>
       <a th:href="@{/teacher/grades-home.html}" th:classappend="${activeNav == 'notes'} ? ' active'">
         <i class="fa-solid fa-pen-to-square"></i> Notes
       </a>
