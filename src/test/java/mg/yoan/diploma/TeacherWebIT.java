@@ -3,9 +3,6 @@ package mg.yoan.diploma;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
 import mg.yoan.diploma.domain.Course;
 import mg.yoan.diploma.domain.Group;
 import mg.yoan.diploma.domain.Promotion;
@@ -38,11 +35,9 @@ class TeacherWebIT extends WebDiplomaIT {
     assertContains(
         htmlGet("/teacher/exams-new.html?courseId=" + course.getId(), token).getBody(),
         course.getRef());
+    assertContains(htmlGet("/teacher/grades-home.html", token).getBody(), "Notes de mes cours");
     assertContains(
-        htmlGet("/teacher/grades-home.html", token).getBody(), "Notes de mes cours");
-    assertContains(
-        htmlGet("/teacher/exams.html?courseId=" + course.getId(), token).getBody(),
-        "Mes examens");
+        htmlGet("/teacher/exams.html?courseId=" + course.getId(), token).getBody(), "Mes examens");
   }
 
   @Test
@@ -90,10 +85,7 @@ class TeacherWebIT extends WebDiplomaIT {
 
     assertContains(
         htmlGet(
-                "/teacher/grades-edit.html?examId="
-                    + exam.examId()
-                    + "&groupId="
-                    + group.getId(),
+                "/teacher/grades-edit.html?examId=" + exam.examId() + "&groupId=" + group.getId(),
                 token)
             .getBody(),
         student.getUser().getFullName());
@@ -118,7 +110,6 @@ class TeacherWebIT extends WebDiplomaIT {
     ExamOption submitted = teacherGradeService.getExam(teacher.getId().toString(), exam.examId());
     assertTrue(submitted.isSubmitted());
     assertEquals(
-        2,
-        teacherGradeService.getHistory(teacher.getId().toString(), gradeId).entries().size());
+        2, teacherGradeService.getHistory(teacher.getId().toString(), gradeId).entries().size());
   }
 }

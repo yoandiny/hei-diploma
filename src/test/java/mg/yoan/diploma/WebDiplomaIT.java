@@ -49,14 +49,16 @@ public abstract class WebDiplomaIT extends DiplomaIT {
     return restTemplate.exchange(path, HttpMethod.GET, new HttpEntity<>(headers), String.class);
   }
 
-  protected ResponseEntity<String> htmlPost(String path, String token, MultiValueMap<String, String> form) {
+  protected ResponseEntity<String> htmlPost(
+      String path, String token, MultiValueMap<String, String> form) {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     headers.setAccept(List.of(MediaType.TEXT_HTML));
     if (token != null) {
       headers.add(HttpHeaders.COOKIE, "jwt=" + token);
     }
-    return restTemplate.exchange(path, HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
+    return restTemplate.exchange(
+        path, HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
   }
 
   protected MultiValueMap<String, String> form(String... keyValues) {

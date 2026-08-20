@@ -83,9 +83,7 @@ class AdminWebIT extends WebDiplomaIT {
 
     String courseRef = "CW" + uid();
     htmlPost(
-        "/admin/courses/save",
-        token,
-        form("ref", courseRef, "title", "Cours web", "credits", "6"));
+        "/admin/courses/save", token, form("ref", courseRef, "title", "Cours web", "credits", "6"));
     Course course =
         courseService.listAll().stream()
             .filter(item -> courseRef.equals(item.getRef()))
@@ -106,9 +104,7 @@ class AdminWebIT extends WebDiplomaIT {
             "Cours web modifié",
             "credits",
             "8"));
-    assertEquals(
-        "Cours web modifié",
-        courseService.getById(course.getId().toString()).getTitle());
+    assertEquals("Cours web modifié", courseService.getById(course.getId().toString()).getTitle());
 
     Teacher teacher = newTeacher();
     MultiValueMap<String, String> assignmentForm = new LinkedMultiValueMap<>();
@@ -123,7 +119,9 @@ class AdminWebIT extends WebDiplomaIT {
         teacher.getUser().getFullName());
 
     var assignment =
-        assignmentService.listByCourse(course.getId().toString()).stream().findFirst().orElseThrow();
+        assignmentService.listByCourse(course.getId().toString()).stream()
+            .findFirst()
+            .orElseThrow();
     htmlPost(
         "/admin/courses/assignments/" + assignment.getId() + "/delete",
         token,
