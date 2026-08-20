@@ -175,6 +175,42 @@ class RestApiIT extends DiplomaIT {
     assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
   }
 
+  @Test
+  void admin_lists_graduates_over_http() {
+    Promotion promotion = newPromotion();
+    Group group = newGroup(promotion);
+    Course course = newCourse();
+    Teacher teacher = newTeacher();
+    Student graduate = newStudent(promotion, group);
+    assign(course, teacher, group);
+    var exam =
+        teacherGradeService.createExam(
+            teacher.getId().toString(),
+            course.getId().toString(),
+            Instant.parse("2026-06-01T08:00:00Z"),
+            BigDecimal.ONE,
+            List.of(group.getId().toString()));
+    teacherGradeService.saveGrade(
+        teacher.getId().toString(),
+        exam.examId(),
+        graduate.getId().toString(),
+        new BigDecimal("12.00"));
+    teacherGradeService.submitExam(teacher.getId().toString(), exam.examId());
+
+    JUser admin = newAdmin();
+    String token = login(admin.getEmail());
+
+    ResponseEntity<Object[]> response =
+        restTemplate.exchange(
+            "/admin/promotions/" + promotion.getId() + "/graduates",
+            org.springframework.http.HttpMethod.GET,
+            authenticated(token),
+            Object[].class);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertTrue(response.getBody() != null && response.getBody().length == 1);
+  }
+
   private String login(String email) {
     ResponseEntity<LoginResponse> response =
         restTemplate.postForEntity(
